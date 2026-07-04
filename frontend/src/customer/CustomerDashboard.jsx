@@ -19,13 +19,37 @@ import AcUnitIcon from '@mui/icons-material/AcUnit';
 import ConstructionIcon from '@mui/icons-material/Construction';
 import CleaningServicesIcon from '@mui/icons-material/CleaningServices';
 
-const CATEGORY_ICONS = {
-  'Electrician': <FlashOnIcon sx={{ fontSize: 32, color: '#000000' }} />,
-  'Plumber': <OpacityIcon sx={{ fontSize: 32, color: '#000000' }} />,
-  'Carpenter': <CarpenterIcon sx={{ fontSize: 32, color: '#000000' }} />,
-  'AC Technician': <AcUnitIcon sx={{ fontSize: 32, color: '#000000' }} />,
-  'Mechanic': <ConstructionIcon sx={{ fontSize: 32, color: '#000000' }} />,
-  'Home Cleaning': <CleaningServicesIcon sx={{ fontSize: 32, color: '#000000' }} />
+const CATEGORY_STYLES = {
+  'Electrician': {
+    icon: <FlashOnIcon sx={{ fontSize: 32, color: '#f59e0b' }} />,
+    bgColor: 'rgba(245, 158, 11, 0.08)',
+    borderColor: '#f59e0b'
+  },
+  'Plumber': {
+    icon: <OpacityIcon sx={{ fontSize: 32, color: '#3b82f6' }} />,
+    bgColor: 'rgba(59, 130, 246, 0.08)',
+    borderColor: '#3b82f6'
+  },
+  'Carpenter': {
+    icon: <CarpenterIcon sx={{ fontSize: 32, color: '#10b981' }} />,
+    bgColor: 'rgba(16, 185, 129, 0.08)',
+    borderColor: '#10b981'
+  },
+  'AC Technician': {
+    icon: <AcUnitIcon sx={{ fontSize: 32, color: '#06b6d4' }} />,
+    bgColor: 'rgba(6, 182, 212, 0.08)',
+    borderColor: '#06b6d4'
+  },
+  'Mechanic': {
+    icon: <ConstructionIcon sx={{ fontSize: 32, color: '#ef4444' }} />,
+    bgColor: 'rgba(239, 68, 68, 0.08)',
+    borderColor: '#ef4444'
+  },
+  'Home Cleaning': {
+    icon: <CleaningServicesIcon sx={{ fontSize: 32, color: '#8b5cf6' }} />,
+    bgColor: 'rgba(139, 92, 246, 0.08)',
+    borderColor: '#8b5cf6'
+  }
 };
 
 function CustomerDashboard() {
@@ -86,15 +110,6 @@ function CustomerDashboard() {
               <RoomIcon sx={{ mr: 0.5, color: '#000000' }} /> {currentLocation}
             </Typography>
           </Grid>
-          <Grid item sx={{ mt: { xs: 2, sm: 0 } }}>
-            <Button
-              variant="contained"
-              onClick={() => navigate('/customer/book')}
-              sx={{ background: '#000000', color: '#ffffff', fontWeight: '700', borderRadius: '6px', textTransform: 'none' }}
-            >
-              Quick Book Service
-            </Button>
-          </Grid>
         </Grid>
       </Paper>
 
@@ -143,42 +158,61 @@ function CustomerDashboard() {
           </Typography>
 
           <Grid container spacing={3} sx={{ mb: 6 }}>
-            {categories.map((cat) => (
-              <Grid item xs={6} sm={4} key={cat.id}>
-                <Card 
-                  variant="outlined" 
-                  onClick={() => navigate(`/customer/book?category=${cat.id}`)}
-                  sx={{ 
-                    p: 3, 
-                    textAlign: 'center', 
-                    cursor: 'pointer', 
-                    borderRadius: '8px', 
-                    borderColor: '#E5E7EB',
-                    '&:hover': {
-                      borderColor: '#000000',
-                      boxShadow: '0 4px 12px rgba(0,0,0,0.05)'
-                    }
-                  }}
-                >
-                  <Box sx={{
-                    width: '60px',
-                    height: '60px',
-                    borderRadius: '50%',
-                    bgcolor: '#FAFAFB',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    mx: 'auto',
-                    mb: 2
-                  }}>
-                    {CATEGORY_ICONS[cat.name] || <HandymanIcon sx={{ color: '#000000' }} />}
-                  </Box>
-                  <Typography variant="subtitle2" fontWeight="700">
-                    {cat.name}
-                  </Typography>
-                </Card>
-              </Grid>
-            ))}
+            {categories.map((cat) => {
+              const styles = CATEGORY_STYLES[cat.name] || {
+                icon: <HandymanIcon sx={{ fontSize: 32, color: '#000000' }} />,
+                bgColor: '#FAFAFB',
+                borderColor: '#E5E7EB'
+              };
+              return (
+                <Grid item xs={6} sm={4} md={2} key={cat.id}>
+                  <Card 
+                    variant="outlined" 
+                    onClick={() => navigate(`/customer/book?category=${cat.id}`)}
+                    sx={{ 
+                      p: 3, 
+                      textAlign: 'center', 
+                      cursor: 'pointer', 
+                      borderRadius: '12px', 
+                      borderColor: '#E5E7EB',
+                      width: '100%',
+                      height: '150px',
+                      display: 'flex',
+                      flexDirection: 'column',
+                      justifyContent: 'center',
+                      alignItems: 'center',
+                      transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+                      '&:hover': {
+                        borderColor: styles.borderColor,
+                        transform: 'translateY(-4px)',
+                        boxShadow: `0 10px 20px -5px ${styles.bgColor.replace('0.08', '0.15')}`
+                      }
+                    }}
+                  >
+                    <Box sx={{
+                      width: '60px',
+                      height: '60px',
+                      borderRadius: '50%',
+                      bgcolor: styles.bgColor,
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      mx: 'auto',
+                      mb: 2,
+                      transition: 'transform 0.3s ease',
+                      '.MuiCard-root:hover &': {
+                        transform: 'scale(1.1)'
+                      }
+                    }}>
+                      {styles.icon}
+                    </Box>
+                    <Typography variant="subtitle2" fontWeight="800" sx={{ color: '#0F0F14' }}>
+                      {cat.name}
+                    </Typography>
+                  </Card>
+                </Grid>
+              );
+            })}
           </Grid>
 
           {/* Quick Info & Profile Card */}
