@@ -11,8 +11,8 @@ import toast from 'react-hot-toast';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import PlayArrowIcon from '@mui/icons-material/PlayArrow';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
-import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
-import RemoveCircleOutlineIcon from '@mui/icons-material/RemoveCircleOutline';
+import AddCircleOutlinedIcon from '@mui/icons-material/AddCircleOutlined';
+import RemoveCircleOutlinedIcon from '@mui/icons-material/RemoveCircleOutlined';
 import SendIcon from '@mui/icons-material/Send';
 import HandymanIcon from '@mui/icons-material/Handyman';
 import QrCodeScannerIcon from '@mui/icons-material/QrCodeScanner';
@@ -536,7 +536,7 @@ function WorkerJobDetails() {
                     {spareParts.length > 1 && (
                       <Grid item xs={12} sm={1}>
                         <IconButton color="error" onClick={() => handleRemovePart(index)}>
-                          <RemoveCircleOutlineIcon />
+                          <RemoveCircleOutlinedIcon />
                         </IconButton>
                       </Grid>
                     )}
@@ -544,7 +544,7 @@ function WorkerJobDetails() {
                 ))}
 
                 <Button
-                  startIcon={<AddCircleOutlineIcon />}
+                  startIcon={<AddCircleOutlinedIcon />}
                   onClick={handleAddPart}
                   sx={{ color: '#000000', mb: 3, textTransform: 'none' }}
                 >
