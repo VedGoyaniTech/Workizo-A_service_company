@@ -56,6 +56,46 @@ class BookingViewSet(viewsets.ModelViewSet):
 
     def perform_create(self, serializer):
         booking = serializer.save(customer=self.request.user)
+        
+        # Default date/time if instant booking
+        if booking.booking_type == 'instant':
+            from django.utils import timezone
+            if not booking.preferred_date:
+                booking.preferred_date = timezone.now().date()
+            if not booking.preferred_time:
+                booking.preferred_time = "Instant (10-40 mins)"
+            booking.save()
+            
+            # Find and notify online approved workers in the service category
+            from workers.models import WorkerProfile
+            workers = WorkerProfile.objects.filter(
+                online_status=True,
+                approval_status='approved',
+                service_category=booking.service_category
+            )
+            
+            channel_layer = get_channel_layer()
+            for wp in workers:
+                # Create DB notification for the worker
+                noti = Notification.objects.create(
+                    user=wp.user,
+                    title="New Instant Booking Request",
+                    message=f"New instant request for {booking.service_category.name}. Problem: {booking.problem_type}.",
+                    notification_type="incoming_booking_request"
+                )
+                if channel_layer:
+                    async_to_sync(channel_layer.group_send)(
+                        f"user_{wp.user.id}",
+                        {
+                            "type": "send_notification",
+                            "data": {
+                                "type": "notification",
+                                "notification": NotificationSerializer(noti).data,
+                                "booking": BookingSerializer(booking).data
+                            }
+                        }
+                    )
+
         # Create notification for self
         create_and_send_notification(
             user=self.request.user,

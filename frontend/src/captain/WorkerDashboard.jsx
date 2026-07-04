@@ -37,6 +37,7 @@ function WorkerDashboard() {
   const [countdown, setCountdown] = useState(20);
   const simulationInterval = useRef(null);
   const countdownInterval = useRef(null);
+  const notiWs = useRef(null);
 
   const fetchStats = async () => {
     try {
@@ -163,15 +164,98 @@ function WorkerDashboard() {
     }
   }, [online, user]);
 
+  // Establish WebSocket connection for real-time notifications
+  useEffect(() => {
+    if (online && user?.profile?.approval_status === 'approved') {
+      const wsScheme = window.location.protocol === "https:" ? "wss" : "ws";
+      const token = localStorage.getItem('access_token');
+      
+      notiWs.current = new WebSocket(`${wsScheme}://127.0.0.1:8001/ws/notifications/?token=${token}`);
+
+      notiWs.current.onmessage = (event) => {
+        try {
+          const payload = JSON.parse(event.data);
+          if (payload.type === 'notification' && payload.notification.notification_type === 'incoming_booking_request') {
+            const booking = payload.booking;
+            
+            // Trigger ringtone audio alert
+            try {
+              const audio = new Audio('https://assets.mixkit.co/active_storage/sfx/2869/2869-600.wav');
+              audio.play();
+            } catch (e) {
+              console.log('Audio playback blocked by user interaction rule', e);
+            }
+
+            // Set incoming request state with real booking details
+            setIncomingRequest({
+              id: booking.id,
+              category: booking.service_category_detail?.name || 'Service Partner',
+              distance: (Math.random() * 3 + 1.2).toFixed(1) + ' km away',
+              earnings: Math.floor(Math.random() * 200) + 300,
+              problem: booking.problem_type,
+              location: `${booking.address}, ${booking.city}`,
+              isReal: true
+            });
+
+            // Start countdown timer
+            setCountdown(30);
+            if (countdownInterval.current) clearInterval(countdownInterval.current);
+            countdownInterval.current = setInterval(() => {
+              setCountdown((prevCount) => {
+                if (prevCount <= 1) {
+                  clearInterval(countdownInterval.current);
+                  setIncomingRequest(null);
+                  toast.error('Real-time request missed.');
+                  return 0;
+                }
+                return prevCount - 1;
+              });
+            }, 1000);
+          }
+        } catch (err) {
+          console.error('Error handling WebSocket notification:', err);
+        }
+      };
+
+      notiWs.current.onclose = () => {
+        console.log('Notification WS closed');
+      };
+    } else {
+      if (notiWs.current) {
+        notiWs.current.close();
+        notiWs.current = null;
+      }
+    }
+
+    return () => {
+      if (notiWs.current) {
+        notiWs.current.close();
+        notiWs.current = null;
+      }
+    };
+  }, [online, user]);
+
   const handleAcceptRequest = async () => {
+    const isReal = incomingRequest?.isReal;
+    const bookingId = incomingRequest?.id;
     stopSimulation();
     setLoading(true);
     try {
-      const res = await api.post('/api/bookings/bookings/generate-simulation/');
-      toast.success('Job request accepted!');
-      navigate(`/captain/job/${res.data.id}`);
+      if (isReal) {
+        const res = await api.post(`/api/bookings/bookings/${bookingId}/accept/`);
+        toast.success('Job request accepted!');
+        navigate(`/captain/job/${res.data.id}`);
+      } else {
+        const res = await api.post('/api/bookings/bookings/generate-simulation/');
+        toast.success('Job request accepted!');
+        navigate(`/captain/job/${res.data.id}`);
+      }
     } catch (err) {
-      toast.error('Failed to accept simulated request');
+      console.error(err);
+      toast.error(err.response?.data?.detail || 'Failed to accept request');
+      if (online) {
+        startSimulation();
+      }
     } finally {
       setLoading(false);
     }

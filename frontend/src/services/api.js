@@ -7,9 +7,18 @@ const api = axios.create({
   },
 });
 
-// Request Interceptor: Attach JWT Token
+// Request Interceptor: Attach JWT Token & Normalize URLs
 api.interceptors.request.use(
   (config) => {
+    // Normalize URL to prevent duplicate '/api/' prefix when combined with baseURL
+    if (config.url) {
+      if (config.url.startsWith('/api/')) {
+        config.url = config.url.substring(5);
+      } else if (config.url.startsWith('api/')) {
+        config.url = config.url.substring(4);
+      }
+    }
+
     const token = localStorage.getItem('access_token');
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;

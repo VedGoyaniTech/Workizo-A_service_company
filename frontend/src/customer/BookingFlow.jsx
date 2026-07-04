@@ -18,10 +18,17 @@ function BookingFlow() {
   const searchParams = new URLSearchParams(location.search);
   const preselectedCategoryId = searchParams.get('category');
 
-  const { register, handleSubmit, setValue, formState: { errors } } = useForm();
+  const { register, handleSubmit, setValue, watch, formState: { errors } } = useForm({
+    defaultValues: {
+      booking_type: 'instant'
+    }
+  });
+  const bookingType = watch('booking_type');
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(false);
   const [submitting, setSubmitting] = useState(false);
+
+  const selectedCategory = categories.find(cat => String(cat.id) === String(preselectedCategoryId));
 
   useEffect(() => {
     // Fetch categories
@@ -50,8 +57,11 @@ function BookingFlow() {
     formData.append('city', data.city || 'Ahmedabad');
     formData.append('state', data.state || 'Gujarat');
     formData.append('pincode', data.pincode);
-    formData.append('preferred_date', data.preferred_date);
-    formData.append('preferred_time', data.preferred_time);
+    formData.append('booking_type', data.booking_type);
+    if (data.booking_type === 'slot') {
+      formData.append('preferred_date', data.preferred_date);
+      formData.append('preferred_time', data.preferred_time);
+    }
 
     if (data.before_photo && data.before_photo[0]) {
       formData.append('before_photo', data.before_photo[0]);
@@ -98,28 +108,50 @@ function BookingFlow() {
           <form onSubmit={handleSubmit(onSubmit)}>
             <Grid container spacing={3}>
               {/* Category */}
-              <Grid item xs={12}>
-                <TextField
-                  select
-                  fullWidth
-                  label="Select Service Category"
-                  defaultValue=""
-                  {...register('service_category', { required: 'Please select a category' })}
-                  error={!!errors.service_category}
-                  helperText={errors.service_category?.message}
-                  slotProps={{
-                    input: {
-                      style: { borderRadius: '6px' }
-                    }
-                  }}
-                >
-                  {categories.map((cat) => (
-                    <MenuItem key={cat.id} value={cat.id}>
-                      {cat.name}
-                    </MenuItem>
-                  ))}
-                </TextField>
-              </Grid>
+              {!preselectedCategoryId ? (
+                <Grid item xs={12}>
+                  <TextField
+                    select
+                    fullWidth
+                    label="Select Service Category"
+                    defaultValue=""
+                    {...register('service_category', { required: 'Please select a category' })}
+                    error={!!errors.service_category}
+                    helperText={errors.service_category?.message}
+                    slotProps={{
+                      input: {
+                        style: { borderRadius: '6px' }
+                      }
+                    }}
+                  >
+                    {categories.map((cat) => (
+                      <MenuItem key={cat.id} value={cat.id}>
+                        {cat.name}
+                      </MenuItem>
+                    ))}
+                  </TextField>
+                </Grid>
+              ) : (
+                <Grid item xs={12}>
+                  <Box sx={{ 
+                    p: 2.5, 
+                    background: '#FAFAFB', 
+                    borderRadius: '8px', 
+                    border: '1px solid #E5E7EB',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    gap: 0.5
+                  }}>
+                    <Typography variant="caption" color="text.secondary" fontWeight="700" sx={{ textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                      Selected Service Category
+                    </Typography>
+                    <Typography variant="h6" fontWeight="800" sx={{ fontFamily: 'Outfit, sans-serif' }}>
+                      {selectedCategory ? selectedCategory.name : 'Loading service details...'}
+                    </Typography>
+                    <input type="hidden" {...register('service_category')} value={preselectedCategoryId} />
+                  </Box>
+                </Grid>
+              )}
 
               {/* Problem Type */}
               <Grid item xs={12}>
@@ -157,56 +189,81 @@ function BookingFlow() {
                 />
               </Grid>
 
-              {/* Date & Time slots */}
-              <Grid item xs={12} sm={6}>
-                <TextField
-                  fullWidth
-                  type="date"
-                  label="Preferred Date"
-                  slotProps={{
-                    inputLabel: { shrink: true },
-                    input: {
-                      startAdornment: (
-                        <InputAdornment position="start">
-                          <EventIcon fontSize="small" />
-                        </InputAdornment>
-                      ),
-                      style: { borderRadius: '6px' }
-                    }
-                  }}
-                  {...register('preferred_date', { required: 'Date is required' })}
-                  error={!!errors.preferred_date}
-                  helperText={errors.preferred_date?.message}
-                />
-              </Grid>
-
-              <Grid item xs={12} sm={6}>
+              {/* Booking Type Select */}
+              <Grid item xs={12}>
                 <TextField
                   select
                   fullWidth
-                  label="Preferred Time Slot"
-                  defaultValue=""
+                  label="Select Service Mode"
+                  defaultValue="instant"
+                  {...register('booking_type', { required: 'Please select a booking mode' })}
+                  error={!!errors.booking_type}
+                  helperText={errors.booking_type?.message}
                   slotProps={{
                     input: {
-                      startAdornment: (
-                        <InputAdornment position="start">
-                          <AccessTimeIcon fontSize="small" />
-                        </InputAdornment>
-                      ),
                       style: { borderRadius: '6px' }
                     }
                   }}
-                  {...register('preferred_time', { required: 'Time slot is required' })}
-                  error={!!errors.preferred_time}
-                  helperText={errors.preferred_time?.message}
                 >
-                  <MenuItem value="09:00 AM - 11:00 AM">09:00 AM - 11:00 AM</MenuItem>
-                  <MenuItem value="11:00 AM - 01:00 PM">11:00 AM - 01:00 PM</MenuItem>
-                  <MenuItem value="01:00 PM - 03:00 PM">01:00 PM - 03:00 PM</MenuItem>
-                  <MenuItem value="03:00 PM - 05:00 PM">03:00 PM - 05:00 PM</MenuItem>
-                  <MenuItem value="05:00 PM - 07:00 PM">05:00 PM - 07:00 PM</MenuItem>
+                  <MenuItem value="instant">Instant Service (Get Captain in 10-40 mins)</MenuItem>
+                  <MenuItem value="slot">Slot-Based Booking (Schedule for later)</MenuItem>
                 </TextField>
               </Grid>
+
+              {bookingType === 'slot' && (
+                <>
+                  {/* Date & Time slots */}
+                  <Grid item xs={12} sm={6}>
+                    <TextField
+                      fullWidth
+                      type="date"
+                      label="Preferred Date"
+                      slotProps={{
+                        inputLabel: { shrink: true },
+                        input: {
+                          startAdornment: (
+                            <InputAdornment position="start">
+                              <EventIcon fontSize="small" />
+                            </InputAdornment>
+                          ),
+                          style: { borderRadius: '6px' }
+                        }
+                      }}
+                      {...register('preferred_date', { required: bookingType === 'slot' ? 'Date is required' : false })}
+                      error={!!errors.preferred_date}
+                      helperText={errors.preferred_date?.message}
+                    />
+                  </Grid>
+
+                  <Grid item xs={12} sm={6}>
+                    <TextField
+                      select
+                      fullWidth
+                      label="Preferred Time Slot"
+                      defaultValue=""
+                      slotProps={{
+                        input: {
+                          startAdornment: (
+                            <InputAdornment position="start">
+                              <AccessTimeIcon fontSize="small" />
+                            </InputAdornment>
+                          ),
+                          style: { borderRadius: '6px' }
+                        }
+                      }}
+                      {...register('preferred_time', { required: bookingType === 'slot' ? 'Time slot is required' : false })}
+                      error={!!errors.preferred_time}
+                      helperText={errors.preferred_time?.message}
+                    >
+                      <MenuItem value="09:00 AM - 11:00 AM">09:00 AM - 11:00 AM</MenuItem>
+                      <MenuItem value="11:00 AM - 01:00 PM">11:00 AM - 01:00 PM</MenuItem>
+                      <MenuItem value="01:00 PM - 03:00 PM">01:00 PM - 03:00 PM</MenuItem>
+                      <MenuItem value="03:00 PM - 05:00 PM">03:00 PM - 05:00 PM</MenuItem>
+                      <MenuItem value="05:00 PM - 07:00 PM">05:00 PM - 07:00 PM</MenuItem>
+                    </TextField>
+                  </Grid>
+                </>
+              )}
 
               {/* Address details */}
               <Grid item xs={12}>

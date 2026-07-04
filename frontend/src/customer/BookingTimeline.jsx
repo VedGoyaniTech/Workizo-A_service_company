@@ -102,7 +102,7 @@ function BookingTimeline() {
 
   // Simulate assignment logic
   useEffect(() => {
-    if (booking && booking.status === 'searching') {
+    if (booking && booking.status === 'searching' && booking.booking_type !== 'instant') {
       if (!searchTimer.current) {
         searchTimer.current = setTimeout(async () => {
           try {
@@ -248,12 +248,43 @@ function BookingTimeline() {
                     `}</style>
                   </Box>
                 </Box>
-                <Typography variant="h5" fontWeight="800" gutterBottom sx={{ fontFamily: 'Outfit, sans-serif' }}>
-                  Finding Your Local Captain
+                 <Typography variant="h5" fontWeight="800" gutterBottom sx={{ fontFamily: 'Outfit, sans-serif' }}>
+                  {booking.booking_type === 'instant' ? 'Finding Your Nearest Captain' : 'Finding Your Local Worker'}
                 </Typography>
-                <Typography variant="body2" color="text.secondary">
-                  Please hold on. We are reaching out to nearest service partners...
+                <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+                  {booking.booking_type === 'instant'
+                    ? 'Your request is broadcasted to nearby captains. Arriving in 10-40 minutes...'
+                    : 'Please hold on. We are reaching out to nearest service partners...'}
                 </Typography>
+                
+                {booking.booking_type === 'instant' && (
+                  <Button
+                    variant="outlined"
+                    onClick={async () => {
+                      try {
+                        await api.post(`/api/bookings/bookings/${id}/simulate-assignment/`);
+                        toast.success('Captain assigned via simulation!');
+                        fetchDetails();
+                      } catch (err) {
+                        console.error(err);
+                        toast.error(err.response?.data?.detail || 'No available workers for simulation.');
+                      }
+                    }}
+                    sx={{
+                      borderColor: '#000000',
+                      color: '#000000',
+                      borderRadius: '6px',
+                      textTransform: 'none',
+                      mt: 1,
+                      '&:hover': {
+                        borderColor: '#333333',
+                        background: 'rgba(0,0,0,0.04)'
+                      }
+                    }}
+                  >
+                    Simulate Captain Acceptance
+                  </Button>
+                )}
               </CardContent>
             </Card>
           </motion.div>
@@ -296,7 +327,7 @@ function BookingTimeline() {
                   ★ 4.8 Rating | {booking.worker.phone}
                 </Typography>
                 <Typography variant="caption" sx={{ display: 'block', mt: 0.5, color: 'text.secondary' }}>
-                  Status: <span style={{ color: '#000000', fontWeight: 'bold' }}>{booking.status.replace('_', ' ').toUpperCase()}</span>
+                  Mode: <span style={{ color: '#000000', fontWeight: 'bold' }}>{booking.booking_type === 'instant' ? 'Instant Service' : 'Slot-Based'}</span> | Status: <span style={{ color: '#000000', fontWeight: 'bold' }}>{booking.status.replace('_', ' ').toUpperCase()}</span>
                 </Typography>
               </Grid>
               <Grid item>
