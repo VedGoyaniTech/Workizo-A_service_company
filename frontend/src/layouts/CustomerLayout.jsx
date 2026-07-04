@@ -266,7 +266,7 @@ const CustomerLayout = () => {
           <Typography variant="body2" color="text.secondary" align="center">
             {'© '}
             {new Date().getFullYear()}
-            {' WORKIZO. Connecting Customers and Local Workers — In Real Time.'}
+            {' WORKIZO. One Request, One Skilled Solution.'}
           </Typography>
           <Typography variant="caption" color="text.disabled" align="center" display="block" sx={{ mt: 1 }}>
             Built with Django & React. Secure JWT Authentication. Role-Based Access Control.

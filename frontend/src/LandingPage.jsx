@@ -85,26 +85,32 @@ const LandingPage = () => {
       {/* Boxy-Style Split Hero Section */}
       <Box sx={{ background: '#ffffff', pt: { xs: 8, md: 10 }, pb: { xs: 8, md: 10 }, borderBottom: '1px solid #E5E7EB' }}>
         <Container maxWidth="lg">
-          <Grid container spacing={5} alignItems="center">
+          <Box 
+            sx={{ 
+              display: 'flex', 
+              flexDirection: { xs: 'column', md: 'row' }, 
+              alignItems: 'center', 
+              justifyContent: 'space-between',
+              gap: { xs: 6, md: 8 }
+            }}
+          >
             {/* Left Side: Copywriting and CTA */}
-            <Grid item xs={12} md={6}>
+            <Box sx={{ width: { xs: '100%', md: '55%' }, display: 'flex', flexDirection: 'column' }}>
               <Typography
                 variant="h1"
                 component="h1"
                 sx={{
-                  fontSize: { xs: '2.8rem', md: '4rem' },
+                  fontSize: { xs: '2.5rem', sm: '3.2rem', md: '4rem' },
                   fontWeight: 900,
                   letterSpacing: '-0.04em',
-                  lineHeight: 1.1,
+                  lineHeight: 1.15,
                   mb: 2.5,
                   color: '#0F0F14',
                   fontFamily: 'Outfit, sans-serif'
                 }}
               >
-                Fast Service,<br />
-                <span style={{ color: '#000000', borderBottom: '4px solid #000000', display: 'inline-block', paddingBottom: '4px' }}>
-                  Low Prices
-                </span>
+                One Request,<br />
+                <span style={{ color: '#4f46e5' }}>One Skilled Solution</span>
               </Typography>
               
               <Typography 
@@ -120,75 +126,93 @@ const LandingPage = () => {
                 At Workizo we ensure our customers get background-verified local service professionals quickly at the most affordable prices.
               </Typography>
 
-              <Button
-                variant="contained"
-                onClick={() => {
-                  const token = localStorage.getItem('access_token');
-                  if (!token) {
-                    toast.error('Please log in first to book a service');
-                    localStorage.setItem('redirect_after_login', '/customer/book');
-                    navigate('/customer/login');
-                  } else {
-                    navigate('/customer/book');
-                  }
-                }}
-                sx={{
-                  bgcolor: '#000000',
-                  color: '#ffffff',
-                  borderRadius: '30px',
-                  fontWeight: 'bold',
-                  fontSize: '1.05rem',
-                  px: 4,
-                  py: 1.8,
-                  mb: 6,
-                  textTransform: 'none',
-                  boxShadow: '0 4px 14px rgba(0,0,0,0.15)',
-                  '&:hover': {
-                    bgcolor: '#222222',
-                    boxShadow: '0 6px 20px rgba(0,0,0,0.2)'
-                  }
-                }}
-              >
-                Book Service Now &rarr;
-              </Button>
+              <Box sx={{ alignSelf: 'flex-start' }}>
+                <Button
+                  variant="contained"
+                  onClick={() => {
+                    const token = localStorage.getItem('access_token');
+                    if (!token) {
+                      toast.error('Please log in first to book a service');
+                      localStorage.setItem('redirect_after_login', '/customer/book');
+                      navigate('/customer/login');
+                    } else {
+                      navigate('/customer/book');
+                    }
+                  }}
+                  sx={{
+                    bgcolor: '#000000',
+                    color: '#ffffff',
+                    borderRadius: '30px',
+                    fontWeight: 'bold',
+                    fontSize: '1.05rem',
+                    px: 4,
+                    py: 1.8,
+                    mb: 6,
+                    textTransform: 'none',
+                    boxShadow: '0 4px 14px rgba(0,0,0,0.15)',
+                    '&:hover': {
+                      bgcolor: '#222222',
+                      boxShadow: '0 6px 20px rgba(0,0,0,0.2)'
+                    }
+                  }}
+                >
+                  Book Service Now &rarr;
+                </Button>
+              </Box>
 
               {/* Three bottom highlights */}
-              <Grid container spacing={2} sx={{ borderTop: '1px solid #E5E7EB', pt: 3.5 }}>
-                <Grid item xs={4}>
+              <Box 
+                sx={{ 
+                  display: 'flex', 
+                  justifyContent: 'space-between', 
+                  borderTop: '1px solid #E5E7EB', 
+                  pt: 3.5,
+                  gap: 2
+                }}
+              >
+                <Box sx={{ flex: 1 }}>
                   <Typography variant="h6" sx={{ fontWeight: 900, fontSize: '1.2rem', color: '#0F0F14' }}>
                     Verified
                   </Typography>
                   <Typography variant="caption" sx={{ color: '#6B7280', fontWeight: 600, display: 'block', mt: 0.5 }}>
                     CAPTAIN PARTNERS
                   </Typography>
-                </Grid>
-                <Grid item xs={4}>
+                </Box>
+                <Box sx={{ flex: 1 }}>
                   <Typography variant="h6" sx={{ fontWeight: 900, fontSize: '1.2rem', color: '#0F0F14' }}>
                     Live
                   </Typography>
                   <Typography variant="caption" sx={{ color: '#6B7280', fontWeight: 600, display: 'block', mt: 0.5 }}>
                     TRACKING TIMELINE
                   </Typography>
-                </Grid>
-                <Grid item xs={4}>
+                </Box>
+                <Box sx={{ flex: 1 }}>
                   <Typography variant="h6" sx={{ fontWeight: 900, fontSize: '1.2rem', color: '#0F0F14' }}>
                     Fixed
                   </Typography>
                   <Typography variant="caption" sx={{ color: '#6B7280', fontWeight: 600, display: 'block', mt: 0.5 }}>
                     PRICE QUOTES
                   </Typography>
-                </Grid>
-              </Grid>
-            </Grid>
+                </Box>
+              </Box>
+            </Box>
 
             {/* Right Side: Generated Handyman Portrait Image Card */}
-            <Grid item xs={12} md={6}>
+            <Box 
+              sx={{ 
+                width: { xs: '100%', md: '45%' },
+                display: 'flex',
+                justifyContent: { xs: 'center', md: 'flex-end' },
+                alignItems: 'center',
+              }}
+            >
               <Box 
                 sx={{ 
                   position: 'relative',
                   display: 'flex',
                   justifyContent: 'center',
                   alignItems: 'center',
+                  width: '100%',
                 }}
               >
                 <Box 
@@ -200,13 +224,18 @@ const LandingPage = () => {
                     maxWidth: '480px',
                     height: 'auto',
                     borderRadius: '24px',
-                    boxShadow: '0 25px 50px -12px rgba(0,0,0,0.25)',
+                    boxShadow: '0 25px 50px -12px rgba(0,0,0,0.15)',
                     border: '1px solid rgba(229, 231, 235, 0.5)',
+                    transition: 'transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.4s cubic-bezier(0.16, 1, 0.3, 1)',
+                    '&:hover': {
+                      transform: 'scale(1.02) translateY(-4px)',
+                      boxShadow: '0 30px 60px -15px rgba(0,0,0,0.25)',
+                    }
                   }}
                 />
               </Box>
-            </Grid>
-          </Grid>
+            </Box>
+          </Box>
         </Container>
       </Box>
 
