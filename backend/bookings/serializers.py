@@ -26,11 +26,27 @@ class BookingSerializer(serializers.ModelSerializer):
     class Meta:
         model = Booking
         fields = (
-            'id', 'customer', 'worker', 'service_category', 'service_category_detail',
+            'id', 'tracking_id', 'customer', 'worker', 'service_category', 'service_category_detail',
             'problem_type', 'problem_description', 'address', 'city', 'state', 'pincode',
             'preferred_date', 'preferred_time', 'booking_type', 'status', 'qr_code_value',
             'before_photo', 'after_photo', 'spare_part_photo', 'invoice_photo', 'optional_video',
             'repair_token', 'major_repairs', 'created_at', 'updated_at'
         )
-        read_only_fields = ('id', 'customer', 'worker', 'qr_code_value', 'created_at', 'updated_at')
+        read_only_fields = ('id', 'tracking_id', 'customer', 'worker', 'qr_code_value', 'created_at', 'updated_at')
+
+
+class PublicBookingSerializer(serializers.ModelSerializer):
+    service_category_detail = ServiceCategorySerializer(source='service_category', read_only=True)
+    repair_token = RepairTokenSerializer(read_only=True)
+    major_repairs = MajorRepairApprovalSerializer(many=True, read_only=True)
+    worker_name = serializers.CharField(source='worker.full_name', read_only=True, default=None)
+    
+    class Meta:
+        model = Booking
+        fields = (
+            'id', 'tracking_id', 'status', 'booking_type', 'problem_type',
+            'preferred_date', 'preferred_time', 'service_category_detail',
+            'worker_name', 'repair_token', 'major_repairs', 'created_at', 'updated_at'
+        )
+        read_only_fields = ('id', 'tracking_id', 'status', 'created_at', 'updated_at')
 

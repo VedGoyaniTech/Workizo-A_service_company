@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate, Link as RouterLink } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useForm } from 'react-hook-form';
@@ -9,13 +9,26 @@ import {
 import toast from 'react-hot-toast';
 
 const WorkerRegister = () => {
-  const { register: registerAuth } = useAuth();
+  const { register: registerAuth, isAuthenticated, user } = useAuth();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   
   const { register, handleSubmit, watch, formState: { errors } } = useForm();
   
   const password = watch('password');
+
+  // Redirect if already authenticated
+  useEffect(() => {
+    if (isAuthenticated && user) {
+      if (user.role === 'worker') {
+        navigate('/captain/dashboard');
+      } else if (user.role === 'customer') {
+        navigate('/customer/dashboard');
+      } else if (user.role === 'admin') {
+        navigate('/admin/dashboard');
+      }
+    }
+  }, [isAuthenticated, user, navigate]);
 
   const onSubmit = async (data) => {
     setLoading(true);

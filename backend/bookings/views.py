@@ -8,7 +8,7 @@ from asgiref.sync import async_to_sync
 from channels.layers import get_channel_layer
 
 from .models import Booking, RepairToken, MajorRepairApproval, BookingRejection
-from .serializers import BookingSerializer, RepairTokenSerializer, MajorRepairApprovalSerializer
+from .serializers import BookingSerializer, RepairTokenSerializer, MajorRepairApprovalSerializer, PublicBookingSerializer
 from notifications.models import Notification
 from notifications.serializers import NotificationSerializer
 
@@ -117,6 +117,20 @@ class BookingViewSet(viewsets.ModelViewSet):
             message=f"Your request for {booking.service_category.name} is placed. Searching for nearest worker...",
             notification_type="booking_update"
         )
+
+    @action(detail=False, methods=['get'], permission_classes=[permissions.AllowAny], url_path='track')
+    def track(self, request):
+        tracking_id = request.query_params.get('tracking_id')
+        if not tracking_id:
+            return Response({"detail": "tracking_id query parameter is required."}, status=status.HTTP_400_BAD_REQUEST)
+        
+        try:
+            booking = Booking.objects.get(tracking_id=tracking_id)
+        except Booking.DoesNotExist:
+            return Response({"detail": "No booking found with this Tracking ID."}, status=status.HTTP_404_NOT_FOUND)
+            
+        serializer = PublicBookingSerializer(booking)
+        return Response(serializer.data)
 
     @action(detail=False, methods=['get'], url_path='my-bookings')
     def my_bookings(self, request):

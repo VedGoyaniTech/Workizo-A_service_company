@@ -6,8 +6,12 @@ import { Toaster } from 'react-hot-toast';
 
 import theme from './theme';
 import { AuthProvider } from './context/AuthContext';
-import Layout from './layouts/Layout';
 import ProtectedRoute from './components/ProtectedRoute';
+
+// Layouts
+import CustomerLayout from './layouts/CustomerLayout';
+import CaptainLayout from './layouts/CaptainLayout';
+import AdminLayout from './layouts/AdminLayout';
 
 // Pages
 import LandingPage from './LandingPage';
@@ -28,6 +32,7 @@ import WorkerJobDetails from './captain/WorkerJobDetails';
 import WorkerJobHistory from './captain/WorkerJobHistory';
 import WorkerWallet from './captain/WorkerWallet';
 import WorkerSettings from './captain/WorkerSettings';
+import BookingTracker from './customer/BookingTracker';
 
 function App() {
   return (
@@ -35,10 +40,11 @@ function App() {
       <CssBaseline />
       <BrowserRouter>
         <AuthProvider>
-          <Layout>
-            <Routes>
-              {/* Public Routes */}
+          <Routes>
+            {/* Public and Customer Routes under CustomerLayout */}
+            <Route element={<CustomerLayout />}>
               <Route path="/" element={<LandingPage />} />
+              <Route path="/track" element={<BookingTracker />} />
               <Route path="/customer/login" element={<CustomerLogin />} />
               <Route path="/customer/register" element={<CustomerRegister />} />
               <Route path="/captain/login" element={<WorkerLogin />} />
@@ -79,68 +85,35 @@ function App() {
                   </ProtectedRoute>
                 }
               />
+            </Route>
 
-              {/* Captain Protected Routes */}
-              <Route
-                path="/captain/dashboard"
-                element={
-                  <ProtectedRoute allowedRoles={['worker']}>
-                    <WorkerDashboard />
-                  </ProtectedRoute>
-                }
-              />
-              <Route
-                path="/captain/job/:id"
-                element={
-                  <ProtectedRoute allowedRoles={['worker']}>
-                    <WorkerJobDetails />
-                  </ProtectedRoute>
-                }
-              />
-              <Route
-                path="/captain/profile"
-                element={
-                  <ProtectedRoute allowedRoles={['worker']}>
-                    <WorkerProfile />
-                  </ProtectedRoute>
-                }
-              />
-              <Route
-                path="/captain/history"
-                element={
-                  <ProtectedRoute allowedRoles={['worker']}>
-                    <WorkerJobHistory />
-                  </ProtectedRoute>
-                }
-              />
-              <Route
-                path="/captain/wallet"
-                element={
-                  <ProtectedRoute allowedRoles={['worker']}>
-                    <WorkerWallet />
-                  </ProtectedRoute>
-                }
-              />
-              <Route
-                path="/captain/settings"
-                element={
-                  <ProtectedRoute allowedRoles={['worker']}>
-                    <WorkerSettings />
-                  </ProtectedRoute>
-                }
-              />
+            {/* Captain Protected Routes under CaptainLayout */}
+            <Route
+              element={
+                <ProtectedRoute allowedRoles={['worker']}>
+                  <CaptainLayout />
+                </ProtectedRoute>
+              }
+            >
+              <Route path="/captain/dashboard" element={<WorkerDashboard />} />
+              <Route path="/captain/job/:id" element={<WorkerJobDetails />} />
+              <Route path="/captain/profile" element={<WorkerProfile />} />
+              <Route path="/captain/history" element={<WorkerJobHistory />} />
+              <Route path="/captain/wallet" element={<WorkerWallet />} />
+              <Route path="/captain/settings" element={<WorkerSettings />} />
+            </Route>
 
-              {/* Admin Protected Routes */}
-              <Route
-                path="/admin/dashboard"
-                element={
-                  <ProtectedRoute allowedRoles={['admin']}>
-                    <AdminDashboard />
-                  </ProtectedRoute>
-                }
-              />
-            </Routes>
-          </Layout>
+            {/* Admin Protected Routes under AdminLayout */}
+            <Route
+              element={
+                <ProtectedRoute allowedRoles={['admin']}>
+                  <AdminLayout />
+                </ProtectedRoute>
+              }
+            >
+              <Route path="/admin/dashboard" element={<AdminDashboard />} />
+            </Route>
+          </Routes>
           <Toaster 
             position="top-right"
             toastOptions={{
@@ -158,3 +131,4 @@ function App() {
 }
 
 export default App;
+

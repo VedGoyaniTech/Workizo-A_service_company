@@ -38,6 +38,7 @@ class Booking(models.Model):
     preferred_time = models.CharField(max_length=50, null=True, blank=True)
     status = models.CharField(max_length=50, choices=STATUS_CHOICES, default='searching')
     qr_code_value = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
+    tracking_id = models.CharField(max_length=50, unique=True, null=True, blank=True)
     before_photo = models.ImageField(upload_to='bookings/before/', null=True, blank=True)
     after_photo = models.ImageField(upload_to='bookings/after/', null=True, blank=True)
     spare_part_photo = models.ImageField(upload_to='bookings/parts/', null=True, blank=True)
@@ -45,6 +46,13 @@ class Booking(models.Model):
     optional_video = models.FileField(upload_to='bookings/videos/', null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+
+    def save(self, *args, **kwargs):
+        is_new = self.pk is None
+        super().save(*args, **kwargs)
+        if is_new and not self.tracking_id:
+            self.tracking_id = f"WRK-{self.id + 10000}"
+            super().save(update_fields=['tracking_id'])
 
     def __str__(self):
         return f"Booking #{self.id} - {self.service_category.name} ({self.status})"

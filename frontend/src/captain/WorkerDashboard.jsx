@@ -26,7 +26,7 @@ function WorkerDashboard() {
   const { user, updateProfileState } = useAuth();
   const navigate = useNavigate();
   
-  const [online, setOnline] = useState(false);
+  const online = !!user?.profile?.online_status;
   const [stats, setStats] = useState(null);
   const [wallet, setWallet] = useState(null);
   const [recentJobs, setRecentJobs] = useState([]);
@@ -48,7 +48,17 @@ function WorkerDashboard() {
     try {
       const statsRes = await api.get('/api/workers/dashboard-stats/');
       setStats(statsRes.data);
-      setOnline(statsRes.data.online_status);
+      
+      // Update online status in auth state if they mismatch
+      if (statsRes.data.online_status !== !!user?.profile?.online_status) {
+        updateProfileState({
+          user: user,
+          profile: {
+            ...user.profile,
+            online_status: statsRes.data.online_status
+          }
+        });
+      }
 
       const walletRes = await api.get('/api/workers/wallet/');
       setWallet(walletRes.data);
@@ -139,7 +149,7 @@ function WorkerDashboard() {
         notiWs.current = null;
       }
     }
-  }, [online, user]);
+  }, [user]);
 
   const handleOnlineToggle = async (event) => {
     setTogglingOnline(true);
@@ -148,7 +158,6 @@ function WorkerDashboard() {
       const res = await api.put('/api/accounts/profile/', {
         online_status: newStatus
       });
-      setOnline(newStatus);
       updateProfileState(res.data);
       toast.success(newStatus ? 'You are now Online! Listening for matching bookings.' : 'You are now Offline.');
       

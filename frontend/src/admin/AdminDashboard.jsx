@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useLocation } from 'react-router-dom';
 import api from '../services/api';
 import {
   Container, Typography, Box, Grid, Paper, Tabs, Tab, Table, TableBody,
@@ -20,10 +21,25 @@ const TabPanel = ({ children, value, index }) => (
 );
 
 const AdminDashboard = () => {
-  const [tabValue, setTabValue] = useState(0);
+  const location = useLocation();
+  const queryParams = new URLSearchParams(location.search);
+  const tabQuery = queryParams.get('tab');
+  const initialTab = tabQuery ? parseInt(tabQuery, 10) : 0;
+
+  const [tabValue, setTabValue] = useState(initialTab);
   const [customers, setCustomers] = useState([]);
   const [workers, setWorkers] = useState([]);
   const [loading, setLoading] = useState(true);
+
+  // Sync tab value with URL query params
+  useEffect(() => {
+    const qParams = new URLSearchParams(location.search);
+    const tQuery = qParams.get('tab');
+    if (tQuery !== null) {
+      setTabValue(parseInt(tQuery, 10));
+    }
+  }, [location.search]);
+
 
   // Document Viewer Modal State
   const [openDocDialog, setOpenDocDialog] = useState(false);

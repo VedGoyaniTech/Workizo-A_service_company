@@ -16,6 +16,27 @@ class WorkerRegisterProfileView(APIView):
         except WorkerProfile.DoesNotExist:
             profile = WorkerProfile.objects.create(user=request.user)
             
+        # Update User fields if provided
+        user = request.user
+        user_updated = False
+        
+        full_name = request.data.get('full_name')
+        if full_name:
+            user.full_name = full_name
+            user_updated = True
+            
+        phone = request.data.get('phone')
+        if phone:
+            from django.contrib.auth import get_user_model
+            User = get_user_model()
+            if User.objects.filter(phone=phone).exclude(id=user.id).exists():
+                return Response({'phone': ['This phone number is already in use.']}, status=status.HTTP_400_BAD_REQUEST)
+            user.phone = phone
+            user_updated = True
+            
+        if user_updated:
+            user.save()
+            
         # Perform updates
         serializer = WorkerProfileSerializer(profile, data=request.data, partial=True)
         if serializer.is_valid():

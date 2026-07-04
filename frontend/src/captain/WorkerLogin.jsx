@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate, Link as RouterLink } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useForm } from 'react-hook-form';
@@ -8,18 +8,35 @@ import {
 } from '@mui/material';
 
 const WorkerLogin = () => {
-  const { login } = useAuth();
+  const { login, isAuthenticated, user } = useAuth();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   
   const { register, handleSubmit, formState: { errors } } = useForm();
 
+  // Redirect if already authenticated
+  useEffect(() => {
+    if (isAuthenticated && user) {
+      if (user.role === 'worker') {
+        navigate('/captain/dashboard');
+      } else if (user.role === 'customer') {
+        navigate('/customer/dashboard');
+      } else if (user.role === 'admin') {
+        navigate('/admin/dashboard');
+      }
+    }
+  }, [isAuthenticated, user, navigate]);
+
   const onSubmit = async (data) => {
     setLoading(true);
     try {
-      const user = await login(data.email, data.password);
-      if (user.role === 'worker') {
+      const loggedUser = await login(data.email, data.password);
+      if (loggedUser.role === 'worker') {
         navigate('/captain/dashboard');
+      } else if (loggedUser.role === 'customer') {
+        navigate('/customer/dashboard');
+      } else if (loggedUser.role === 'admin') {
+        navigate('/admin/dashboard');
       } else {
         navigate('/');
       }

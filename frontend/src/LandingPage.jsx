@@ -40,6 +40,8 @@ const TESTIMONIALS = [
   { name: 'Mehul Mehta', location: 'Bopal, Ahmedabad', text: 'Quick carpenter booking to fix our entrance door latch. Fair pricing, no hassles. Fully satisfied.', rating: 4 },
 ];
 
+import handymanHero from './assets/handyman_hero.png';
+
 const LandingPage = () => {
   const navigate = useNavigate();
   const [city, setCity] = useState('Ahmedabad');
@@ -54,111 +56,251 @@ const LandingPage = () => {
     if (!token) {
       navigate('/customer/login');
     } else {
-      toast.success(`You selected ${catName}. Service Booking will be unlocked in Phase 2.`);
+      navigate('/customer/book');
     }
   };
 
   return (
     <Box sx={{ pb: 8 }}>
       
-      {/* Hero Header with Location and Search */}
-      <Box 
-        sx={{
-          background: '#ffffff',
-          pt: { xs: 8, md: 10 },
-          pb: { xs: 6, md: 8 },
-          borderBottom: '1px solid #E5E7EB',
-          textAlign: 'center'
-        }}
-      >
-        <Container maxWidth="md">
-          <Typography
-            variant="h2"
-            component="h1"
-            sx={{
-              fontSize: { xs: '2.2rem', md: '3.4rem' },
-              fontWeight: 800,
-              letterSpacing: '-0.03em',
-              mb: 1.5,
-              color: '#0F0F14'
-            }}
-          >
-            Home services, on demand.
-          </Typography>
-          <Typography variant="body1" color="text.secondary" sx={{ mb: 5, fontSize: { xs: '0.95rem', md: '1.1rem' } }}>
-            Connecting you with background-verified local service professionals.
-          </Typography>
-
-          {/* Search bar widget */}
-          <Paper 
-            elevation={0}
-            sx={{ 
-              p: 1, 
-              display: 'flex', 
-              alignItems: 'center', 
-              mx: 'auto', 
-              maxWidth: '650px', 
-              backgroundColor: '#ffffff',
-              border: '1px solid #E5E7EB',
-              borderRadius: 2,
-              boxShadow: '0 4px 20px rgba(0, 0, 0, 0.05)',
-              flexDirection: { xs: 'column', sm: 'row' },
-              gap: { xs: 1.5, sm: 0 }
-            }}
-          >
-            {/* Location selector */}
-            <Box display="flex" alignItems="center" sx={{ pl: 1, minWidth: '160px', width: { xs: '100%', sm: 'auto' } }}>
-              <RoomIcon sx={{ color: '#000000', mr: 1 }} />
-              <Select
-                value={city}
-                onChange={(e) => setCity(e.target.value)}
-                variant="standard"
-                disableUnderline
-                sx={{ 
-                  color: '#0F0F14', 
-                  fontWeight: 600,
-                  fontSize: '0.95rem',
-                  width: '100%',
-                  textAlign: 'left'
+      {/* Boxy-Style Split Hero Section */}
+      <Box sx={{ background: '#ffffff', pt: { xs: 8, md: 10 }, pb: { xs: 8, md: 10 }, borderBottom: '1px solid #E5E7EB' }}>
+        <Container maxWidth="lg">
+          <Grid container spacing={5} alignItems="center">
+            {/* Left Side: Copywriting and CTA */}
+            <Grid item xs={12} md={6}>
+              <Typography
+                variant="h1"
+                component="h1"
+                sx={{
+                  fontSize: { xs: '2.8rem', md: '4rem' },
+                  fontWeight: 900,
+                  letterSpacing: '-0.04em',
+                  lineHeight: 1.1,
+                  mb: 2.5,
+                  color: '#0F0F14',
+                  fontFamily: 'Outfit, sans-serif'
                 }}
               >
-                <MenuItem value="Ahmedabad">Ahmedabad</MenuItem>
-                <MenuItem value="Mumbai">Mumbai</MenuItem>
-                <MenuItem value="Delhi">Delhi NCR</MenuItem>
-                <MenuItem value="Bangalore">Bangalore</MenuItem>
-                <MenuItem value="Pune">Pune</MenuItem>
-              </Select>
-            </Box>
-            
-            <Divider orientation="vertical" flexItem sx={{ display: { xs: 'none', sm: 'block' }, mx: 2, borderColor: '#E5E7EB' }} />
+                Fast Service,<br />
+                <span style={{ color: '#000000', borderBottom: '4px solid #000000', display: 'inline-block', paddingBottom: '4px' }}>
+                  Low Prices
+                </span>
+              </Typography>
+              
+              <Typography 
+                variant="body1" 
+                sx={{ 
+                  mb: 4.5, 
+                  fontSize: { xs: '1rem', md: '1.25rem' }, 
+                  color: '#4B5563',
+                  lineHeight: 1.6,
+                  maxWidth: '480px'
+                }}
+              >
+                At Workizo we ensure our customers get background-verified local service professionals quickly at the most affordable prices.
+              </Typography>
 
-            {/* Service Search Input */}
-            <TextField
-              placeholder="Search for 'AC service', 'plumber', 'electrician'..."
-              variant="standard"
-              fullWidth
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              InputProps={{
-                disableUnderline: true,
-                startAdornment: (
-                  <InputAdornment position="start">
-                    <SearchIcon sx={{ color: '#6B7280', ml: { xs: 0, sm: 1 } }} />
-                  </InputAdornment>
-                ),
-                style: { color: '#0F0F14', fontSize: '0.95rem' }
-              }}
-              sx={{ width: '100%' }}
-            />
-          </Paper>
+              <Button
+                variant="contained"
+                onClick={() => navigate(localStorage.getItem('access_token') ? '/customer/book' : '/customer/login')}
+                sx={{
+                  bgcolor: '#000000',
+                  color: '#ffffff',
+                  borderRadius: '30px',
+                  fontWeight: 'bold',
+                  fontSize: '1.05rem',
+                  px: 4,
+                  py: 1.8,
+                  mb: 6,
+                  textTransform: 'none',
+                  boxShadow: '0 4px 14px rgba(0,0,0,0.15)',
+                  '&:hover': {
+                    bgcolor: '#222222',
+                    boxShadow: '0 6px 20px rgba(0,0,0,0.2)'
+                  }
+                }}
+              >
+                Book Service Now &rarr;
+              </Button>
+
+              {/* Three bottom highlights */}
+              <Grid container spacing={2} sx={{ borderTop: '1px solid #E5E7EB', pt: 3.5 }}>
+                <Grid item xs={4}>
+                  <Typography variant="h6" sx={{ fontWeight: 900, fontSize: '1.2rem', color: '#0F0F14' }}>
+                    Verified
+                  </Typography>
+                  <Typography variant="caption" sx={{ color: '#6B7280', fontWeight: 600, display: 'block', mt: 0.5 }}>
+                    CAPTAIN PARTNERS
+                  </Typography>
+                </Grid>
+                <Grid item xs={4}>
+                  <Typography variant="h6" sx={{ fontWeight: 900, fontSize: '1.2rem', color: '#0F0F14' }}>
+                    Live
+                  </Typography>
+                  <Typography variant="caption" sx={{ color: '#6B7280', fontWeight: 600, display: 'block', mt: 0.5 }}>
+                    TRACKING TIMELINE
+                  </Typography>
+                </Grid>
+                <Grid item xs={4}>
+                  <Typography variant="h6" sx={{ fontWeight: 900, fontSize: '1.2rem', color: '#0F0F14' }}>
+                    Fixed
+                  </Typography>
+                  <Typography variant="caption" sx={{ color: '#6B7280', fontWeight: 600, display: 'block', mt: 0.5 }}>
+                    PRICE QUOTES
+                  </Typography>
+                </Grid>
+              </Grid>
+            </Grid>
+
+            {/* Right Side: Generated Handyman Portrait Image Card */}
+            <Grid item xs={12} md={6}>
+              <Box 
+                sx={{ 
+                  position: 'relative',
+                  display: 'flex',
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                }}
+              >
+                <Box 
+                  component="img"
+                  src={handymanHero}
+                  alt="Professional Handyman"
+                  sx={{
+                    width: '100%',
+                    maxWidth: '480px',
+                    height: 'auto',
+                    borderRadius: '24px',
+                    boxShadow: '0 25px 50px -12px rgba(0,0,0,0.25)',
+                    border: '1px solid rgba(229, 231, 235, 0.5)',
+                  }}
+                />
+              </Box>
+            </Grid>
+          </Grid>
         </Container>
       </Box>
 
-      {/* Urban Company Circular Icon Grid */}
-      <Container maxWidth="md" sx={{ mt: 8 }}>
-        <Typography variant="h5" fontWeight="bold" align="center" sx={{ mb: 4 }}>
+      {/* Simple Process: How It Works Section */}
+      <Box sx={{ bgcolor: '#FAFAFB', py: 10, borderBottom: '1px solid #E5E7EB' }}>
+        <Container maxWidth="lg">
+          <Box sx={{ textAlign: 'center', mb: 6 }}>
+            <Typography variant="caption" sx={{ color: '#000000', fontWeight: 800, letterSpacing: '0.1rem', textTransform: 'uppercase' }}>
+              Simple Process
+            </Typography>
+            <Typography variant="h3" sx={{ fontWeight: 900, mt: 1, mb: 2, fontFamily: 'Outfit, sans-serif' }}>
+              How It Works
+            </Typography>
+            <Typography variant="body1" sx={{ color: '#6B7280', maxWidth: '600px', mx: 'auto' }}>
+              Get your home services completed in three easy steps. No complications, just results.
+            </Typography>
+          </Box>
+
+          <Grid container spacing={4}>
+            <Grid item xs={12} md={4}>
+              <Card sx={{ p: 4, height: '100%', borderRadius: '16px', boxShadow: 'none', border: '1px solid #E5E7EB', display: 'flex', flexDirection: 'column' }}>
+                <Typography variant="h5" sx={{ fontWeight: 900, mb: 1.5, color: '#000000' }}>01</Typography>
+                <Typography variant="subtitle1" sx={{ fontWeight: 800, mb: 1, color: '#0F0F14' }}>Choose Category</Typography>
+                <Typography variant="body2" sx={{ color: '#6B7280', lineHeight: 1.6 }}>
+                  Select from our list of vetted experts (plumber, electrician, etc.) and search local providers.
+                </Typography>
+              </Card>
+            </Grid>
+            <Grid item xs={12} md={4}>
+              <Card sx={{ p: 4, height: '100%', borderRadius: '16px', boxShadow: 'none', border: '1px solid #E5E7EB', display: 'flex', flexDirection: 'column' }}>
+                <Typography variant="h5" sx={{ fontWeight: 900, mb: 1.5, color: '#000000' }}>02</Typography>
+                <Typography variant="subtitle1" sx={{ fontWeight: 800, mb: 1, color: '#0F0F14' }}>Match Nearby</Typography>
+                <Typography variant="body2" sx={{ color: '#6B7280', lineHeight: 1.6 }}>
+                  Our live dispatcher alerts all online Captains in your category and pairs you in under 5 minutes.
+                </Typography>
+              </Card>
+            </Grid>
+            <Grid item xs={12} md={4}>
+              <Card sx={{ p: 4, height: '100%', borderRadius: '16px', boxShadow: 'none', border: '1px solid #E5E7EB', display: 'flex', flexDirection: 'column' }}>
+                <Typography variant="h5" sx={{ fontWeight: 900, mb: 1.5, color: '#000000' }}>03</Typography>
+                <Typography variant="subtitle1" sx={{ fontWeight: 800, mb: 1, color: '#0F0F14' }}>Track Timeline</Typography>
+                <Typography variant="body2" sx={{ color: '#6B7280', lineHeight: 1.6 }}>
+                  Track the assigned Captain live on the interactive timeline, verify via secure QR, and settle payments.
+                </Typography>
+              </Card>
+            </Grid>
+          </Grid>
+        </Container>
+      </Box>
+
+      {/* Redesigned Category Search & Selection Section */}
+      <Container maxWidth="md" sx={{ mt: 10 }}>
+        <Typography variant="h4" fontWeight="900" align="center" sx={{ mb: 1.5, fontFamily: 'Outfit, sans-serif' }}>
           Select a Service Category
         </Typography>
+        <Typography variant="body1" align="center" sx={{ color: '#6B7280', mb: 5 }}>
+          Search for standard service providers in your neighborhood.
+        </Typography>
+
+        {/* Central Search Widget */}
+        <Paper 
+          elevation={0}
+          sx={{ 
+            p: 1, 
+            display: 'flex', 
+            alignItems: 'center', 
+            mx: 'auto', 
+            mb: 6,
+            maxWidth: '650px', 
+            backgroundColor: '#ffffff',
+            border: '1px solid #E5E7EB',
+            borderRadius: 2,
+            boxShadow: '0 4px 20px rgba(0, 0, 0, 0.05)',
+            flexDirection: { xs: 'column', sm: 'row' },
+            gap: { xs: 1.5, sm: 0 }
+          }}
+        >
+          {/* Location selector */}
+          <Box display="flex" alignItems="center" sx={{ pl: 1, minWidth: '160px', width: { xs: '100%', sm: 'auto' } }}>
+            <RoomIcon sx={{ color: '#000000', mr: 1 }} />
+            <Select
+              value={city}
+              onChange={(e) => setCity(e.target.value)}
+              variant="standard"
+              disableUnderline
+              sx={{ 
+                color: '#0F0F14', 
+                fontWeight: 600,
+                fontSize: '0.95rem',
+                width: '100%',
+                textAlign: 'left'
+              }}
+            >
+              <MenuItem value="Ahmedabad">Ahmedabad</MenuItem>
+              <MenuItem value="Mumbai">Mumbai</MenuItem>
+              <MenuItem value="Delhi">Delhi NCR</MenuItem>
+              <MenuItem value="Bangalore">Bangalore</MenuItem>
+              <MenuItem value="Pune">Pune</MenuItem>
+            </Select>
+          </Box>
+          
+          <Divider orientation="vertical" flexItem sx={{ display: { xs: 'none', sm: 'block' }, mx: 2, borderColor: '#E5E7EB' }} />
+
+          {/* Service Search Input */}
+          <TextField
+            placeholder="Search for 'AC service', 'plumber', 'electrician'..."
+            variant="standard"
+            fullWidth
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            InputProps={{
+              disableUnderline: true,
+              startAdornment: (
+                <InputAdornment position="start">
+                  <SearchIcon sx={{ color: '#6B7280', ml: { xs: 0, sm: 1 } }} />
+                </InputAdornment>
+              ),
+              style: { color: '#0F0F14', fontSize: '0.95rem' }
+            }}
+            sx={{ width: '100%' }}
+          />
+        </Paper>
         
         <Grid container spacing={3} justifyContent="center">
           {filteredCategories.map((cat) => (
