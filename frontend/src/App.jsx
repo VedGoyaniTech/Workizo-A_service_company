@@ -22,6 +22,9 @@ import WorkerProfile from './captain/WorkerProfile';
 import CustomerDashboard from './customer/CustomerDashboard';
 import WorkerDashboard from './captain/WorkerDashboard';
 import AdminDashboard from './admin/AdminDashboard';
+import BookingFlow from './customer/BookingFlow';
+import BookingTimeline from './customer/BookingTimeline';
+import WorkerJobDetails from './captain/WorkerJobDetails';
 
 function App() {
   return (
@@ -50,6 +53,22 @@ function App() {
                 }
               />
               <Route
+                path="/customer/book"
+                element={
+                  <ProtectedRoute allowedRoles={['customer']}>
+                    <BookingFlow />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/customer/booking/:id"
+                element={
+                  <ProtectedRoute allowedRoles={['customer']}>
+                    <BookingTimeline />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
                 path="/customer/profile"
                 element={
                   <ProtectedRoute allowedRoles={['customer']}>
@@ -64,6 +83,14 @@ function App() {
                 element={
                   <ProtectedRoute allowedRoles={['worker']}>
                     <WorkerDashboard />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/captain/job/:id"
+                element={
+                  <ProtectedRoute allowedRoles={['worker']}>
+                    <WorkerJobDetails />
                   </ProtectedRoute>
                 }
               />

@@ -35,3 +35,35 @@ class WorkerProfile(models.Model):
 
     def __str__(self):
         return f"Worker Profile for {self.user.email}"
+
+class Wallet(models.Model):
+    worker = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='wallet')
+    current_balance = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
+    pending_balance = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"Wallet for {self.worker.email} - Balance: ₹{self.current_balance}"
+
+class WalletTransaction(models.Model):
+    TYPE_CHOICES = (
+        ('credit', 'Credit'),
+        ('debit', 'Debit'),
+    )
+
+    wallet = models.ForeignKey(Wallet, on_delete=models.CASCADE, related_name='transactions')
+    amount = models.DecimalField(max_digits=10, decimal_places=2)
+    transaction_type = models.CharField(max_length=20, choices=TYPE_CHOICES)
+    description = models.CharField(max_length=255)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"Wallet Txn #{self.id} - {self.transaction_type.upper()} ₹{self.amount} for {self.wallet.worker.email}"
+
+from django.db.models.signals import post_save
+from django.dispatch import receiver
+
+@receiver(post_save, sender=settings.AUTH_USER_MODEL)
+def create_worker_wallet(sender, instance, created, **kwargs):
+    if instance.role == 'worker':
+        Wallet.objects.get_or_create(worker=instance)

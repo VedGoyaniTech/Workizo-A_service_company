@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from workers.models import WorkerProfile
+from workers.models import WorkerProfile, Wallet, WalletTransaction
 from services.models import ServiceCategory
 from services.serializers import ServiceCategorySerializer
 
@@ -35,3 +35,17 @@ class WorkerProfileSerializer(serializers.ModelSerializer):
             'online_status'
         )
         read_only_fields = ('is_verified', 'approval_status')
+
+class WalletTransactionSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = WalletTransaction
+        fields = ('id', 'wallet', 'amount', 'transaction_type', 'description', 'created_at')
+        read_only_fields = ('id', 'created_at')
+
+class WalletSerializer(serializers.ModelSerializer):
+    transactions = WalletTransactionSerializer(many=True, read_only=True)
+
+    class Meta:
+        model = Wallet
+        fields = ('id', 'worker', 'current_balance', 'pending_balance', 'transactions')
+        read_only_fields = ('id', 'current_balance', 'pending_balance')
