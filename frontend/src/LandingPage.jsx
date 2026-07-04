@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
+import api from './services/api';
 import {
   Container, Typography, Button, Box, Grid, Card, CardContent,
   Avatar, TextField, InputAdornment, Select, MenuItem, InputLabel,
@@ -28,12 +29,6 @@ const ALL_CATEGORIES = [
   { id: '6', name: 'Home Cleaning', icon: <CleaningServicesIcon sx={{ fontSize: 32, color: '#8b5cf6' }} />, bgColor: 'rgba(139, 92, 246, 0.08)', desc: 'Deep house & kitchen cleaning' },
 ];
 
-const OFFERS = [
-  { title: 'Summer AC Servicing', desc: 'Starting at just ₹299. Deep cleaning, filter washing.', tag: 'BESTSELLER', gradient: 'linear-gradient(135deg, #F0F9FF 0%, #E0F2FE 100%)', price: '₹299', textColor: '#0F0F14', tagBg: '#BAE6FD', tagColor: '#0369A1' },
-  { title: 'Full Home Cleaning', desc: 'Flat 20% Off. Deep wash, kitchen & bathroom sanitizing.', tag: 'FESTIVE SPECIAL', gradient: 'linear-gradient(135deg, #F0FDF4 0%, #DCFCE7 100%)', price: '₹999', textColor: '#0F0F14', tagBg: '#BBF7D0', tagColor: '#15803D' },
-  { title: 'Express Electrician', desc: 'Captains arrive within 45 mins. Secure wiring fixes.', tag: 'SUPER FAST', gradient: 'linear-gradient(135deg, #FFFBEB 0%, #FEF3C7 100%)', price: '₹99', textColor: '#0F0F14', tagBg: '#FDE68A', tagColor: '#B45309' },
-];
-
 const TESTIMONIALS = [
   { name: 'Kunal Patel', location: 'Satellite, Ahmedabad', text: 'Booked an AC servicing Captain. He arrived within an hour with proper tools and fixed the cooling immediately. Excellent service!', rating: 5 },
   { name: 'Aarushi Shah', location: 'Vastrapur, Ahmedabad', text: 'The deep kitchen cleaning was flawless. Vetted professional, safe background checks. Very reliable.', rating: 5 },
@@ -46,17 +41,41 @@ const LandingPage = () => {
   const navigate = useNavigate();
   const [city, setCity] = useState('Ahmedabad');
   const [searchQuery, setSearchQuery] = useState('');
+  const [dbCategories, setDbCategories] = useState([]);
+
+  useEffect(() => {
+    api.get('/api/services/categories/')
+      .then(res => {
+        setDbCategories(res.data);
+      })
+      .catch(err => {
+        console.error('Failed to fetch categories:', err);
+      });
+  }, []);
 
   const filteredCategories = ALL_CATEGORIES.filter(cat => 
     cat.name.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
   const handleCategoryClick = (catName) => {
+    const matched = dbCategories.find(c => c.name.toLowerCase() === catName.toLowerCase());
+    const catId = matched ? matched.id : null;
+
     const token = localStorage.getItem('access_token');
     if (!token) {
+      toast.error('Please log in first to book a service');
+      if (catId) {
+        localStorage.setItem('redirect_after_login', `/customer/book?category=${catId}`);
+      } else {
+        localStorage.setItem('redirect_after_login', '/customer/book');
+      }
       navigate('/customer/login');
     } else {
-      navigate('/customer/book');
+      if (catId) {
+        navigate(`/customer/book?category=${catId}`);
+      } else {
+        navigate('/customer/book');
+      }
     }
   };
 
@@ -103,7 +122,16 @@ const LandingPage = () => {
 
               <Button
                 variant="contained"
-                onClick={() => navigate(localStorage.getItem('access_token') ? '/customer/book' : '/customer/login')}
+                onClick={() => {
+                  const token = localStorage.getItem('access_token');
+                  if (!token) {
+                    toast.error('Please log in first to book a service');
+                    localStorage.setItem('redirect_after_login', '/customer/book');
+                    navigate('/customer/login');
+                  } else {
+                    navigate('/customer/book');
+                  }
+                }}
                 sx={{
                   bgcolor: '#000000',
                   color: '#ffffff',
@@ -342,70 +370,6 @@ const LandingPage = () => {
             </Box>
           )}
         </Grid>
-      </Container>
-
-      {/* Offers and Promotions list */}
-      <Container maxWidth="lg" sx={{ mt: 10 }}>
-        <Typography variant="h5" fontWeight="bold" sx={{ mb: 4 }}>
-          Offers for you in {city}
-        </Typography>
-
-        <Box 
-          sx={{ 
-            display: 'flex', 
-            gap: 3, 
-            overflowX: 'auto', 
-            pb: 2,
-            scrollbarWidth: 'none',
-            '&::-webkit-scrollbar': { display: 'none' }
-          }}
-        >
-          {OFFERS.map((offer, idx) => (
-            <Card 
-              key={idx}
-              sx={{ 
-                minWidth: { xs: '280px', sm: '360px' }, 
-                background: offer.gradient, 
-                borderColor: '#E5E7EB', 
-                borderRadius: 2
-              }}
-            >
-              <CardContent sx={{ p: 4, display: 'flex', flexDirection: 'column', height: '100%' }}>
-                <Chip 
-                  label={offer.tag} 
-                  size="small" 
-                  sx={{ 
-                    bgcolor: offer.tagBg, 
-                    color: offer.tagColor, 
-                    fontWeight: 'bold',
-                    width: 'fit-content',
-                    mb: 2,
-                    fontSize: '0.7rem'
-                  }} 
-                />
-                <Typography variant="h6" fontWeight="bold" sx={{ mb: 1, color: offer.textColor }}>
-                  {offer.title}
-                </Typography>
-                <Typography variant="body2" color="text.secondary" sx={{ mb: 4, flexGrow: 1 }}>
-                  {offer.desc}
-                </Typography>
-                <Box display="flex" justifyContent="space-between" alignItems="center">
-                  <Typography variant="h6" fontWeight="bold" color="text.primary">
-                    {offer.price}
-                  </Typography>
-                  <Button 
-                    variant="contained" 
-                    color="primary" 
-                    size="small"
-                    onClick={() => navigate('/customer/login')}
-                  >
-                    Book Now
-                  </Button>
-                </Box>
-              </CardContent>
-            </Card>
-          ))}
-        </Box>
       </Container>
 
       {/* Safety & Assurance Section */}

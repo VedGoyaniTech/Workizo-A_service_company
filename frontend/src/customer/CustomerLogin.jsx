@@ -18,9 +18,21 @@ const CustomerLogin = () => {
   useEffect(() => {
     if (isAuthenticated && user) {
       if (user.role === 'customer') {
-        navigate('/customer/dashboard');
+        const redirectPath = localStorage.getItem('redirect_after_login');
+        if (redirectPath) {
+          localStorage.removeItem('redirect_after_login');
+          navigate(redirectPath);
+        } else {
+          navigate('/customer/dashboard');
+        }
       } else if (user.role === 'worker') {
-        navigate('/captain/dashboard');
+        const redirectPath = localStorage.getItem('redirect_after_login');
+        if (redirectPath && redirectPath.includes('/captain/')) {
+          localStorage.removeItem('redirect_after_login');
+          navigate(redirectPath);
+        } else {
+          navigate('/captain/dashboard');
+        }
       } else if (user.role === 'admin') {
         navigate('/admin/dashboard');
       }
@@ -31,10 +43,21 @@ const CustomerLogin = () => {
     setLoading(true);
     try {
       const loggedUser = await login(data.email, data.password);
+      const redirectPath = localStorage.getItem('redirect_after_login');
       if (loggedUser.role === 'customer') {
-        navigate('/customer/dashboard');
+        if (redirectPath) {
+          localStorage.removeItem('redirect_after_login');
+          navigate(redirectPath);
+        } else {
+          navigate('/customer/dashboard');
+        }
       } else if (loggedUser.role === 'worker') {
-        navigate('/captain/dashboard');
+        if (redirectPath && redirectPath.includes('/captain/')) {
+          localStorage.removeItem('redirect_after_login');
+          navigate(redirectPath);
+        } else {
+          navigate('/captain/dashboard');
+        }
       } else if (loggedUser.role === 'admin') {
         navigate('/admin/dashboard');
       } else {

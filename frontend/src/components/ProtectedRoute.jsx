@@ -25,6 +25,10 @@ const ProtectedRoute = ({ children, allowedRoles }) => {
   }
 
   if (!isAuthenticated) {
+    // Save current path to redirect back after successful login
+    const currentPath = window.location.pathname + window.location.search;
+    localStorage.setItem('redirect_after_login', currentPath);
+
     // Determine where to redirect based on the requested role scope
     if (allowedRoles && allowedRoles.includes('admin')) {
       return <Navigate to="/admin/login" replace />;

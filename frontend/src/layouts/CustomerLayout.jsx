@@ -1,6 +1,7 @@
 import React from 'react';
 import { useNavigate, useLocation, Outlet } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import toast from 'react-hot-toast';
 import {
   AppBar, Toolbar, Typography, Button, Container, Box,
   Avatar, Menu, MenuItem, IconButton, Tooltip
@@ -108,7 +109,15 @@ const CustomerLayout = () => {
                   <Button 
                     variant="text" 
                     color="inherit" 
-                    onClick={() => navigate(isAuthenticated ? '/customer/book' : '/customer/login')}
+                    onClick={() => {
+                      if (isAuthenticated) {
+                        navigate('/customer/book');
+                      } else {
+                        toast.error('Please log in first to book a service');
+                        localStorage.setItem('redirect_after_login', '/customer/book');
+                        navigate('/customer/login');
+                      }
+                    }}
                     sx={{ color: location.pathname.includes('/book') ? '#000000' : '#4B5563', fontWeight: 600 }}
                   >
                     Book Service
@@ -136,7 +145,7 @@ const CustomerLayout = () => {
               )}
 
               {/* Become a Captain button - styled in Workizo black outlined pill button */}
-              {(!isAuthenticated || user?.role === 'customer') && (
+              {!isAuthenticated && (
                 <Button 
                   variant="outlined" 
                   onClick={() => navigate('/captain/login')}
