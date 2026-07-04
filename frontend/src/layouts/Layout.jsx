@@ -10,6 +10,9 @@ import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import DashboardIcon from '@mui/icons-material/Dashboard';
 import LogoutIcon from '@mui/icons-material/Logout';
 import PersonIcon from '@mui/icons-material/Person';
+import AccountBalanceWalletIcon from '@mui/icons-material/AccountBalanceWallet';
+import HistoryIcon from '@mui/icons-material/History';
+import SettingsIcon from '@mui/icons-material/Settings';
 
 const Layout = ({ children }) => {
   const { user, logout, isAuthenticated } = useAuth();
@@ -145,6 +148,22 @@ const Layout = ({ children }) => {
                         <PersonIcon fontSize="small" sx={{ mr: 1.5, color: '#6B7280' }} />
                         Profile Settings
                       </MenuItem>
+                    )}
+                    {user.role === 'worker' && (
+                      <>
+                        <MenuItem onClick={() => { handleMenuClose(); navigate('/captain/wallet'); }}>
+                          <AccountBalanceWalletIcon fontSize="small" sx={{ mr: 1.5, color: '#6B7280' }} />
+                          Wallet Ledger
+                        </MenuItem>
+                        <MenuItem onClick={() => { handleMenuClose(); navigate('/captain/history'); }}>
+                          <HistoryIcon fontSize="small" sx={{ mr: 1.5, color: '#6B7280' }} />
+                          Job History
+                        </MenuItem>
+                        <MenuItem onClick={() => { handleMenuClose(); navigate('/captain/settings'); }}>
+                          <SettingsIcon fontSize="small" sx={{ mr: 1.5, color: '#6B7280' }} />
+                          System Settings
+                        </MenuItem>
+                      </>
                     )}
                     <MenuItem onClick={handleLogout} sx={{ color: '#ef4444' }}>
                       <LogoutIcon fontSize="small" sx={{ mr: 1.5, color: '#ef4444' }} />

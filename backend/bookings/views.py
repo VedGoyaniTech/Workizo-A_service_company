@@ -7,7 +7,7 @@ from django.contrib.auth import get_user_model
 from asgiref.sync import async_to_sync
 from channels.layers import get_channel_layer
 
-from .models import Booking, RepairToken, MajorRepairApproval
+from .models import Booking, RepairToken, MajorRepairApproval, BookingRejection
 from .serializers import BookingSerializer, RepairTokenSerializer, MajorRepairApprovalSerializer
 from notifications.models import Notification
 from notifications.serializers import NotificationSerializer
@@ -96,6 +96,20 @@ class BookingViewSet(viewsets.ModelViewSet):
                         }
                     )
 
+        # Broadcast the new available booking request to all workers in this category
+        channel_layer = get_channel_layer()
+        if channel_layer:
+            async_to_sync(channel_layer.group_send)(
+                f"category_{booking.service_category.id}",
+                {
+                    "type": "send_notification",
+                    "data": {
+                        "type": "booking_available",
+                        "booking": BookingSerializer(booking).data
+                    }
+                }
+            )
+
         # Create notification for self
         create_and_send_notification(
             user=self.request.user,
@@ -122,14 +136,21 @@ class BookingViewSet(viewsets.ModelViewSet):
             return Response({"detail": "Only workers can access this list."}, status=status.HTTP_403_FORBIDDEN)
         
         # Filter matching worker category
-        category = getattr(user, 'worker_profile').service_category
+        profile = getattr(user, 'worker_profile', None)
+        if not profile or not profile.online_status or profile.approval_status != 'approved':
+            return Response([])
+
+        category = profile.service_category
         if not category:
             return Response([])
+
+        # Exclude rejected bookings
+        rejected_booking_ids = BookingRejection.objects.filter(worker=user).values_list('booking_id', flat=True)
 
         bookings = Booking.objects.filter(
             service_category=category,
             status='searching'
-        ).order_by('-created_at')
+        ).exclude(id__in=rejected_booking_ids).order_by('-created_at')
         
         serializer = self.get_serializer(bookings, many=True)
         return Response(serializer.data)
@@ -152,6 +173,20 @@ class BookingViewSet(viewsets.ModelViewSet):
         booking_data = self.get_serializer(booking).data
         send_booking_update(booking.id, booking_data)
 
+        # Broadcast to all workers in this category that booking is taken (remove from their dashboard)
+        channel_layer = get_channel_layer()
+        if channel_layer:
+            async_to_sync(channel_layer.group_send)(
+                f"category_{booking.service_category.id}",
+                {
+                    "type": "send_notification",
+                    "data": {
+                        "type": "booking_taken",
+                        "booking_id": booking.id
+                    }
+                }
+            )
+
         # Notify Customer
         create_and_send_notification(
             user=booking.customer,
@@ -168,6 +203,17 @@ class BookingViewSet(viewsets.ModelViewSet):
         )
 
         return Response(booking_data)
+
+    @action(detail=True, methods=['post'])
+    def reject(self, request, pk=None):
+        booking = self.get_object()
+        user = request.user
+        if user.role != 'worker':
+            return Response({"detail": "Only workers can reject jobs."}, status=status.HTTP_403_FORBIDDEN)
+
+        BookingRejection.objects.get_or_create(worker=user, booking=booking)
+        return Response({"detail": "Booking request rejected/declined."})
+
 
     @action(detail=True, methods=['post'], url_path='update-status')
     def update_status(self, request, pk=None):
@@ -192,6 +238,12 @@ class BookingViewSet(viewsets.ModelViewSet):
             booking.before_photo = request.FILES['before_photo']
         if 'after_photo' in request.FILES:
             booking.after_photo = request.FILES['after_photo']
+        if 'spare_part_photo' in request.FILES:
+            booking.spare_part_photo = request.FILES['spare_part_photo']
+        if 'invoice_photo' in request.FILES:
+            booking.invoice_photo = request.FILES['invoice_photo']
+        if 'optional_video' in request.FILES:
+            booking.optional_video = request.FILES['optional_video']
 
         booking.save()
 
@@ -199,8 +251,11 @@ class BookingViewSet(viewsets.ModelViewSet):
         status_messages = {
             'on_the_way': f"Captain {booking.worker.full_name} is on the way.",
             'arrived': f"Captain {booking.worker.full_name} has arrived at your location.",
-            'in_progress': "Work has started at your premises.",
-            'completed': "Service job completed. Invoice pending approval.",
+            'inspection': "Captain is performing an initial inspection of the issue.",
+            'repair_started': "Captain has started the repair work.",
+            'repair_completed': "Captain completed the repair. Preparing service bill invoice.",
+            'waiting_approval': "Service bill generated. Awaiting your approval.",
+            'completed': "Service job completed. Invoice payment confirmed.",
             'cancelled': f"Booking #{booking.id} has been cancelled."
         }
 
@@ -212,6 +267,7 @@ class BookingViewSet(viewsets.ModelViewSet):
 
         booking_data = self.get_serializer(booking).data
         send_booking_update(booking.id, booking_data)
+
 
         return Response(booking_data)
 

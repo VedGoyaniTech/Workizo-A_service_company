@@ -71,3 +71,132 @@ class WalletWithdrawView(APIView):
         )
 
         return Response(WalletSerializer(wallet).data)
+
+from django.utils import timezone
+from django.db.models import Sum, Avg
+from datetime import timedelta
+from bookings.models import Booking, BookingRejection
+from services.models import Rating
+
+class WorkerDashboardStatsView(APIView):
+    permission_classes = (IsWorker,)
+
+    def get(self, request):
+        user = request.user
+        
+        # Get wallet
+        wallet, _ = Wallet.objects.get_or_create(worker=user)
+        
+        # Calculate earnings
+        now = timezone.now()
+        today_start = now.replace(hour=0, minute=0, second=0, microsecond=0)
+        week_start = today_start - timedelta(days=7)
+        month_start = today_start - timedelta(days=30)
+        
+        today_earnings = wallet.transactions.filter(
+            transaction_type='credit',
+            created_at__gte=today_start
+        ).aggregate(total=Sum('amount'))['total'] or 0.00
+        
+        week_earnings = wallet.transactions.filter(
+            transaction_type='credit',
+            created_at__gte=week_start
+        ).aggregate(total=Sum('amount'))['total'] or 0.00
+        
+        month_earnings = wallet.transactions.filter(
+            transaction_type='credit',
+            created_at__gte=month_start
+        ).aggregate(total=Sum('amount'))['total'] or 0.00
+        
+        # Jobs counts
+        all_jobs = Booking.objects.filter(worker=user)
+        total_jobs = all_jobs.count()
+        completed_jobs = all_jobs.filter(status='completed').count()
+        pending_jobs = all_jobs.exclude(status__in=['completed', 'cancelled', 'searching']).count()
+        
+        # Ratings avg
+        ratings_avg = Rating.objects.filter(worker=user).aggregate(avg=Avg('rating'))['avg']
+        ratings_avg = round(ratings_avg, 1) if ratings_avg else 4.8
+        
+        # Acceptance Rate
+        accepted_count = all_jobs.count()
+        rejected_count = BookingRejection.objects.filter(worker=user).count()
+        total_offers = accepted_count + rejected_count
+        acceptance_rate = round((accepted_count / total_offers) * 100, 1) if total_offers > 0 else 100.0
+        
+        # Completion Rate
+        completion_rate = round((completed_jobs / total_jobs) * 100, 1) if total_jobs > 0 else 100.0
+        
+        # Recent activity ledger
+        recent_activities = []
+        
+        # Recent completed/updated jobs
+        for b in all_jobs.order_by('-updated_at')[:5]:
+            recent_activities.append({
+                "id": f"act-job-{b.id}",
+                "type": "job",
+                "title": f"Job #{b.id} - {b.status.replace('_', ' ').title()}",
+                "description": f"{b.service_category.name} service for {b.customer.full_name}.",
+                "time": b.updated_at.isoformat()
+            })
+            
+        # Recent transactions
+        for txn in wallet.transactions.order_by('-created_at')[:5]:
+            recent_activities.append({
+                "id": f"act-txn-{txn.id}",
+                "type": "wallet",
+                "title": f"Wallet {txn.transaction_type.title()}",
+                "description": f"{txn.description} - Amount: ₹{txn.amount}",
+                "time": txn.created_at.isoformat()
+            })
+            
+        recent_activities = sorted(recent_activities, key=lambda x: x['time'], reverse=True)[:7]
+        
+        # Graph data: last 7 credit transactions
+        graph_txns = wallet.transactions.filter(transaction_type='credit').order_by('-created_at')[:7]
+        graph_data = []
+        for t in reversed(graph_txns):
+            graph_data.append({
+                "name": t.created_at.strftime('%a %d'),
+                "Amount": float(t.amount)
+            })
+            
+        if not graph_data:
+            graph_data = [
+                { "name": "Mon", "Amount": 0.0 },
+                { "name": "Tue", "Amount": 0.0 },
+                { "name": "Wed", "Amount": 0.0 },
+                { "name": "Thu", "Amount": 0.0 },
+                { "name": "Fri", "Amount": 0.0 },
+                { "name": "Sat", "Amount": 0.0 },
+                { "name": "Sun", "Amount": 0.0 }
+            ]
+
+        # Profile Photo URI absolute
+        profile_photo = None
+        if user.profile_photo:
+            profile_photo = request.build_absolute_uri(user.profile_photo.url)
+        elif getattr(user, 'worker_profile', None) and user.worker_profile.profile_photo:
+            profile_photo = request.build_absolute_uri(user.worker_profile.profile_photo.url)
+            
+        return Response({
+            "welcome_message": f"Welcome, Captain {user.full_name}!",
+            "worker_name": user.full_name,
+            "profile_photo": profile_photo,
+            "service_category": user.worker_profile.service_category.name if getattr(user, 'worker_profile', None) and user.worker_profile.service_category else "Not Assigned",
+            "verification_status": user.worker_profile.approval_status if getattr(user, 'worker_profile', None) else "pending",
+            "online_status": user.worker_profile.online_status if getattr(user, 'worker_profile', None) else False,
+            "today_earnings": float(today_earnings),
+            "weekly_earnings": float(week_earnings),
+            "monthly_earnings": float(month_earnings),
+            "wallet_balance": float(wallet.current_balance),
+            "total_jobs": total_jobs,
+            "pending_jobs": pending_jobs,
+            "completed_jobs": completed_jobs,
+            "rating": ratings_avg,
+            "acceptance_rate": acceptance_rate,
+            "completion_rate": completion_rate,
+            "recent_activity": recent_activities,
+            "performance_graph": graph_data
+        })
+

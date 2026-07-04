@@ -11,7 +11,10 @@ class Booking(models.Model):
         ('on_the_way', 'Worker On The Way'),
         ('arrived', 'Worker Arrived'),
         ('verified', 'QR Verified'),
-        ('in_progress', 'Work Started / Repair In Progress'),
+        ('inspection', 'Inspection'),
+        ('repair_started', 'Repair Started'),
+        ('repair_completed', 'Repair Completed'),
+        ('waiting_approval', 'Waiting For Customer Approval'),
         ('completed', 'Completed'),
         ('cancelled', 'Cancelled'),
     )
@@ -37,6 +40,9 @@ class Booking(models.Model):
     qr_code_value = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
     before_photo = models.ImageField(upload_to='bookings/before/', null=True, blank=True)
     after_photo = models.ImageField(upload_to='bookings/after/', null=True, blank=True)
+    spare_part_photo = models.ImageField(upload_to='bookings/parts/', null=True, blank=True)
+    invoice_photo = models.ImageField(upload_to='bookings/invoices/', null=True, blank=True)
+    optional_video = models.FileField(upload_to='bookings/videos/', null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
@@ -45,6 +51,7 @@ class Booking(models.Model):
 
 class RepairToken(models.Model):
     STATUS_CHOICES = (
+        ('item_received', 'Item Received'),
         ('reached_workshop', 'Reached Workshop'),
         ('inspection', 'Inspection'),
         ('repair_started', 'Repair Started'),
@@ -56,7 +63,7 @@ class RepairToken(models.Model):
 
     booking = models.OneToOneField(Booking, on_delete=models.CASCADE, related_name='repair_token')
     token_number = models.CharField(max_length=50, unique=True)
-    status = models.CharField(max_length=50, choices=STATUS_CHOICES, default='reached_workshop')
+    status = models.CharField(max_length=50, choices=STATUS_CHOICES, default='item_received')
     updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
@@ -77,3 +84,15 @@ class MajorRepairApproval(models.Model):
 
     def __str__(self):
         return f"Repair Approval #{self.id} for Booking #{self.booking.id} ({self.status})"
+
+class BookingRejection(models.Model):
+    worker = models.ForeignKey(User, on_delete=models.CASCADE, related_name='booking_rejections')
+    booking = models.ForeignKey(Booking, on_delete=models.CASCADE, related_name='booking_rejections')
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        unique_together = ('worker', 'booking')
+
+    def __str__(self):
+        return f"Rejection by {self.worker.email} for Booking #{self.booking.id}"
+

@@ -126,16 +126,27 @@ class GenerateBillView(views.APIView):
         if hasattr(booking, 'bill'):
             return Response({"detail": "Bill already generated for this booking."}, status=status.HTTP_400_BAD_REQUEST)
 
-        labour_charges = Decimal(str(request.data.get('labour_charges', 0)))
-        discount = Decimal(str(request.data.get('discount', 0)))
+        import json
+        labour_charges = Decimal(str(request.data.get('labour_charges', 0) or 0))
+        discount = Decimal(str(request.data.get('discount', 0) or 0))
+        
         items_data = request.data.get('items', [])
+        if isinstance(items_data, str):
+            try:
+                items_data = json.loads(items_data)
+            except Exception:
+                items_data = []
+
+        supplier_invoice = request.FILES.get('supplier_invoice')
 
         # Create Bill (charges calculated below)
         bill = Bill.objects.create(
             booking=booking,
             labour_charges=labour_charges,
-            discount=discount
+            discount=discount,
+            supplier_invoice=supplier_invoice
         )
+
 
         parts_charges = Decimal('0.00')
         for item in items_data:

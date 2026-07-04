@@ -29,6 +29,8 @@ class BookingSerializer(serializers.ModelSerializer):
             'id', 'customer', 'worker', 'service_category', 'service_category_detail',
             'problem_type', 'problem_description', 'address', 'city', 'state', 'pincode',
             'preferred_date', 'preferred_time', 'booking_type', 'status', 'qr_code_value',
-            'before_photo', 'after_photo', 'repair_token', 'major_repairs', 'created_at', 'updated_at'
+            'before_photo', 'after_photo', 'spare_part_photo', 'invoice_photo', 'optional_video',
+            'repair_token', 'major_repairs', 'created_at', 'updated_at'
         )
         read_only_fields = ('id', 'customer', 'worker', 'qr_code_value', 'created_at', 'updated_at')
+
