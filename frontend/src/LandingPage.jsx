@@ -455,36 +455,7 @@ const LandingPage = () => {
         </Grid>
       </Container>
 
-      {/* Ahmedabad Testimonials */}
-      <Container maxWidth="lg" sx={{ mt: 10, pt: 8, borderTop: '1px solid #E5E7EB' }}>
-        <Typography variant="h5" fontWeight="bold" sx={{ mb: 5 }}>
-          Customer reviews in Ahmedabad
-        </Typography>
 
-        <Grid container spacing={3}>
-          {TESTIMONIALS.map((test, idx) => (
-            <Grid item xs={12} md={4} key={idx}>
-              <Card sx={{ p: 3, height: '100%', backgroundColor: '#ffffff', borderColor: '#E5E7EB' }}>
-                <Box display="flex" alignItems="center" gap={2} sx={{ mb: 2 }}>
-                  <Avatar sx={{ bgcolor: '#000000' }}>{test.name.charAt(0)}</Avatar>
-                  <Box>
-                    <Typography variant="subtitle2" fontWeight="bold">
-                      {test.name}
-                    </Typography>
-                    <Typography variant="caption" color="text.secondary">
-                      {test.location}
-                    </Typography>
-                  </Box>
-                </Box>
-                <Rating value={test.rating} readOnly size="small" sx={{ mb: 2 }} />
-                <Typography variant="body2" color="text.secondary">
-                  "{test.text}"
-                </Typography>
-              </Card>
-            </Grid>
-          ))}
-        </Grid>
-      </Container>
 
     </Box>
   );
