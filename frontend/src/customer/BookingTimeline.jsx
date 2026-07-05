@@ -367,45 +367,87 @@ function BookingTimeline() {
           <Typography variant="subtitle2" color="text.secondary" align="center" gutterBottom>
             SERVICE TIMELINE
           </Typography>
-          <Typography variant="h6" fontWeight="800" align="center" gutterBottom sx={{ mb: 4, fontFamily: 'Outfit, sans-serif' }}>
+          <Typography variant="h6" fontWeight="800" align="center" gutterBottom sx={{ mb: 6, fontFamily: 'Outfit, sans-serif' }}>
             Track Progress
           </Typography>
 
-          <Box sx={{ maxWidth: '380px', mx: 'auto', mt: 2 }}>
-            <Stepper activeStep={activeStepIndex >= 0 ? activeStepIndex : 0} orientation="vertical">
-              {STATUS_STEPS.map((step, idx) => (
-                <Step key={step.key} sx={{ py: 0.8 }}>
-                  <StepLabel
-                    StepIconProps={{
-                      sx: {
-                        color: activeStepIndex >= idx ? '#000000' : '#E5E7EB',
-                        '&.Mui-active': { color: '#000000', width: 30, height: 30 },
-                        '&.Mui-completed': { color: '#000000', width: 30, height: 30 },
-                        width: 30,
-                        height: 30,
-                        fontSize: '1rem'
-                      }
+          <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', mt: 4, position: 'relative' }}>
+            {STATUS_STEPS.map((step, idx) => {
+              const isActive = activeStepIndex === idx;
+              const isCompleted = activeStepIndex > idx;
+              return (
+                <Box 
+                  key={step.key} 
+                  sx={{ 
+                    display: 'flex', 
+                    flexDirection: 'column', 
+                    alignItems: 'center', 
+                    position: 'relative', 
+                    width: '100%', 
+                    mb: idx === STATUS_STEPS.length - 1 ? 0 : 5
+                  }}
+                >
+                  
+                  {/* Connecting Line */}
+                  {idx < STATUS_STEPS.length - 1 && (
+                    <Box 
+                      sx={{ 
+                        position: 'absolute', 
+                        top: 40,
+                        bottom: -40,
+                        left: '50%',
+                        transform: 'translateX(-50%)',
+                        width: '3px', 
+                        bgcolor: isCompleted ? '#000000' : '#E5E7EB',
+                        zIndex: 1
+                      }}
+                    />
+                  )}
+                  
+                  {/* Step Circle */}
+                  <Box 
+                    sx={{ 
+                      width: 40, 
+                      height: 40, 
+                      borderRadius: '50%', 
+                      bgcolor: isActive ? '#000000' : isCompleted ? '#000000' : '#ffffff', 
+                      border: `2px solid ${isActive || isCompleted ? '#000000' : '#D1D5DB'}`,
+                      color: isActive || isCompleted ? '#ffffff' : '#9CA3AF',
+                      display: 'flex', 
+                      alignItems: 'center', 
+                      justifyContent: 'center',
+                      fontWeight: '900',
+                      fontSize: '1.1rem',
+                      zIndex: 2,
+                      boxShadow: isActive ? '0 0 0 6px rgba(0,0,0,0.08)' : 'none',
+                      transition: 'all 0.3s ease',
+                      mx: 'auto'
                     }}
                   >
+                    {idx + 1}
+                  </Box>
+                  
+                  {/* Step Info */}
+                  <Box sx={{ textAlign: 'center', mt: 1.5, zIndex: 2 }}>
                     <Typography 
                       sx={{ 
-                        fontSize: activeStepIndex === idx ? '1.15rem' : '1.05rem', 
-                        fontWeight: activeStepIndex === idx ? '900' : activeStepIndex > idx ? '700' : '500', 
-                        color: activeStepIndex >= idx ? '#0F0F14' : '#6E7280',
-                        ml: 1.5
+                        fontSize: isActive ? '1.25rem' : '1.1rem', 
+                        fontWeight: isActive ? '900' : isCompleted ? '700' : '500', 
+                        color: isActive || isCompleted ? '#0F0F14' : '#9CA3AF',
+                        fontFamily: 'Outfit, sans-serif'
                       }}
                     >
                       {step.label}
                     </Typography>
-                    {activeStepIndex === idx && (
-                      <Typography variant="caption" color="text.secondary" sx={{ ml: 1.5, display: 'block' }}>
+                    {isActive && (
+                      <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mt: 0.5, fontWeight: 500 }}>
                         Current status of your booking
                       </Typography>
                     )}
-                  </StepLabel>
-                </Step>
-              ))}
-            </Stepper>
+                  </Box>
+                </Box>
+              );
+            })}
           </Box>
         </CardContent>
       </Card>
