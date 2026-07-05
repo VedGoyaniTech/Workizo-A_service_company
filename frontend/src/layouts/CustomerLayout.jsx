@@ -4,12 +4,19 @@ import { useAuth } from '../context/AuthContext';
 import toast from 'react-hot-toast';
 import {
   AppBar, Toolbar, Typography, Button, Container, Box,
-  Avatar, Menu, MenuItem, IconButton, Tooltip
+  Avatar, Menu, MenuItem, IconButton, Tooltip, Grid, Divider, Link
 } from '@mui/material';
 import HandymanIcon from '@mui/icons-material/Handyman';
 import DashboardIcon from '@mui/icons-material/Dashboard';
 import LogoutIcon from '@mui/icons-material/Logout';
 import PersonIcon from '@mui/icons-material/Person';
+import FacebookIcon from '@mui/icons-material/Facebook';
+import TwitterIcon from '@mui/icons-material/Twitter';
+import InstagramIcon from '@mui/icons-material/Instagram';
+import LinkedInIcon from '@mui/icons-material/LinkedIn';
+import PhoneIcon from '@mui/icons-material/Phone';
+import EmailIcon from '@mui/icons-material/Email';
+import LocationOnIcon from '@mui/icons-material/LocationOn';
 
 const CustomerLayout = () => {
   const { user, logout, isAuthenticated } = useAuth();
@@ -255,22 +262,241 @@ const CustomerLayout = () => {
       <Box 
         component="footer" 
         sx={{ 
-          py: 4, 
+          py: 8, 
           px: 2, 
           mt: 'auto', 
-          backgroundColor: '#ffffff', 
-          borderTop: '1px solid #E5E7EB' 
+          backgroundColor: '#111111', 
+          color: '#FFFFFF',
+          borderTop: '1px solid #222222' 
         }}
       >
-        <Container maxWidth="lg">
-          <Typography variant="body2" color="text.secondary" align="center">
-            {'© '}
-            {new Date().getFullYear()}
-            {' WORKIZO. One Request, One Skilled Solution.'}
-          </Typography>
-          <Typography variant="caption" color="text.disabled" align="center" display="block" sx={{ mt: 1 }}>
-            Built with Django & React. Secure JWT Authentication. Role-Based Access Control.
-          </Typography>
+        <Container maxWidth="xl">
+          <Box 
+            sx={{ 
+              display: 'flex', 
+              flexDirection: { xs: 'column', sm: 'row' }, 
+              justifyContent: 'space-between', 
+              alignItems: 'flex-start', 
+              gap: { xs: 4, sm: 3, md: 4 },
+              flexWrap: 'wrap'
+            }}
+          >
+            {/* Column 1: Brand Info & Socials */}
+            <Box sx={{ flex: '1 1 250px', minWidth: '220px', maxWidth: '300px' }}>
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mb: 2 }}>
+                <Box 
+                  sx={{ 
+                    width: 38, 
+                    height: 38, 
+                    bgcolor: '#ffffff', 
+                    borderRadius: '8px', 
+                    display: 'flex', 
+                    alignItems: 'center', 
+                    justifyContent: 'center',
+                    boxShadow: '0 2px 8px rgba(255, 255, 255, 0.15)'
+                  }}
+                >
+                  <HandymanIcon sx={{ color: '#111111', fontSize: 22 }} />
+                </Box>
+                <Typography
+                  variant="h6"
+                  noWrap
+                  sx={{
+                    fontFamily: 'Outfit',
+                    fontWeight: 900,
+                    letterSpacing: '.03rem',
+                    color: '#ffffff',
+                    fontSize: '1.3rem'
+                  }}
+                >
+                  Workizo
+                </Typography>
+              </Box>
+              <Typography variant="body2" sx={{ color: '#9CA3AF', mb: 3, lineHeight: 1.6 }}>
+                Fast, reliable, and affordable home and professional services at your doorstep. Your satisfaction is our top priority.
+              </Typography>
+              <Box sx={{ display: 'flex', gap: 1.5 }}>
+                {[
+                  { icon: <FacebookIcon sx={{ fontSize: 20 }} />, url: 'https://facebook.com' },
+                  { icon: <TwitterIcon sx={{ fontSize: 20 }} />, url: 'https://twitter.com' },
+                  { icon: <InstagramIcon sx={{ fontSize: 20 }} />, url: 'https://instagram.com' },
+                  { icon: <LinkedInIcon sx={{ fontSize: 20 }} />, url: 'https://linkedin.com' }
+                ].map((social, idx) => (
+                  <IconButton
+                    key={idx}
+                    component="a"
+                    href={social.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    sx={{
+                      color: '#9CA3AF',
+                      bgcolor: 'rgba(255, 255, 255, 0.05)',
+                      '&:hover': {
+                        color: '#ffffff',
+                        bgcolor: 'rgba(255, 255, 255, 0.15)',
+                        transform: 'translateY(-2px)'
+                      },
+                      transition: 'all 0.2s ease-in-out',
+                      width: 36,
+                      height: 36
+                    }}
+                  >
+                    {social.icon}
+                  </IconButton>
+                ))}
+              </Box>
+            </Box>
+
+            {/* Column 2: Quick Links */}
+            <Box sx={{ flex: '1 1 150px', minWidth: '150px', maxWidth: '200px' }}>
+              <Typography variant="subtitle1" fontWeight="bold" sx={{ color: '#ffffff', mb: 2.5, fontFamily: 'Outfit' }}>
+                Quick Links
+              </Typography>
+              <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1.5 }}>
+                {[
+                  { text: 'Home', path: '/' },
+                  { text: 'Book Service', path: '/customer/book', action: () => {
+                      if (isAuthenticated) {
+                        navigate('/customer/book');
+                      } else {
+                        toast.error('Please log in first to book a service');
+                        localStorage.setItem('redirect_after_login', '/customer/book');
+                        navigate('/customer/login');
+                      }
+                    } 
+                  },
+                  { text: 'Track Booking', path: '/track' },
+                  { text: 'Become a Captain', path: '/captain/login' },
+                  { text: 'Admin Login', path: '/admin/login' }
+                ].map((link, idx) => (
+                  <Link
+                    key={idx}
+                    component="button"
+                    onClick={() => {
+                      if (link.action) {
+                        link.action();
+                      } else {
+                        navigate(link.path);
+                      }
+                    }}
+                    underline="none"
+                    sx={{
+                      color: '#9CA3AF',
+                      textAlign: 'left',
+                      fontSize: '0.875rem',
+                      '&:hover': {
+                        color: '#ffffff',
+                      },
+                      transition: 'color 0.2s ease-in-out',
+                      cursor: 'pointer',
+                      background: 'none',
+                      border: 'none',
+                      p: 0,
+                      fontFamily: 'inherit'
+                    }}
+                  >
+                    {link.text}
+                  </Link>
+                ))}
+              </Box>
+            </Box>
+
+            {/* Column 3: Services */}
+            <Box sx={{ flex: '1 1 150px', minWidth: '150px', maxWidth: '200px' }}>
+              <Typography variant="subtitle1" fontWeight="bold" sx={{ color: '#ffffff', mb: 2.5, fontFamily: 'Outfit' }}>
+                Services
+              </Typography>
+              <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1.5 }}>
+                {[
+                  'Electrician',
+                  'Plumber',
+                  'Carpenter',
+                  'AC Technician',
+                  'Mechanic',
+                  'Home Cleaning'
+                ].map((service, idx) => (
+                  <Link
+                    key={idx}
+                    component="button"
+                    onClick={() => {
+                      if (isAuthenticated) {
+                        navigate('/customer/book');
+                      } else {
+                        toast.error('Please log in first to book a service');
+                        localStorage.setItem('redirect_after_login', '/customer/book');
+                        navigate('/customer/login');
+                      }
+                    }}
+                    underline="none"
+                    sx={{
+                      color: '#9CA3AF',
+                      textAlign: 'left',
+                      fontSize: '0.875rem',
+                      '&:hover': {
+                        color: '#ffffff',
+                      },
+                      transition: 'color 0.2s ease-in-out',
+                      cursor: 'pointer',
+                      background: 'none',
+                      border: 'none',
+                      p: 0,
+                      fontFamily: 'inherit'
+                    }}
+                  >
+                    {service}
+                  </Link>
+                ))}
+              </Box>
+            </Box>
+
+            {/* Column 4: Contact Us */}
+            <Box sx={{ flex: '1 1 250px', minWidth: '220px', maxWidth: '300px' }}>
+              <Typography variant="subtitle1" fontWeight="bold" sx={{ color: '#ffffff', mb: 2.5, fontFamily: 'Outfit' }}>
+                Contact Us
+              </Typography>
+              <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+                <Box sx={{ display: 'flex', gap: 1.5, alignItems: 'flex-start' }}>
+                  <PhoneIcon sx={{ color: '#9CA3AF', fontSize: 20, mt: 0.2 }} />
+                  <Typography variant="body2" sx={{ color: '#9CA3AF' }}>
+                    +91 9876543210
+                  </Typography>
+                </Box>
+                <Box sx={{ display: 'flex', gap: 1.5, alignItems: 'flex-start' }}>
+                  <EmailIcon sx={{ color: '#9CA3AF', fontSize: 20, mt: 0.2 }} />
+                  <Typography variant="body2" sx={{ color: '#9CA3AF', wordBreak: 'break-all' }}>
+                    support@workizo.com
+                  </Typography>
+                </Box>
+                <Box sx={{ display: 'flex', gap: 1.5, alignItems: 'flex-start' }}>
+                  <LocationOnIcon sx={{ color: '#9CA3AF', fontSize: 20, mt: 0.2 }} />
+                  <Typography variant="body2" sx={{ color: '#9CA3AF', lineHeight: 1.5, whiteSpace: 'normal', wordBreak: 'break-word' }}>
+                    SIGNATURE-2, C-909, Sarkhej - Sanand Rd,<br />
+                    Makarba, Sarkhej-Okaf, Ahmedabad,<br />
+                    Gujarat 382210
+                  </Typography>
+                </Box>
+              </Box>
+            </Box>
+          </Box>
+
+          <Divider sx={{ my: 5, borderColor: '#222222' }} />
+
+          <Box 
+            sx={{ 
+              display: 'flex', 
+              flexDirection: { xs: 'column', sm: 'row' }, 
+              justifyContent: 'space-between', 
+              alignItems: 'center', 
+              gap: 2 
+            }}
+          >
+            <Typography variant="body2" sx={{ color: '#9CA3AF' }}>
+              © {new Date().getFullYear()} Workizo. All rights reserved.
+            </Typography>
+            <Typography variant="caption" sx={{ color: '#6B7280', textAlign: { xs: 'center', sm: 'right' } }}>
+              Built with Django & React. Secure JWT Authentication. Role-Based Access Control.
+            </Typography>
+          </Box>
         </Container>
       </Box>
     </Box>
