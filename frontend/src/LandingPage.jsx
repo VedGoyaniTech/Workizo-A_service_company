@@ -525,11 +525,11 @@ const LandingPage = () => {
         </Box>
 
         {/* 3-Column Grid of Cards */}
-        <Grid container spacing={4}>
-          <Grid item xs={12} md={4}>
-            <Card sx={{ p: 4, height: '100%', borderRadius: '16px', border: '1px solid #E5E7EB', boxShadow: '0 4px 20px rgba(0,0,0,0.02)', display: 'flex', flexDirection: 'column' }}>
-              <VerifiedUserIcon color="primary" sx={{ fontSize: 44, mb: 2 }} />
-              <Typography variant="subtitle1" fontWeight="800" sx={{ mb: 1.5, color: '#0F0F14' }}>
+        <Grid container spacing={3}>
+          <Grid item xs={12} sm={4}>
+            <Card sx={{ p: 3, height: '100%', backgroundColor: '#ffffff', borderColor: '#E5E7EB', boxShadow: 'none', border: '1px solid #E5E7EB', borderRadius: '16px' }}>
+              <VerifiedUserIcon color="primary" sx={{ fontSize: 36, mb: 1.5 }} />
+              <Typography variant="subtitle1" fontWeight="bold" sx={{ mb: 1 }}>
                 100% KYC Verified
               </Typography>
               <Typography variant="body2" color="text.secondary" sx={{ lineHeight: 1.6 }}>
@@ -538,10 +538,10 @@ const LandingPage = () => {
             </Card>
           </Grid>
           
-          <Grid item xs={12} md={4}>
-            <Card sx={{ p: 4, height: '100%', borderRadius: '16px', border: '1px solid #E5E7EB', boxShadow: '0 4px 20px rgba(0,0,0,0.02)', display: 'flex', flexDirection: 'column' }}>
-              <MonetizationOnIcon color="primary" sx={{ fontSize: 44, mb: 2 }} />
-              <Typography variant="subtitle1" fontWeight="800" sx={{ mb: 1.5, color: '#0F0F14' }}>
+          <Grid item xs={12} sm={4}>
+            <Card sx={{ p: 3, height: '100%', backgroundColor: '#ffffff', borderColor: '#E5E7EB', boxShadow: 'none', border: '1px solid #E5E7EB', borderRadius: '16px' }}>
+              <MonetizationOnIcon color="primary" sx={{ fontSize: 36, mb: 1.5 }} />
+              <Typography variant="subtitle1" fontWeight="bold" sx={{ mb: 1 }}>
                 Standardized Pricing
               </Typography>
               <Typography variant="body2" color="text.secondary" sx={{ lineHeight: 1.6 }}>
@@ -550,10 +550,10 @@ const LandingPage = () => {
             </Card>
           </Grid>
           
-          <Grid item xs={12} md={4}>
-            <Card sx={{ p: 4, height: '100%', borderRadius: '16px', border: '1px solid #E5E7EB', boxShadow: '0 4px 20px rgba(0,0,0,0.02)', display: 'flex', flexDirection: 'column' }}>
-              <StarsIcon sx={{ color: '#F59E0B', fontSize: 44, mb: 2 }} />
-              <Typography variant="subtitle1" fontWeight="800" sx={{ mb: 1.5, color: '#0F0F14' }}>
+          <Grid item xs={12} sm={4}>
+            <Card sx={{ p: 3, height: '100%', backgroundColor: '#ffffff', borderColor: '#E5E7EB', boxShadow: 'none', border: '1px solid #E5E7EB', borderRadius: '16px' }}>
+              <StarsIcon sx={{ color: '#F59E0B', fontSize: 36, mb: 1.5 }} />
+              <Typography variant="subtitle1" fontWeight="bold" sx={{ mb: 1 }}>
                 Elite Trained Captains
               </Typography>
               <Typography variant="body2" color="text.secondary" sx={{ lineHeight: 1.6 }}>
