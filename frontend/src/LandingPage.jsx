@@ -510,55 +510,56 @@ const LandingPage = () => {
       </Container>
 
       {/* Safety & Assurance Section */}
-      <Container maxWidth="lg" sx={{ mt: 10, pt: 8, borderTop: '1px solid #E5E7EB' }}>
-        <Grid container spacing={4} alignItems="center">
-          <Grid item xs={12} md={5}>
-            <Typography variant="h4" fontWeight="bold" sx={{ mb: 2 }}>
-              Workizo Quality & Safety Assurance
-            </Typography>
-            <Typography variant="body1" color="text.secondary" sx={{ mb: 4 }}>
-              Just like India's top home platforms, we prioritize trust, background verification, and quality of work.
-            </Typography>
-            <Button variant="outlined" color="primary" onClick={() => navigate('/captain/register')}>
-              Become a Verified Captain
-            </Button>
+      <Container maxWidth="lg" sx={{ mt: 10, pt: 8, borderTop: '1px solid #E5E7EB', pb: 10 }}>
+        {/* Header Block */}
+        <Box sx={{ textAlign: 'center', mb: 6 }}>
+          <Typography variant="h3" sx={{ fontWeight: 900, mb: 2, fontFamily: 'Outfit, sans-serif' }}>
+            Workizo Quality & Safety Assurance
+          </Typography>
+          <Typography variant="body1" sx={{ color: '#6B7280', maxWidth: '700px', mx: 'auto', mb: 3 }}>
+            Just like India's top home platforms, we prioritize trust, background verification, and quality of work.
+          </Typography>
+          <Button variant="outlined" color="primary" onClick={() => navigate('/captain/register')} sx={{ borderRadius: '24px', px: 4, py: 1, fontWeight: 700 }}>
+            Become a Verified Captain
+          </Button>
+        </Box>
+
+        {/* 3-Column Grid of Cards */}
+        <Grid container spacing={4}>
+          <Grid item xs={12} md={4}>
+            <Card sx={{ p: 4, height: '100%', borderRadius: '16px', border: '1px solid #E5E7EB', boxShadow: '0 4px 20px rgba(0,0,0,0.02)', display: 'flex', flexDirection: 'column' }}>
+              <VerifiedUserIcon color="primary" sx={{ fontSize: 44, mb: 2 }} />
+              <Typography variant="subtitle1" fontWeight="800" sx={{ mb: 1.5, color: '#0F0F14' }}>
+                100% KYC Verified
+              </Typography>
+              <Typography variant="body2" color="text.secondary" sx={{ lineHeight: 1.6 }}>
+                Every Captain is verified via Aadhaar & PAN background checks prior to platform listing.
+              </Typography>
+            </Card>
           </Grid>
-          <Grid item xs={12} md={7}>
-            <Grid container spacing={3}>
-              <Grid item xs={12} sm={6}>
-                <Card sx={{ p: 3, backgroundColor: '#ffffff', borderColor: '#E5E7EB' }}>
-                  <VerifiedUserIcon color="primary" sx={{ fontSize: 36, mb: 1.5 }} />
-                  <Typography variant="subtitle1" fontWeight="bold" sx={{ mb: 1 }}>
-                    100% KYC Verified
-                  </Typography>
-                  <Typography variant="body2" color="text.secondary">
-                    Every Captain is verified via Aadhaar & PAN background checks prior to platform listing.
-                  </Typography>
-                </Card>
-              </Grid>
-              <Grid item xs={12} sm={6}>
-                <Card sx={{ p: 3, backgroundColor: '#ffffff', borderColor: '#E5E7EB' }}>
-                  <MonetizationOnIcon color="primary" sx={{ fontSize: 36, mb: 1.5 }} />
-                  <Typography variant="subtitle1" fontWeight="bold" sx={{ mb: 1 }}>
-                    Standardized Pricing
-                  </Typography>
-                  <Typography variant="body2" color="text.secondary">
-                    No bargaining. Get fixed, fair quotes for all categories before work begins.
-                  </Typography>
-                </Card>
-              </Grid>
-              <Grid item xs={12}>
-                <Card sx={{ p: 3, backgroundColor: '#ffffff', borderColor: '#E5E7EB' }}>
-                  <StarsIcon sx={{ color: '#F59E0B', fontSize: 36, mb: 1.5 }} />
-                  <Typography variant="subtitle1" fontWeight="bold" sx={{ mb: 1 }}>
-                    Elite Trained Captains
-                  </Typography>
-                  <Typography variant="body2" color="text.secondary">
-                    Only experienced local experts are matched to guarantee 100% satisfaction.
-                  </Typography>
-                </Card>
-              </Grid>
-            </Grid>
+          
+          <Grid item xs={12} md={4}>
+            <Card sx={{ p: 4, height: '100%', borderRadius: '16px', border: '1px solid #E5E7EB', boxShadow: '0 4px 20px rgba(0,0,0,0.02)', display: 'flex', flexDirection: 'column' }}>
+              <MonetizationOnIcon color="primary" sx={{ fontSize: 44, mb: 2 }} />
+              <Typography variant="subtitle1" fontWeight="800" sx={{ mb: 1.5, color: '#0F0F14' }}>
+                Standardized Pricing
+              </Typography>
+              <Typography variant="body2" color="text.secondary" sx={{ lineHeight: 1.6 }}>
+                No bargaining. Get fixed, fair quotes for all categories before work begins.
+              </Typography>
+            </Card>
+          </Grid>
+          
+          <Grid item xs={12} md={4}>
+            <Card sx={{ p: 4, height: '100%', borderRadius: '16px', border: '1px solid #E5E7EB', boxShadow: '0 4px 20px rgba(0,0,0,0.02)', display: 'flex', flexDirection: 'column' }}>
+              <StarsIcon sx={{ color: '#F59E0B', fontSize: 44, mb: 2 }} />
+              <Typography variant="subtitle1" fontWeight="800" sx={{ mb: 1.5, color: '#0F0F14' }}>
+                Elite Trained Captains
+              </Typography>
+              <Typography variant="body2" color="text.secondary" sx={{ lineHeight: 1.6 }}>
+                Only experienced local experts are matched to guarantee 100% satisfaction.
+              </Typography>
+            </Card>
           </Grid>
         </Grid>
       </Container>
