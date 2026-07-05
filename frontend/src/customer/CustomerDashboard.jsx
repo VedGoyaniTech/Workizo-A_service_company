@@ -131,7 +131,7 @@ function CustomerDashboard() {
                       {bk.service_category_detail?.name}
                     </Typography>
                     <Typography variant="body2" color="text.secondary">
-                      Ref: #{bk.id} | Problem: {bk.problem_type}
+                      Tracking ID: {bk.tracking_id || bk.id} | Problem: {bk.problem_type}
                     </Typography>
                     
                     <Button
@@ -268,7 +268,7 @@ function CustomerDashboard() {
                   <ListItem key={bk.id} sx={{ px: 0, py: 1.5 }} divider>
                     <ListItemText
                       primary={bk.service_category_detail?.name}
-                      secondary={`${new Date(bk.created_at).toLocaleDateString()} | Ref: #${bk.id}`}
+                      secondary={`${new Date(bk.created_at).toLocaleDateString()} | Tracking ID: ${bk.tracking_id || bk.id}`}
                     />
                     <Box sx={{ textAlign: 'right' }}>
                       <Typography variant="body2" fontWeight="700">

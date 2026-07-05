@@ -204,6 +204,32 @@ function BookingTimeline() {
 
   return (
     <Container maxWidth="md" sx={{ py: 4 }}>
+      {/* Booking Confirmation & Tracking ID Banner */}
+      {!['completed', 'cancelled'].includes(booking.status) && (
+        <Card 
+          variant="outlined" 
+          sx={{ 
+            borderColor: '#10B981', 
+            bgcolor: 'rgba(16, 185, 129, 0.04)', 
+            borderRadius: '8px', 
+            mb: 4, 
+            p: 3, 
+            textAlign: 'center',
+            boxShadow: '0 4px 12px rgba(16, 185, 129, 0.05)'
+          }}
+        >
+          <Typography variant="subtitle2" sx={{ color: '#10B981', fontWeight: 800, letterSpacing: '0.05rem', textTransform: 'uppercase', mb: 0.5 }}>
+            Booking Confirmed
+          </Typography>
+          <Typography variant="h5" sx={{ fontWeight: 900, mb: 1, fontFamily: 'Outfit, sans-serif' }}>
+            Tracking ID: <span style={{ color: '#10B981' }}>{booking.tracking_id}</span>
+          </Typography>
+          <Typography variant="body2" color="text.secondary" sx={{ maxWidth: '500px', mx: 'auto' }}>
+            Please keep a note of this Tracking ID! You can track the status of your service anytime by entering this ID in the <strong>Track Booking</strong> tab in the navigation menu.
+          </Typography>
+        </Card>
+      )}
+
       {/* 1. Radar Search Animation */}
       <AnimatePresence>
         {booking.status === 'searching' && (
@@ -367,8 +393,11 @@ function BookingTimeline() {
           <Typography variant="subtitle2" color="text.secondary" align="center" gutterBottom>
             SERVICE TIMELINE
           </Typography>
-          <Typography variant="h6" fontWeight="800" align="center" gutterBottom sx={{ mb: 6, fontFamily: 'Outfit, sans-serif' }}>
+          <Typography variant="h6" fontWeight="800" align="center" gutterBottom sx={{ mb: 1, fontFamily: 'Outfit, sans-serif' }}>
             Track Progress
+          </Typography>
+          <Typography variant="body2" color="text.secondary" align="center" sx={{ mb: 4, fontWeight: 700 }}>
+            Tracking ID: {booking.tracking_id}
           </Typography>
 
           <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', mt: 4, position: 'relative' }}>
