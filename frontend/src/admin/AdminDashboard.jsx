@@ -44,7 +44,7 @@ const AdminDashboard = () => {
   const activeTab = queryParams.get('tab') || 'dashboard';
 
   return (
-    <Container maxWidth="xl" sx={{ mb: 6 }}>
+    <Container maxWidth={false} sx={{ mb: 6, px: { xs: 0, sm: 1, md: 2 } }}>
       {activeTab === 'dashboard' && <DashboardView />}
       {activeTab === 'bookings' && <BookingsView />}
       {activeTab === 'workers' && <WorkersView />}
@@ -96,14 +96,14 @@ const DashboardView = () => {
   const { cards, charts, activities } = data || {};
 
   const cardList = [
-    { title: 'Total Customers', val: cards.totalCustomers, icon: <PeopleIcon sx={{ color: '#1A73E8' }} /> },
-    { title: 'Total Captains', val: cards.totalCaptains, icon: <SupervisorAccountIcon sx={{ color: '#34A853' }} /> },
-    { title: 'Online Captains', val: cards.onlineCaptains, icon: <CheckCircleIcon sx={{ color: '#34A853' }} /> },
-    { title: 'Pending Captains', val: cards.pendingApprovals, icon: <SupervisorAccountIcon sx={{ color: '#FBBC05' }} /> },
-    { title: 'Total Bookings', val: cards.totalBookings, icon: <ReceiptLongIcon sx={{ color: '#1A73E8' }} /> },
-    { title: 'Active Bookings', val: cards.activeBookings, icon: <ReceiptLongIcon sx={{ color: '#FBBC05' }} /> },
-    { title: 'Today\'s Revenue', val: `₹${cards.todayRevenue.toFixed(2)}`, icon: <PaymentIcon sx={{ color: '#34A853' }} /> },
-    { title: 'Monthly Revenue', val: `₹${cards.monthlyRevenue.toFixed(2)}`, icon: <PaymentIcon sx={{ color: '#1A73E8' }} /> },
+    { title: 'Total Customers', val: cards.totalCustomers, icon: <PeopleIcon sx={{ color: '#1A73E8', fontSize: 32 }} /> },
+    { title: 'Total Captains', val: cards.totalCaptains, icon: <SupervisorAccountIcon sx={{ color: '#34A853', fontSize: 32 }} /> },
+    { title: 'Online Captains', val: cards.onlineCaptains, icon: <CheckCircleIcon sx={{ color: '#34A853', fontSize: 32 }} /> },
+    { title: 'Pending Captains', val: cards.pendingApprovals, icon: <SupervisorAccountIcon sx={{ color: '#FBBC05', fontSize: 32 }} /> },
+    { title: 'Total Bookings', val: cards.totalBookings, icon: <ReceiptLongIcon sx={{ color: '#1A73E8', fontSize: 32 }} /> },
+    { title: 'Active Bookings', val: cards.activeBookings, icon: <ReceiptLongIcon sx={{ color: '#FBBC05', fontSize: 32 }} /> },
+    { title: 'Today\'s Revenue', val: `₹${cards.todayRevenue.toFixed(2)}`, icon: <PaymentIcon sx={{ color: '#34A853', fontSize: 32 }} /> },
+    { title: 'Monthly Revenue', val: `₹${cards.monthlyRevenue.toFixed(2)}`, icon: <PaymentIcon sx={{ color: '#1A73E8', fontSize: 32 }} /> },
   ];
 
   return (
@@ -124,16 +124,16 @@ const DashboardView = () => {
         {cardList.map((card, idx) => (
           <Grid item xs={12} sm={6} md={3} key={idx}>
             <Card sx={{ height: '100%', boxShadow: '0 2px 10px rgba(0,0,0,0.03)', borderRadius: 2 }}>
-              <CardContent sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <CardContent sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', p: 3, '&:last-child': { pb: 3 } }}>
                 <Box sx={{ mr: 2, minWidth: 0 }}>
-                  <Typography variant="caption" fontWeight="bold" sx={{ color: '#6E7280', textTransform: 'uppercase', tracking: 1, display: 'block' }}>
+                  <Typography variant="subtitle2" fontWeight="700" sx={{ color: '#6E7280', textTransform: 'uppercase', tracking: 1, display: 'block' }}>
                     {card.title}
                   </Typography>
-                  <Typography variant="h5" fontWeight="800" sx={{ color: '#0F0F14', mt: 1, fontFamily: 'Outfit' }}>
+                  <Typography variant="h4" fontWeight="900" sx={{ color: '#0F0F14', mt: 1, fontFamily: 'Outfit' }}>
                     {card.val}
                   </Typography>
                 </Box>
-                <Box sx={{ bgcolor: 'rgba(0,0,0,0.02)', p: 1, borderRadius: 1.5, flexShrink: 0 }}>
+                <Box sx={{ bgcolor: 'rgba(0,0,0,0.02)', p: 1.5, borderRadius: 1.5, flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', width: 52, height: 52 }}>
                   {card.icon}
                 </Box>
               </CardContent>
