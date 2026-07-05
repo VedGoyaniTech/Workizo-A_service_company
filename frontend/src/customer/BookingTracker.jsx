@@ -72,7 +72,7 @@ const BookingTracker = () => {
   const activeStep = booking ? getActiveStep(booking.status) : 0;
 
   return (
-    <Container maxWidth="lg" sx={{ py: 6 }}>
+    <Container maxWidth="md" sx={{ py: 8 }}>
       {/* Title */}
       <Box sx={{ textAlign: 'center', mb: 6 }}>
         <Typography variant="caption" sx={{ color: '#000000', fontWeight: 800, letterSpacing: '0.1rem', textTransform: 'uppercase' }}>
@@ -146,8 +146,8 @@ const BookingTracker = () => {
       {booking && (
         <Grid container spacing={4}>
           {/* Timeline Tracker */}
-          <Grid item xs={12} md={6}>
-            <Card variant="outlined" sx={{ p: 4, borderRadius: '12px', borderColor: '#E5E7EB', height: '100%' }}>
+          <Grid item xs={12}>
+            <Card variant="outlined" sx={{ p: 4, borderRadius: '12px', borderColor: '#E5E7EB' }}>
               <Box display="flex" justifyContent="space-between" flexWrap="wrap" gap={2} sx={{ mb: 4, borderBottom: '1px solid #E5E7EB', pb: 2 }}>
                 <Box>
                   <Typography variant="caption" color="text.secondary">TRACKING ID</Typography>
@@ -194,8 +194,8 @@ const BookingTracker = () => {
           </Grid>
 
           {/* Booking Summary Details */}
-          <Grid item xs={12} md={6}>
-            <Card variant="outlined" sx={{ p: 3, borderRadius: '12px', height: '100%', borderColor: '#E5E7EB' }}>
+          <Grid item xs={12}>
+            <Card variant="outlined" sx={{ p: 3, borderRadius: '12px', borderColor: '#E5E7EB' }}>
               <Typography variant="subtitle2" fontWeight="800" sx={{ mb: 2, display: 'flex', alignItems: 'center', gap: 1 }}>
                 <HandymanIcon fontSize="small" /> Job Summary
               </Typography>
