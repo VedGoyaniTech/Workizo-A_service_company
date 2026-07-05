@@ -14,6 +14,16 @@ import HandymanIcon from '@mui/icons-material/Handyman';
 import AdminPanelSettingsIcon from '@mui/icons-material/AdminPanelSettings';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
+import DashboardIcon from '@mui/icons-material/Dashboard';
+import ReceiptLongIcon from '@mui/icons-material/ReceiptLong';
+import CategoryIcon from '@mui/icons-material/Category';
+import PaymentIcon from '@mui/icons-material/Payment';
+import ReceiptIcon from '@mui/icons-material/Receipt';
+import StarIcon from '@mui/icons-material/Star';
+import BarChartIcon from '@mui/icons-material/BarChart';
+import CampaignIcon from '@mui/icons-material/Campaign';
+import SettingsIcon from '@mui/icons-material/Settings';
+import PersonIcon from '@mui/icons-material/Person';
 
 const drawerWidth = 260;
 
@@ -31,13 +41,9 @@ const AdminLayout = () => {
   // Dynamic desktop drawer width
   const currentDrawerWidth = isCollapsed ? 80 : 260;
 
-  // Parse active tab from URL to highlight menu items
+  // Parse active tab from URL query params
   const queryParams = new URLSearchParams(location.search);
-  const tabQuery = queryParams.get('tab');
-  
-  // Default tab highlight based on URL
-  const isCaptainsActive = location.pathname === '/admin/dashboard' && (tabQuery === '0' || tabQuery === null);
-  const isCustomersActive = location.pathname === '/admin/dashboard' && tabQuery === '1';
+  const tabQuery = queryParams.get('tab') || 'dashboard';
 
   const handleDrawerToggle = () => {
     setMobileOpen(!mobileOpen);
@@ -57,8 +63,23 @@ const AdminLayout = () => {
     navigate('/admin/login');
   };
 
+  const menuItems = [
+    { text: 'Dashboard', tab: 'dashboard', icon: <DashboardIcon /> },
+    { text: 'Bookings', tab: 'bookings', icon: <ReceiptLongIcon /> },
+    { text: 'Workers', tab: 'workers', icon: <SupervisorAccountIcon /> },
+    { text: 'Customers', tab: 'customers', icon: <PeopleIcon /> },
+    { text: 'Service Categories', tab: 'categories', icon: <CategoryIcon /> },
+    { text: 'Payments', tab: 'payments', icon: <PaymentIcon /> },
+    { text: 'Bills', tab: 'bills', icon: <ReceiptIcon /> },
+    { text: 'Ratings & Reviews', tab: 'reviews', icon: <StarIcon /> },
+    { text: 'Reports & Analytics', tab: 'reports', icon: <BarChartIcon /> },
+    { text: 'Notifications', tab: 'notifications', icon: <CampaignIcon /> },
+    { text: 'System Settings', tab: 'settings', icon: <SettingsIcon /> },
+    { text: 'Profile', tab: 'profile', icon: <PersonIcon /> },
+  ];
+
   const drawerContent = (
-    <Box sx={{ display: 'flex', flexDirection: 'column', height: '100%', bgcolor: '#110c0c', color: '#ffffff' }}>
+    <Box sx={{ display: 'flex', flexDirection: 'column', height: '100%', bgcolor: '#ffffff', color: '#0F0F14' }}>
       {/* Branding Logo & Collapse Button */}
       <Box 
         sx={{ 
@@ -66,7 +87,7 @@ const AdminLayout = () => {
           display: 'flex', 
           alignItems: 'center', 
           justifyContent: isCollapsed ? 'center' : 'space-between',
-          borderBottom: '1px solid #221515',
+          borderBottom: '1px solid #E5E7EB',
           height: '75px',
           transition: theme.transitions.create('padding', {
             easing: theme.transitions.easing.sharp,
@@ -77,10 +98,10 @@ const AdminLayout = () => {
         {!isCollapsed ? (
           <>
             <Box 
-              onClick={() => navigate('/admin/dashboard')} 
+              onClick={() => navigate('/admin/dashboard?tab=dashboard')} 
               sx={{ display: 'flex', alignItems: 'center', gap: 1.5, cursor: 'pointer' }}
             >
-              <HandymanIcon sx={{ color: '#ef4444', fontSize: 28 }} />
+              <HandymanIcon sx={{ color: '#1A73E8', fontSize: 28 }} />
               <Box>
                 <Typography
                   variant="h6"
@@ -88,13 +109,13 @@ const AdminLayout = () => {
                     fontFamily: 'Outfit',
                     fontWeight: 900,
                     letterSpacing: '.05rem',
-                    color: '#ffffff',
+                    color: '#0F0F14',
                     lineHeight: 1.2
                   }}
                 >
                   WORKIZO
                 </Typography>
-                <Typography variant="caption" sx={{ color: '#ef4444', letterSpacing: '.1rem', fontWeight: 600 }}>
+                <Typography variant="caption" sx={{ color: '#1A73E8', letterSpacing: '.1rem', fontWeight: 600 }}>
                   ADMIN PORTAL
                 </Typography>
               </Box>
@@ -102,8 +123,8 @@ const AdminLayout = () => {
             <IconButton 
               onClick={() => setIsCollapsed(true)} 
               sx={{ 
-                color: '#9CA3AF', 
-                '&:hover': { color: '#ffffff', bgcolor: 'rgba(255,255,255,0.08)' } 
+                color: '#6E7280', 
+                '&:hover': { color: '#000000', bgcolor: 'rgba(0,0,0,0.04)' } 
               }}
             >
               <ChevronLeftIcon />
@@ -113,8 +134,8 @@ const AdminLayout = () => {
           <IconButton 
             onClick={() => setIsCollapsed(false)} 
             sx={{ 
-              color: '#ef4444', 
-              '&:hover': { bgcolor: 'rgba(255,255,255,0.08)' } 
+              color: '#1A73E8', 
+              '&:hover': { bgcolor: 'rgba(0,0,0,0.04)' } 
             }}
           >
             <ChevronRightIcon />
@@ -123,92 +144,63 @@ const AdminLayout = () => {
       </Box>
 
       {/* Navigation List */}
-      <List sx={{ px: isCollapsed ? 1 : 2, py: 3, flexGrow: 1 }}>
-        <ListItem disablePadding sx={{ mb: 1 }}>
-          <Tooltip title="Verify Captains" placement="right" disableHoverListener={!isCollapsed}>
-            <ListItemButton
-              onClick={() => {
-                navigate('/admin/dashboard?tab=0');
-                if (isMobile) setMobileOpen(false);
-              }}
-              sx={{
-                borderRadius: '8px',
-                py: 1.2,
-                px: isCollapsed ? 1.5 : 2,
-                justifyContent: isCollapsed ? 'center' : 'initial',
-                backgroundColor: isCaptainsActive ? 'rgba(239, 68, 68, 0.15)' : 'transparent',
-                color: isCaptainsActive ? '#ef4444' : '#9CA3AF',
-                '&:hover': {
-                  backgroundColor: 'rgba(255, 255, 255, 0.05)',
-                  color: '#ffffff'
-                },
-                transition: 'all 0.2s'
-              }}
-            >
-              <ListItemIcon sx={{ color: isCaptainsActive ? '#ef4444' : '#9CA3AF', minWidth: isCollapsed ? 0 : 40, justifyContent: 'center' }}>
-                <SupervisorAccountIcon />
-              </ListItemIcon>
-              {!isCollapsed && (
-                <ListItemText 
-                  primary="Verify Captains" 
-                  primaryTypographyProps={{ fontSize: '0.95rem', fontWeight: isCaptainsActive ? 700 : 500 }} 
-                />
-              )}
-            </ListItemButton>
-          </Tooltip>
-        </ListItem>
-
-        <ListItem disablePadding sx={{ mb: 1 }}>
-          <Tooltip title="Customer Directory" placement="right" disableHoverListener={!isCollapsed}>
-            <ListItemButton
-              onClick={() => {
-                navigate('/admin/dashboard?tab=1');
-                if (isMobile) setMobileOpen(false);
-              }}
-              sx={{
-                borderRadius: '8px',
-                py: 1.2,
-                px: isCollapsed ? 1.5 : 2,
-                justifyContent: isCollapsed ? 'center' : 'initial',
-                backgroundColor: isCustomersActive ? 'rgba(239, 68, 68, 0.15)' : 'transparent',
-                color: isCustomersActive ? '#ef4444' : '#9CA3AF',
-                '&:hover': {
-                  backgroundColor: 'rgba(255, 255, 255, 0.05)',
-                  color: '#ffffff'
-                },
-                transition: 'all 0.2s'
-              }}
-            >
-              <ListItemIcon sx={{ color: isCustomersActive ? '#ef4444' : '#9CA3AF', minWidth: isCollapsed ? 0 : 40, justifyContent: 'center' }}>
-                <PeopleIcon />
-              </ListItemIcon>
-              {!isCollapsed && (
-                <ListItemText 
-                  primary="Customer Directory" 
-                  primaryTypographyProps={{ fontSize: '0.95rem', fontWeight: isCustomersActive ? 700 : 500 }} 
-                />
-              )}
-            </ListItemButton>
-          </Tooltip>
-        </ListItem>
+      <List sx={{ px: isCollapsed ? 1 : 1.5, py: 2, flexGrow: 1, overflowY: 'auto' }}>
+        {menuItems.map((item) => {
+          const isActive = tabQuery === item.tab;
+          return (
+            <ListItem key={item.tab} disablePadding sx={{ mb: 0.5 }}>
+              <Tooltip title={item.text} placement="right" disableHoverListener={!isCollapsed}>
+                <ListItemButton
+                  onClick={() => {
+                    navigate(`/admin/dashboard?tab=${item.tab}`);
+                    if (isMobile) setMobileOpen(false);
+                  }}
+                  sx={{
+                    borderRadius: '8px',
+                    py: 1.2,
+                    px: isCollapsed ? 1.5 : 2,
+                    justifyContent: isCollapsed ? 'center' : 'initial',
+                    backgroundColor: isActive ? 'rgba(26, 115, 232, 0.08)' : 'transparent',
+                    color: isActive ? '#1A73E8' : '#4B5563',
+                    '&:hover': {
+                      backgroundColor: 'rgba(0, 0, 0, 0.03)',
+                      color: '#0F0F14'
+                    },
+                    transition: 'all 0.15s'
+                  }}
+                >
+                  <ListItemIcon sx={{ color: isActive ? '#1A73E8' : '#6E7280', minWidth: isCollapsed ? 0 : 36, justifyContent: 'center' }}>
+                    {item.icon}
+                  </ListItemIcon>
+                  {!isCollapsed && (
+                    <ListItemText 
+                      primary={item.text} 
+                      primaryTypographyProps={{ fontSize: '0.9rem', fontWeight: isActive ? 700 : 500 }} 
+                    />
+                  )}
+                </ListItemButton>
+              </Tooltip>
+            </ListItem>
+          );
+        })}
       </List>
 
-      <Divider sx={{ borderColor: '#221515' }} />
+      <Divider sx={{ borderColor: '#E5E7EB' }} />
 
       {/* Footer / Account Profile */}
       <Box 
         sx={{ 
-          p: isCollapsed ? 1.5 : 2.5, 
+          p: isCollapsed ? 1.5 : 2, 
           display: 'flex', 
           flexDirection: isCollapsed ? 'column' : 'row',
           alignItems: 'center', 
           justifyContent: 'center',
           gap: isCollapsed ? 2 : 1.5, 
-          borderTop: '1px solid #221515' 
+          borderTop: '1px solid #E5E7EB' 
         }}
       >
         <Avatar
-          sx={{ bgcolor: '#ef4444', width: 40, height: 40, fontWeight: 700 }}
+          sx={{ bgcolor: '#1A73E8', width: 40, height: 40, fontWeight: 700 }}
         >
           {user?.full_name?.charAt(0).toUpperCase() || 'A'}
         </Avatar>
@@ -216,23 +208,23 @@ const AdminLayout = () => {
         {!isCollapsed ? (
           <>
             <Box sx={{ minWidth: 0, flexGrow: 1 }}>
-              <Typography variant="subtitle2" noWrap sx={{ fontWeight: 700 }}>
+              <Typography variant="subtitle2" noWrap sx={{ fontWeight: 700, color: '#0F0F14' }}>
                 {user?.full_name || 'Admin User'}
               </Typography>
-              <Typography variant="caption" color="text.secondary" noWrap display="block" sx={{ color: '#888888' }}>
+              <Typography variant="caption" noWrap display="block" sx={{ color: '#6E7280' }}>
                 System Administrator
               </Typography>
             </Box>
             <Tooltip title="Log Out" placement="bottom">
               <IconButton onClick={handleLogout} sx={{ color: '#ef4444' }}>
-                <LogoutIcon size="small" />
+                <LogoutIcon fontSize="small" />
               </IconButton>
             </Tooltip>
           </>
         ) : (
           <Tooltip title="Log Out" placement="right">
             <IconButton onClick={handleLogout} sx={{ color: '#ef4444', p: 0.5 }}>
-              <LogoutIcon size="small" />
+              <LogoutIcon fontSize="small" />
             </IconButton>
           </Tooltip>
         )}
@@ -241,7 +233,7 @@ const AdminLayout = () => {
   );
 
   return (
-    <Box display="flex" minHeight="100vh" bgcolor="#FAFAFB">
+    <Box display="flex" minHeight="100vh" bgcolor="#F4F6F8">
       {/* AppBar Header */}
       <AppBar
         position="fixed"
@@ -249,8 +241,8 @@ const AdminLayout = () => {
         sx={{
           width: { md: `calc(100% - ${currentDrawerWidth}px)` },
           ml: { md: `${currentDrawerWidth}px` },
-          background: 'rgba(255, 255, 255, 0.95)',
-          backdropFilter: 'blur(12px)',
+          background: 'rgba(255, 255, 255, 0.9)',
+          backdropFilter: 'blur(8px)',
           borderBottom: '1px solid #E5E7EB',
           color: '#0F0F14',
           transition: theme.transitions.create(['width', 'margin'], {
@@ -270,21 +262,22 @@ const AdminLayout = () => {
             >
               <MenuIcon />
             </IconButton>
-            <AdminPanelSettingsIcon sx={{ color: '#ef4444', mr: 1, display: { xs: 'none', sm: 'block' } }} />
+            <AdminPanelSettingsIcon sx={{ color: '#1A73E8', mr: 1, display: { xs: 'none', sm: 'block' } }} />
             <Typography variant="subtitle1" fontWeight="800" sx={{ letterSpacing: '0.02em', display: { xs: 'none', sm: 'block' } }}>
               Workizo Administrative Panel
             </Typography>
           </Box>
 
           <Box display="flex" alignItems="center" gap={2}>
-            {/* Avatar Dropdown */}
-            <IconButton onClick={handleMenuOpen} sx={{ p: 0 }}>
-              <Avatar
-                sx={{ bgcolor: '#ef4444', width: 36, height: 36, fontWeight: 700 }}
-              >
-                {user?.full_name?.charAt(0).toUpperCase() || 'A'}
-              </Avatar>
-            </IconButton>
+            <Tooltip title="Account Panel">
+              <IconButton onClick={handleMenuOpen} sx={{ p: 0 }}>
+                <Avatar
+                  sx={{ bgcolor: '#1A73E8', width: 36, height: 36, fontWeight: 700 }}
+                >
+                  {user?.full_name?.charAt(0).toUpperCase() || 'A'}
+                </Avatar>
+              </IconButton>
+            </Tooltip>
             <Menu
               anchorEl={anchorEl}
               open={Boolean(anchorEl)}
@@ -301,6 +294,10 @@ const AdminLayout = () => {
               transformOrigin={{ horizontal: 'right', vertical: 'top' }}
               anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
             >
+              <MenuItem onClick={() => { handleMenuClose(); navigate('/admin/dashboard?tab=profile'); }}>
+                <PersonIcon fontSize="small" sx={{ mr: 1.5, color: '#4B5563' }} />
+                My Profile
+              </MenuItem>
               <MenuItem onClick={handleLogout} sx={{ color: '#ef4444' }}>
                 <LogoutIcon fontSize="small" sx={{ mr: 1.5, color: '#ef4444' }} />
                 Logout
@@ -332,7 +329,7 @@ const AdminLayout = () => {
           }}
           sx={{
             display: { xs: 'block', md: 'none' },
-            '& .MuiDrawer-paper': { boxSizing: 'border-box', width: drawerWidth, borderRight: '1px solid #221515' },
+            '& .MuiDrawer-paper': { boxSizing: 'border-box', width: drawerWidth, borderRight: '1px solid #E5E7EB' },
           }}
         >
           {drawerContent}
@@ -365,7 +362,7 @@ const AdminLayout = () => {
         component="main"
         sx={{
           flexGrow: 1,
-          p: { xs: 2, sm: 4 },
+          p: { xs: 2, sm: 3, md: 4 },
           width: { md: `calc(100% - ${currentDrawerWidth}px)` },
           mt: '64px',
           display: 'flex',
