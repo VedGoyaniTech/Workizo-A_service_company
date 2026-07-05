@@ -194,8 +194,8 @@ const BookingTracker = () => {
           </Grid>
 
           {/* Booking Summary Details */}
-          <Grid item xs={12} md={6}>
-            <Card variant="outlined" sx={{ p: 3, borderRadius: '12px', height: '100%', borderColor: '#E5E7EB' }}>
+          <Grid item xs={12}>
+            <Card variant="outlined" sx={{ p: 3, borderRadius: '12px', borderColor: '#E5E7EB' }}>
               <Typography variant="subtitle2" fontWeight="800" sx={{ mb: 2, display: 'flex', alignItems: 'center', gap: 1 }}>
                 <HandymanIcon fontSize="small" /> Job Summary
               </Typography>
@@ -221,8 +221,8 @@ const BookingTracker = () => {
           </Grid>
 
           {/* Workshop / Offsite token Details */}
-          <Grid item xs={12} md={6}>
-            <Card variant="outlined" sx={{ p: 3, borderRadius: '12px', height: '100%', borderColor: '#E5E7EB', display: 'flex', flexDirection: 'column' }}>
+          <Grid item xs={12}>
+            <Card variant="outlined" sx={{ p: 3, borderRadius: '12px', borderColor: '#E5E7EB', display: 'flex', flexDirection: 'column' }}>
               <Typography variant="subtitle2" fontWeight="800" sx={{ mb: 2, display: 'flex', alignItems: 'center', gap: 1 }}>
                 <BuildIcon fontSize="small" /> Workshop Repair Ledger
               </Typography>
