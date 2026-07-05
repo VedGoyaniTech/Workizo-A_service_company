@@ -364,6 +364,7 @@ const AdminLayout = () => {
           flexGrow: 1,
           p: { xs: 2, sm: 3, md: 4 },
           width: { md: `calc(100% - ${currentDrawerWidth}px)` },
+          ml: { md: `${currentDrawerWidth}px` },
           mt: '64px',
           display: 'flex',
           flexDirection: 'column',
