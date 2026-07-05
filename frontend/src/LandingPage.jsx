@@ -254,35 +254,143 @@ const LandingPage = () => {
             </Typography>
           </Box>
 
-          <Grid container spacing={4}>
-            <Grid item xs={12} md={4}>
-              <Card sx={{ p: 4, height: '100%', borderRadius: '16px', boxShadow: 'none', border: '1px solid #E5E7EB', display: 'flex', flexDirection: 'column' }}>
-                <Typography variant="h5" sx={{ fontWeight: 900, mb: 1.5, color: '#000000' }}>01</Typography>
-                <Typography variant="subtitle1" sx={{ fontWeight: 800, mb: 1, color: '#0F0F14' }}>Choose Category</Typography>
-                <Typography variant="body2" sx={{ color: '#6B7280', lineHeight: 1.6 }}>
-                  Select from our list of vetted experts (plumber, electrician, etc.) and search local providers.
-                </Typography>
-              </Card>
+          {/* Centered Timeline Tree */}
+          <Box sx={{ position: 'relative', mt: 8, mb: 4 }}>
+            {/* Vertical Center Line */}
+            <Box 
+              sx={{ 
+                position: 'absolute', 
+                left: { xs: '24px', md: '50%' }, 
+                top: 0, 
+                bottom: 0, 
+                width: '4px', 
+                bgcolor: '#E5E7EB', 
+                transform: { xs: 'none', md: 'translateX(-50%)' },
+                zIndex: 1,
+                borderRadius: '2px'
+              }} 
+            />
+
+            {/* Step 1 */}
+            <Grid container spacing={0} alignItems="center" sx={{ mb: { xs: 4, md: 8 }, position: 'relative', zIndex: 2 }}>
+              {/* Left Content Card */}
+              <Grid item xs={12} md={6} sx={{ order: { xs: 2, md: 1 }, pl: { xs: 8, md: 0 }, pr: { xs: 0, md: 6 } }}>
+                <Box display="flex" justifyContent={{ xs: 'flex-start', md: 'flex-end' }}>
+                  <Card sx={{ p: 4, maxWidth: '460px', width: '100%', borderRadius: '16px', border: '1px solid #E5E7EB', boxShadow: '0 4px 20px rgba(0,0,0,0.02)', bgcolor: '#ffffff' }}>
+                    <Typography variant="h5" sx={{ fontWeight: 900, mb: 1.5, color: '#1A73E8' }}>01</Typography>
+                    <Typography variant="subtitle1" sx={{ fontWeight: 800, mb: 1, color: '#0F0F14' }}>Choose Category</Typography>
+                    <Typography variant="body2" sx={{ color: '#6B7280', lineHeight: 1.6 }}>
+                      Select from our list of vetted experts (plumber, electrician, etc.) and search local providers.
+                    </Typography>
+                  </Card>
+                </Box>
+              </Grid>
+              {/* Center Dot Indicator */}
+              <Box 
+                sx={{ 
+                  position: 'absolute', 
+                  left: { xs: '24px', md: '50%' }, 
+                  top: { xs: '12px', md: 'auto' },
+                  transform: 'translateX(-50%)', 
+                  display: 'flex', 
+                  alignItems: 'center', 
+                  justifyContent: 'center',
+                  width: 48,
+                  height: 48,
+                  bgcolor: '#1A73E8',
+                  color: '#ffffff',
+                  borderRadius: '50%',
+                  fontWeight: 'bold',
+                  boxShadow: '0 0 0 6px #FAFAFB, 0 4px 12px rgba(0,0,0,0.08)',
+                  zIndex: 3
+                }}
+              >
+                1
+              </Box>
+              {/* Right Spacer */}
+              <Grid item xs={12} md={6} sx={{ order: { xs: 1, md: 2 }, display: { xs: 'none', md: 'block' } }} />
             </Grid>
-            <Grid item xs={12} md={4}>
-              <Card sx={{ p: 4, height: '100%', borderRadius: '16px', boxShadow: 'none', border: '1px solid #E5E7EB', display: 'flex', flexDirection: 'column' }}>
-                <Typography variant="h5" sx={{ fontWeight: 900, mb: 1.5, color: '#000000' }}>02</Typography>
-                <Typography variant="subtitle1" sx={{ fontWeight: 800, mb: 1, color: '#0F0F14' }}>Match Nearby</Typography>
-                <Typography variant="body2" sx={{ color: '#6B7280', lineHeight: 1.6 }}>
-                  Our live dispatcher alerts all online Captains in your category and pairs you in under 5 minutes.
-                </Typography>
-              </Card>
+
+            {/* Step 2 */}
+            <Grid container spacing={0} alignItems="center" sx={{ mb: { xs: 4, md: 8 }, position: 'relative', zIndex: 2 }}>
+              {/* Left Spacer */}
+              <Grid item xs={12} md={6} sx={{ display: { xs: 'none', md: 'block' } }} />
+              {/* Center Dot Indicator */}
+              <Box 
+                sx={{ 
+                  position: 'absolute', 
+                  left: { xs: '24px', md: '50%' }, 
+                  top: { xs: '12px', md: 'auto' },
+                  transform: 'translateX(-50%)', 
+                  display: 'flex', 
+                  alignItems: 'center', 
+                  justifyContent: 'center',
+                  width: 48,
+                  height: 48,
+                  bgcolor: '#34A853',
+                  color: '#ffffff',
+                  borderRadius: '50%',
+                  fontWeight: 'bold',
+                  boxShadow: '0 0 0 6px #FAFAFB, 0 4px 12px rgba(0,0,0,0.08)',
+                  zIndex: 3
+                }}
+              >
+                2
+              </Box>
+              {/* Right Content Card */}
+              <Grid item xs={12} md={6} sx={{ pl: { xs: 8, md: 6 } }}>
+                <Box display="flex" justifyContent="flex-start">
+                  <Card sx={{ p: 4, maxWidth: '460px', width: '100%', borderRadius: '16px', border: '1px solid #E5E7EB', boxShadow: '0 4px 20px rgba(0,0,0,0.02)', bgcolor: '#ffffff' }}>
+                    <Typography variant="h5" sx={{ fontWeight: 900, mb: 1.5, color: '#34A853' }}>02</Typography>
+                    <Typography variant="subtitle1" sx={{ fontWeight: 800, mb: 1, color: '#0F0F14' }}>Match Nearby</Typography>
+                    <Typography variant="body2" sx={{ color: '#6B7280', lineHeight: 1.6 }}>
+                      Our live dispatcher alerts all online Captains in your category and pairs you in under 5 minutes.
+                    </Typography>
+                  </Card>
+                </Box>
+              </Grid>
             </Grid>
-            <Grid item xs={12} md={4}>
-              <Card sx={{ p: 4, height: '100%', borderRadius: '16px', boxShadow: 'none', border: '1px solid #E5E7EB', display: 'flex', flexDirection: 'column' }}>
-                <Typography variant="h5" sx={{ fontWeight: 900, mb: 1.5, color: '#000000' }}>03</Typography>
-                <Typography variant="subtitle1" sx={{ fontWeight: 800, mb: 1, color: '#0F0F14' }}>Track Timeline</Typography>
-                <Typography variant="body2" sx={{ color: '#6B7280', lineHeight: 1.6 }}>
-                  Track the assigned Captain live on the interactive timeline, verify via secure QR, and settle payments.
-                </Typography>
-              </Card>
+
+            {/* Step 3 */}
+            <Grid container spacing={0} alignItems="center" sx={{ position: 'relative', zIndex: 2 }}>
+              {/* Left Content Card */}
+              <Grid item xs={12} md={6} sx={{ order: { xs: 2, md: 1 }, pl: { xs: 8, md: 0 }, pr: { xs: 0, md: 6 } }}>
+                <Box display="flex" justifyContent={{ xs: 'flex-start', md: 'flex-end' }}>
+                  <Card sx={{ p: 4, maxWidth: '460px', width: '100%', borderRadius: '16px', border: '1px solid #E5E7EB', boxShadow: '0 4px 20px rgba(0,0,0,0.02)', bgcolor: '#ffffff' }}>
+                    <Typography variant="h5" sx={{ fontWeight: 900, mb: 1.5, color: '#FBBC05' }}>03</Typography>
+                    <Typography variant="subtitle1" sx={{ fontWeight: 800, mb: 1, color: '#0F0F14' }}>Track Timeline</Typography>
+                    <Typography variant="body2" sx={{ color: '#6B7280', lineHeight: 1.6 }}>
+                      Track the assigned Captain live on the interactive timeline, verify via secure QR, and settle payments.
+                    </Typography>
+                  </Card>
+                </Box>
+              </Grid>
+              {/* Center Dot Indicator */}
+              <Box 
+                sx={{ 
+                  position: 'absolute', 
+                  left: { xs: '24px', md: '50%' }, 
+                  top: { xs: '12px', md: 'auto' },
+                  transform: 'translateX(-50%)', 
+                  display: 'flex', 
+                  alignItems: 'center', 
+                  justifyContent: 'center',
+                  width: 48,
+                  height: 48,
+                  bgcolor: '#FBBC05',
+                  color: '#ffffff',
+                  borderRadius: '50%',
+                  fontWeight: 'bold',
+                  boxShadow: '0 0 0 6px #FAFAFB, 0 4px 12px rgba(0,0,0,0.08)',
+                  zIndex: 3
+                }}
+              >
+                3
+              </Box>
+              {/* Right Spacer */}
+              <Grid item xs={12} md={6} sx={{ order: { xs: 1, md: 2 }, display: { xs: 'none', md: 'block' } }} />
             </Grid>
-          </Grid>
+          </Box>
         </Container>
       </Box>
 
