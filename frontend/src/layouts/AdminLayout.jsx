@@ -101,7 +101,7 @@ const AdminLayout = () => {
               onClick={() => navigate('/admin/dashboard?tab=dashboard')} 
               sx={{ display: 'flex', alignItems: 'center', gap: 1.5, cursor: 'pointer' }}
             >
-              <HandymanIcon sx={{ color: '#1A73E8', fontSize: 28 }} />
+              <Box component="img" src="/logo.png" sx={{ width: 32, height: 32, objectFit: 'contain' }} />
               <Box>
                 <Typography
                   variant="h6"

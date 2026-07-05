@@ -90,7 +90,7 @@ const CaptainLayout = () => {
           borderBottom: '1px solid #1E1E24'
         }}
       >
-        <HandymanIcon sx={{ color: '#1A73E8', fontSize: 28 }} />
+        <Box component="img" src="/logo.png" sx={{ width: 32, height: 32, objectFit: 'contain' }} />
         <Box>
           <Typography
             variant="h6"

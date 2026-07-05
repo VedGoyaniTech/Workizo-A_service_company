@@ -75,15 +75,16 @@ const CustomerLayout = () => {
                 sx={{ 
                   width: 38, 
                   height: 38, 
-                  bgcolor: '#000000', // Workizo black logo color
+                  bgcolor: '#ffffff', 
                   borderRadius: '8px', 
                   display: 'flex', 
                   alignItems: 'center', 
                   justifyContent: 'center',
-                  boxShadow: '0 2px 8px rgba(0, 0, 0, 0.15)'
+                  boxShadow: '0 2px 8px rgba(0, 0, 0, 0.08)',
+                  overflow: 'hidden'
                 }}
               >
-                <HandymanIcon sx={{ color: '#ffffff', fontSize: 22 }} />
+                <Box component="img" src="/logo.png" sx={{ width: 34, height: 34, objectFit: 'contain' }} />
               </Box>
               <Typography
                 variant="h6"
@@ -293,10 +294,11 @@ const CustomerLayout = () => {
                     display: 'flex', 
                     alignItems: 'center', 
                     justifyContent: 'center',
-                    boxShadow: '0 2px 8px rgba(255, 255, 255, 0.15)'
+                    boxShadow: '0 2px 8px rgba(255, 255, 255, 0.15)',
+                    overflow: 'hidden'
                   }}
                 >
-                  <HandymanIcon sx={{ color: '#111111', fontSize: 22 }} />
+                  <Box component="img" src="/logo.png" sx={{ width: 34, height: 34, objectFit: 'contain' }} />
                 </Box>
                 <Typography
                   variant="h6"
