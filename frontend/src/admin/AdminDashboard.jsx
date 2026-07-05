@@ -7,7 +7,7 @@ import {
   Dialog, DialogTitle, DialogContent, DialogActions, IconButton,
   CircularProgress, Alert, TextField, MenuItem, Select, FormControl,
   InputLabel, Card, CardContent, InputAdornment, Switch, Divider,
-  Avatar, LinearProgress, Tab, Tabs
+  Avatar, LinearProgress, Tab, Tabs, Stack
 } from '@mui/material';
 import {
   ResponsiveContainer, AreaChart, Area, BarChart, Bar,
@@ -124,16 +124,16 @@ const DashboardView = () => {
         {cardList.map((card, idx) => (
           <Grid item xs={12} sm={6} md={3} key={idx}>
             <Card sx={{ height: '100%', boxShadow: '0 2px 10px rgba(0,0,0,0.03)', borderRadius: 2 }}>
-              <CardContent sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-                <Box>
-                  <Typography variant="caption" fontWeight="bold" sx={{ color: '#6E7280', textTransform: 'uppercase', tracking: 1 }}>
+              <CardContent sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <Box sx={{ mr: 2, minWidth: 0 }}>
+                  <Typography variant="caption" fontWeight="bold" sx={{ color: '#6E7280', textTransform: 'uppercase', tracking: 1, display: 'block' }}>
                     {card.title}
                   </Typography>
                   <Typography variant="h5" fontWeight="800" sx={{ color: '#0F0F14', mt: 1, fontFamily: 'Outfit' }}>
                     {card.val}
                   </Typography>
                 </Box>
-                <Box sx={{ bgcolor: 'rgba(0,0,0,0.02)', p: 1, borderRadius: 1.5 }}>
+                <Box sx={{ bgcolor: 'rgba(0,0,0,0.02)', p: 1, borderRadius: 1.5, flexShrink: 0 }}>
                   {card.icon}
                 </Box>
               </CardContent>
@@ -2211,7 +2211,7 @@ const ProfileView = () => {
               Update Profile Details
             </Typography>
             <form onSubmit={handleUpdateProfile}>
-              <Box display="flex" flexDirection="column" gap={2.5}>
+              <Stack spacing={2.5}>
                 <TextField
                   label="Full Name"
                   size="small"
@@ -2237,7 +2237,7 @@ const ProfileView = () => {
                 <Button type="submit" variant="contained" disabled={profileSaving} sx={{ bgcolor: '#1A73E8', '&:hover': { bgcolor: '#155cb0' }, py: 1 }}>
                   {profileSaving ? 'Saving...' : 'Save Changes'}
                 </Button>
-              </Box>
+              </Stack>
             </form>
           </Paper>
         </Grid>
@@ -2249,7 +2249,7 @@ const ProfileView = () => {
               Change Account Password
             </Typography>
             <form onSubmit={handleChangePassword}>
-              <Box display="flex" flexDirection="column" gap={2.5}>
+              <Stack spacing={2.5}>
                 <TextField
                   label="Current Password"
                   type="password"
@@ -2269,7 +2269,7 @@ const ProfileView = () => {
                 <Button type="submit" variant="contained" disabled={passwordSaving} sx={{ bgcolor: '#ef4444', '&:hover': { bgcolor: '#dc2626' }, py: 1 }}>
                   {passwordSaving ? 'Updating...' : 'Update Password'}
                 </Button>
-              </Box>
+              </Stack>
             </form>
           </Paper>
         </Grid>
