@@ -55,7 +55,7 @@ class LogoutView(APIView):
                 
             token = RefreshToken(refresh_token)
             token.blacklist()
-            return Response({"message": "Successfully logged out"}, status=status.HTTP_250_OK or status.HTTP_200_OK)
+            return Response({"message": "Successfully logged out"}, status=status.HTTP_200_OK)
         except Exception as e:
             return Response({"detail": "Invalid token or already logged out"}, status=status.HTTP_400_BAD_REQUEST)
 

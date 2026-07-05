@@ -9,6 +9,7 @@ from rest_framework.response import Response
 from .models import Bill, BillItem, Payment
 from .serializers import BillSerializer, BillItemSerializer, PaymentSerializer
 from bookings.models import Booking
+from bookings.serializers import BookingSerializer
 from bookings.views import send_booking_update, create_and_send_notification
 from workers.models import Wallet, WalletTransaction
 

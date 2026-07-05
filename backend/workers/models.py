@@ -9,6 +9,8 @@ class WorkerProfile(models.Model):
         ('rejected', 'Rejected'),
     )
 
+    objects = models.Manager()
+
     user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='worker_profile')
     service_category = models.ForeignKey(ServiceCategory, on_delete=models.SET_NULL, null=True, related_name='workers')
     experience = models.IntegerField(default=0)
@@ -37,6 +39,8 @@ class WorkerProfile(models.Model):
         return f"Worker Profile for {self.user.email}"
 
 class Wallet(models.Model):
+    objects = models.Manager()
+
     worker = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='wallet')
     current_balance = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
     pending_balance = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
@@ -50,6 +54,8 @@ class WalletTransaction(models.Model):
         ('credit', 'Credit'),
         ('debit', 'Debit'),
     )
+
+    objects = models.Manager()
 
     wallet = models.ForeignKey(Wallet, on_delete=models.CASCADE, related_name='transactions')
     amount = models.DecimalField(max_digits=10, decimal_places=2)
