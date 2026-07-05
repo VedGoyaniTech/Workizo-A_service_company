@@ -364,37 +364,49 @@ function BookingTimeline() {
       {/* 3. Stepper Tracker Timeline */}
       <Card variant="outlined" sx={{ borderColor: '#E5E7EB', borderRadius: '8px', mb: 4 }}>
         <CardContent sx={{ p: 4 }}>
-          <Typography variant="subtitle2" color="text.secondary" gutterBottom>
+          <Typography variant="subtitle2" color="text.secondary" align="center" gutterBottom>
             SERVICE TIMELINE
           </Typography>
-          <Typography variant="h6" fontWeight="800" gutterBottom sx={{ mb: 4, fontFamily: 'Outfit, sans-serif' }}>
+          <Typography variant="h6" fontWeight="800" align="center" gutterBottom sx={{ mb: 4, fontFamily: 'Outfit, sans-serif' }}>
             Track Progress
           </Typography>
 
-          <Stepper activeStep={activeStepIndex >= 0 ? activeStepIndex : 0} orientation="vertical">
-            {STATUS_STEPS.map((step, idx) => (
-              <Step key={step.key}>
-                <StepLabel
-                  StepIconProps={{
-                    sx: {
-                      color: activeStepIndex >= idx ? '#000000' : '#E5E7EB',
-                      '&.Mui-active': { color: '#000000' },
-                      '&.Mui-completed': { color: '#000000' }
-                    }
-                  }}
-                >
-                  <Typography fontWeight={activeStepIndex === idx ? '800' : '500'}>
-                    {step.label}
-                  </Typography>
-                  {activeStepIndex === idx && (
-                    <Typography variant="caption" color="text.secondary">
-                      Current status of your booking
+          <Box sx={{ maxWidth: '380px', mx: 'auto', mt: 2 }}>
+            <Stepper activeStep={activeStepIndex >= 0 ? activeStepIndex : 0} orientation="vertical">
+              {STATUS_STEPS.map((step, idx) => (
+                <Step key={step.key} sx={{ py: 0.8 }}>
+                  <StepLabel
+                    StepIconProps={{
+                      sx: {
+                        color: activeStepIndex >= idx ? '#000000' : '#E5E7EB',
+                        '&.Mui-active': { color: '#000000', width: 30, height: 30 },
+                        '&.Mui-completed': { color: '#000000', width: 30, height: 30 },
+                        width: 30,
+                        height: 30,
+                        fontSize: '1rem'
+                      }
+                    }}
+                  >
+                    <Typography 
+                      sx={{ 
+                        fontSize: activeStepIndex === idx ? '1.15rem' : '1.05rem', 
+                        fontWeight: activeStepIndex === idx ? '900' : activeStepIndex > idx ? '700' : '500', 
+                        color: activeStepIndex >= idx ? '#0F0F14' : '#6E7280',
+                        ml: 1.5
+                      }}
+                    >
+                      {step.label}
                     </Typography>
-                  )}
-                </StepLabel>
-              </Step>
-            ))}
-          </Stepper>
+                    {activeStepIndex === idx && (
+                      <Typography variant="caption" color="text.secondary" sx={{ ml: 1.5, display: 'block' }}>
+                        Current status of your booking
+                      </Typography>
+                    )}
+                  </StepLabel>
+                </Step>
+              ))}
+            </Stepper>
+          </Box>
         </CardContent>
       </Card>
 
