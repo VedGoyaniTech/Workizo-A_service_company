@@ -311,12 +311,8 @@ const AdminLayout = () => {
       <Box
         component="nav"
         sx={{ 
-          width: { md: currentDrawerWidth }, 
-          flexShrink: { md: 0 },
-          transition: theme.transitions.create('width', {
-            easing: theme.transitions.easing.sharp,
-            duration: theme.transitions.duration.enteringScreen,
-          })
+          width: { md: 0 }, 
+          flexShrink: { md: 0 }
         }}
       >
         {/* Mobile Drawer */}
@@ -340,12 +336,6 @@ const AdminLayout = () => {
           variant="permanent"
           sx={{
             display: { xs: 'none', md: 'block' },
-            width: currentDrawerWidth,
-            flexShrink: 0,
-            transition: theme.transitions.create('width', {
-              easing: theme.transitions.easing.sharp,
-              duration: theme.transitions.duration.enteringScreen,
-            }),
             '& .MuiDrawer-paper': { 
               boxSizing: 'border-box', 
               width: currentDrawerWidth, 
@@ -369,10 +359,16 @@ const AdminLayout = () => {
         sx={{
           flexGrow: 1,
           p: { xs: 2, sm: 3, md: 4 },
+          width: { md: `calc(100% - ${currentDrawerWidth}px)` },
+          ml: { md: `${currentDrawerWidth}px` },
           mt: '64px',
           display: 'flex',
           flexDirection: 'column',
-          minWidth: 0 // Prevent flex children from overflowing
+          transition: theme.transitions.create(['width', 'margin'], {
+            easing: theme.transitions.easing.sharp,
+            duration: theme.transitions.duration.enteringScreen,
+          }),
+          minWidth: 0
         }}
       >
         <Outlet />
