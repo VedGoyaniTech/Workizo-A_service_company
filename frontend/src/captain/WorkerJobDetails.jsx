@@ -1,10 +1,9 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { 
-  Box, Container, Typography, Card, CardContent, Grid, Button, 
-  Divider, TextField, List, ListItem, ListItemText, IconButton,
+  Box, Typography, Button, Divider, TextField, List, ListItem, ListItemText, IconButton,
   Dialog, DialogTitle, DialogContent, DialogActions, LinearProgress,
-  Badge, Stepper, Step, StepLabel, DialogContentText, MenuItem
+  Badge, Stepper, Step, StepLabel, DialogContentText, MenuItem, Grid
 } from '@mui/material';
 import api, { buildApiUrl, buildWsUrl } from '../services/api';
 import toast from 'react-hot-toast';
@@ -18,6 +17,12 @@ import QrCodeScannerIcon from '@mui/icons-material/QrCodeScanner';
 import CancelIcon from '@mui/icons-material/Cancel';
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 
+import { tokens, span } from '../design/tokens';
+import { 
+  DashboardPage, DashboardGrid, DashboardCard, 
+  SummaryCard, SummaryGrid 
+} from '../components/dashboard';
+
 const JOB_TIMELINE = [
   { key: 'accepted', label: 'Accepted' },
   { key: 'on_the_way', label: 'Travelling' },
@@ -26,7 +31,7 @@ const JOB_TIMELINE = [
   { key: 'inspection', label: 'Inspection' },
   { key: 'repair_started', label: 'Repair Started' },
   { key: 'repair_completed', label: 'Repair Completed' },
-  { key: 'waiting_approval', label: 'Waiting for Customer Approval' },
+  { key: 'waiting_approval', label: 'Waiting Approval' },
   { key: 'completed', label: 'Completed' }
 ];
 
@@ -104,7 +109,6 @@ function WorkerJobDetails() {
         const payload = JSON.parse(event.data);
         if (payload.type === 'booking_status') {
           setBooking(payload.booking);
-          // Refresh bill if status completed
           if (['completed', 'waiting_approval', 'repair_completed'].includes(payload.booking.status)) {
             api.get(`/api/billing/${id}/get-bill/`)
               .then(res => setExistingBill(res.data))
@@ -136,48 +140,40 @@ function WorkerJobDetails() {
     }
   };
 
-  const handleCancelBooking = async () => {
+  const handleVerifyQR = async () => {
+    if (!qrCodeInput) {
+      toast.error('Please input QR code value');
+      return;
+    }
     setSubmitting(true);
-    setCancelWarningOpen(false);
     try {
-      await api.post(`/api/bookings/bookings/${id}/update-status/`, {
-        status: 'cancelled'
+      const res = await api.post(`/api/bookings/bookings/${id}/verify-qr/`, {
+        qr_code: qrCodeInput
       });
-      toast.success('Job booking cancelled successfully.');
-      navigate('/captain/dashboard');
+      setBooking(res.data);
+      toast.success('QR Code Check-in Verified successfully!');
+      setQrCodeInput('');
     } catch (err) {
-      toast.error('Failed to cancel booking');
+      toast.error(err.response?.data?.detail || 'QR Code Verification failed');
     } finally {
       setSubmitting(false);
     }
   };
 
-  const handleVerifyQR = async () => {
-    if (!qrCodeInput) return toast.error('Please enter the customer QR code value');
-    setSubmitting(true);
+  const handleCancelBooking = async () => {
+    setCancelWarningOpen(false);
     try {
-      const res = await api.post(`/api/bookings/bookings/${id}/verify-qr/`, {
-        qr_code_value: qrCodeInput.trim().toLowerCase()
-      });
-      if (res.data.verified) {
-        toast.success('QR verified! Check-in successful.');
-        setBooking(res.data.booking);
-      } else {
-        toast.error('Invalid QR code. Please check with customer.');
-      }
+      await api.post(`/api/bookings/bookings/${id}/cancel-booking/`);
+      toast.success('Service job booking has been cancelled.');
+      navigate('/captain/dashboard');
     } catch (err) {
-      toast.error(err.response?.data?.detail || 'Verification failed');
-    } finally {
-      setSubmitting(false);
+      toast.error('Failed to cancel booking');
     }
   };
 
   const handleUploadMedia = async () => {
     setUploadingMedia(true);
     const formData = new FormData();
-    formData.appends = (key, file) => { if (file) formData.append(key, file); };
-    formData.appends('status', booking.status); // keeps current status
-    
     if (beforePhoto) formData.append('before_photo', beforePhoto);
     if (afterPhoto) formData.append('after_photo', afterPhoto);
     if (sparePartPhoto) formData.append('spare_part_photo', sparePartPhoto);
@@ -185,13 +181,12 @@ function WorkerJobDetails() {
     if (optionalVideo) formData.append('optional_video', optionalVideo);
 
     try {
-      const res = await api.post(`/api/bookings/bookings/${id}/update-status/`, formData, {
-        headers: { 'Content-Type': 'multipart/form-data' }
+      await api.post(`/api/bookings/bookings/${id}/upload-media/`, formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        }
       });
-      setBooking(res.data);
-      toast.success('Service media files uploaded successfully.');
-      
-      // Reset selected states
+      toast.success('Diagnostic inspection media uploaded successfully!');
       setBeforePhoto(null);
       setAfterPhoto(null);
       setSparePartPhoto(null);
@@ -204,33 +199,14 @@ function WorkerJobDetails() {
     }
   };
 
-  const handleRequestMajorRepair = async () => {
-    if (!repairReason || !repairCost) return toast.error('Enter estimate and reason');
-    setRequestingRepair(true);
-    try {
-      await api.post(`/api/bookings/bookings/${id}/request-major-repair/`, {
-        reason: repairReason,
-        estimated_cost: repairCost
-      });
-      toast.success('Repair request submitted. Waiting for customer response.');
-      setRepairReason('');
-      setRepairCost('');
-      fetchJobDetails();
-    } catch (err) {
-      toast.error('Failed to send request');
-    } finally {
-      setRequestingRepair(false);
-    }
-  };
-
   const handleUpdateWorkshopToken = async () => {
     setUpdatingToken(true);
     try {
-      await api.post(`/api/bookings/bookings/${id}/update-repair-token/`, {
+      const res = await api.post(`/api/bookings/bookings/${id}/update-workshop-token/`, {
         status: workshopStatus
       });
-      toast.success('Workshop repair token updated.');
-      fetchJobDetails();
+      setBooking(res.data);
+      toast.success('Workshop repair progress token updated.');
     } catch (err) {
       toast.error('Failed to update workshop status');
     } finally {
@@ -238,7 +214,30 @@ function WorkerJobDetails() {
     }
   };
 
-  // Billing spare parts handlers
+  const handleRequestMajorRepair = async () => {
+    setRequestingRepair(true);
+    try {
+      const res = await api.post(`/api/bookings/bookings/${id}/request-major-repair/`, {
+        reason: repairReason,
+        estimated_cost: repairCost
+      });
+      setBooking(res.data);
+      toast.success('Cost authorization request sent to customer.');
+      setRepairReason('');
+      setRepairCost('');
+    } catch (err) {
+      toast.error('Failed to send request');
+    } finally {
+      setRequestingRepair(false);
+    }
+  };
+
+  const handlePartChange = (index, field, value) => {
+    const list = [...spareParts];
+    list[index][field] = value;
+    setSpareParts(list);
+  };
+
   const handleAddPart = () => {
     setSpareParts([...spareParts, { part_name: '', quantity: 1, price: '' }]);
   };
@@ -249,34 +248,28 @@ function WorkerJobDetails() {
     setSpareParts(list);
   };
 
-  const handlePartChange = (index, field, value) => {
-    const list = [...spareParts];
-    list[index][field] = value;
-    setSpareParts(list);
-  };
-
   const handleGenerateBill = async () => {
-    if (!labourCharges) return toast.error('Labour charges are required');
     setGeneratingBill(true);
+    const data = {
+      labour_charges: labourCharges,
+      discount: discount || '0.00',
+      parts_used: spareParts.filter(p => p.part_name && p.price)
+    };
 
-    const formattedParts = spareParts.filter(p => p.part_name && p.price);
     const formData = new FormData();
-    formData.append('labour_charges', labourCharges);
-    formData.append('discount', discount || 0);
-    formData.append('items', JSON.stringify(formattedParts));
+    formData.append('data', JSON.stringify(data));
     if (supplierInvoice) {
       formData.append('supplier_invoice', supplierInvoice);
     }
 
     try {
       const res = await api.post(`/api/billing/${id}/generate-bill/`, formData, {
-        headers: { 'Content-Type': 'multipart/form-data' }
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        }
       });
       setExistingBill(res.data);
-      toast.success('Invoice generated. Waiting for customer payment.');
-      
-      // Advance to waiting for customer approval status
-      await updateJobStatus('waiting_approval');
+      toast.success('Service Invoice generated and sent to customer.');
       fetchJobDetails();
     } catch (err) {
       toast.error('Invoice compilation failed');
@@ -286,7 +279,7 @@ function WorkerJobDetails() {
   };
 
   const handleDownloadInvoice = () => {
-    window.open(buildApiUrl(`/api/billing/${id}/download-invoice/`), '_blank');
+    window.open(`http://127.0.0.1:8001/api/billing/${id}/download-invoice/`, '_blank');
   };
 
   if (loading) {
@@ -295,585 +288,559 @@ function WorkerJobDetails() {
 
   if (!booking) {
     return (
-      <Container sx={{ py: 6 }}>
-        <Typography variant="h6">Job detail not found.</Typography>
-      </Container>
+      <DashboardPage title="Job Workspace" description="Job details not found.">
+        <Typography variant="body1">This service job details does not exist.</Typography>
+      </DashboardPage>
     );
   }
 
   const activeStepIdx = JOB_TIMELINE.findIndex(step => step.key === booking.status);
 
+  const summary = (
+    <SummaryGrid columns={4}>
+      <SummaryCard
+        label="Customer Contact"
+        value={booking.customer?.full_name || 'Loading...'}
+        icon={<CheckCircleIcon />}
+        accentColor="#1A73E8"
+        loading={loading}
+      />
+      <SummaryCard
+        label="Preferred Schedule"
+        value={`${booking.preferred_date} (${booking.preferred_time})`}
+        icon={<HourglassEmptyIcon />}
+        accentColor="#FBBC05"
+        loading={loading}
+      />
+      <SummaryCard
+        label="Service Type"
+        value={booking.service_category_detail?.name || 'N/A'}
+        icon={<HandymanIcon />}
+        accentColor="#8F00FF"
+        loading={loading}
+      />
+      <SummaryCard
+        label="Base charges"
+        value={`₹${booking.service_category_detail?.base_labour_charge || '0.00'}`}
+        icon={<PlayArrowIcon />}
+        accentColor="#EA4335"
+        loading={loading}
+      />
+    </SummaryGrid>
+  );
+
   return (
-    <Container maxWidth="md" sx={{ py: 4 }}>
-      <Box display="flex" justifyContent="space-between" sx={{ mb: 3 }}>
-        <Button 
-          startIcon={<ArrowBackIcon />} 
-          onClick={() => navigate('/captain/dashboard')}
-          sx={{ color: '#000000', textTransform: 'none' }}
-        >
-          Back to Jobs Board
-        </Button>
-
-        {['accepted', 'on_the_way', 'arrived'].includes(booking.status) && (
+    <DashboardPage
+      breadcrumbs={[
+        { label: 'Home', path: '/' },
+        { label: 'Dashboard', path: '/captain/dashboard' },
+        { label: 'Job Details' }
+      ]}
+      title={`Job Order Workspace #${booking.id}`}
+      description={`Customer Name: ${booking.customer?.full_name} | Location: ${booking.city} (${booking.pincode})`}
+      summary={summary}
+      actions={
+        <Box display="flex" gap={1.5}>
           <Button 
-            variant="outlined"
-            color="error"
-            startIcon={<CancelIcon />} 
-            onClick={() => setCancelWarningOpen(true)}
-            sx={{ textTransform: 'none', borderRadius: '8px' }}
+            startIcon={<ArrowBackIcon />} 
+            onClick={() => navigate('/captain/dashboard')}
+            sx={{ color: tokens.colors.primary, textTransform: 'none', fontWeight: 700 }}
           >
-            Cancel Job
+            Back to Board
           </Button>
-        )}
-      </Box>
 
-      {/* Main title */}
-      <Grid container justify="space-between" alignItems="center" sx={{ mb: 4 }}>
-        <Grid item xs>
-          <Typography variant="h4" fontWeight="900" sx={{ fontFamily: 'Outfit, sans-serif' }}>
-            Job Booking #{booking.id}
-          </Typography>
-          <Typography variant="body2" color="text.secondary">
-            Service: <b>{booking.service_category_detail?.name} ({booking.problem_type})</b>
-          </Typography>
-        </Grid>
-        <Grid item>
-          <Badge 
-            color="primary" 
-            badgeContent={booking.status.replace('_', ' ').toUpperCase()} 
-            sx={{ 
-              '& .MuiBadge-badge': { 
-                height: 24, fontSize: 11, fontWeight: '800', px: 1.5, py: 0.5 
-              } 
-            }}
-          />
-        </Grid>
-      </Grid>
-
-      {/* Service Progress Tracker Timeline */}
-      <Card variant="outlined" sx={{ borderColor: '#E5E7EB', borderRadius: '16px', mb: 4 }}>
-        <CardContent sx={{ p: 4 }}>
-          <Typography variant="caption" color="text.secondary" sx={{ fontWeight: '850' }}>
-            SERVICE TIMELINE CHECKPOINTS
-          </Typography>
-          <Box sx={{ mt: 3 }}>
-            <Stepper activeStep={activeStepIdx >= 0 ? activeStepIdx : 0} alternativeLabel>
-              {JOB_TIMELINE.map((step) => (
-                <Step key={step.key}>
-                  <StepLabel
-                    StepIconProps={{
-                      sx: {
-                        color: activeStepIdx >= JOB_TIMELINE.findIndex(s => s.key === step.key) ? '#1A73E8' : '#E5E7EB',
-                        '&.Mui-active': { color: '#1A73E8' },
-                        '&.Mui-completed': { color: '#1A73E8' }
-                      }
-                    }}
-                  >
-                    <Typography variant="caption" fontWeight="800">
-                      {step.label}
-                    </Typography>
-                  </StepLabel>
-                </Step>
-              ))}
-            </Stepper>
-          </Box>
-        </CardContent>
-      </Card>
-
-      {/* Customer Info Card */}
-      <Card variant="outlined" sx={{ borderColor: '#E5E7EB', borderRadius: '16px', mb: 4 }}>
-        <CardContent sx={{ p: 3 }}>
-          <Typography variant="caption" color="text.secondary" sx={{ fontWeight: '850' }}>
-            CUSTOMER CONTACT & DIRECTIONS
-          </Typography>
-          <Typography variant="subtitle1" fontWeight="800" sx={{ mt: 1.5 }}>
-            {booking.customer?.full_name}
-          </Typography>
-          <Typography variant="body2" color="text.secondary">
-            Phone Contact: <b>{booking.customer?.phone}</b>
-          </Typography>
-          <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>
-            Location: <b>{booking.address}, {booking.city}, {booking.state} - {booking.pincode}</b>
-          </Typography>
-          <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>
-            Schedule Slot: <b>{booking.preferred_date} | {booking.preferred_time}</b>
-          </Typography>
-          
-          <Box sx={{ mt: 2, p: 2, bgcolor: '#FAFAFB', borderRadius: '8px', border: '1px solid #E5E7EB' }}>
-            <Typography variant="caption" color="text.secondary" display="block">Problem Description Details:</Typography>
-            <Typography variant="body2">{booking.problem_description || 'No detailed explanation provided.'}</Typography>
-          </Box>
-
-          <Box display="flex" gap={1.5} sx={{ mt: 3 }}>
-            <Button
+          {['accepted', 'on_the_way', 'arrived'].includes(booking.status) && (
+            <Button 
               variant="outlined"
-              size="small"
-              onClick={() => window.open(`tel:${booking.customer?.phone}`)}
-              sx={{ borderColor: '#000000', color: '#000000', textTransform: 'none', borderRadius: '8px' }}
+              color="error"
+              startIcon={<CancelIcon />} 
+              onClick={() => setCancelWarningOpen(true)}
+              sx={{ textTransform: 'none', borderRadius: `${tokens.borderRadiusSm}px`, fontWeight: 700 }}
             >
-              Call Customer
-            </Button>
-            <Button
-              variant="outlined"
-              size="small"
-              onClick={() => window.open(`https://maps.google.com/?q=${encodeURIComponent(booking.address)}`)}
-              sx={{ borderColor: '#000000', color: '#000000', textTransform: 'none', borderRadius: '8px' }}
-            >
-              Navigate to Address
-            </Button>
-          </Box>
-        </CardContent>
-      </Card>
-
-      {/* Checkpoints Actions Card */}
-      <Card variant="outlined" sx={{ borderColor: '#E5E7EB', borderRadius: '16px', mb: 4 }}>
-        <CardContent sx={{ p: 4 }}>
-          <Typography variant="h6" fontWeight="900" sx={{ mb: 2, fontFamily: 'Outfit, sans-serif' }}>
-            Execute Service Milestones
-          </Typography>
-
-          {booking.status === 'accepted' && (
-            <Button
-              fullWidth
-              variant="contained"
-              startIcon={<PlayArrowIcon />}
-              onClick={() => updateJobStatus('on_the_way')}
-              disabled={submitting}
-              sx={{ bgcolor: '#1A73E8', color: '#ffffff', py: 1.5, borderRadius: '8px', fontWeight: '800' }}
-            >
-              Start Journey (Travelling)
+              Cancel Job
             </Button>
           )}
+        </Box>
+      }
+    >
+      <DashboardGrid>
+        {/* Left column: Stepper progress, actions milestones, billing builder, media uploads */}
+        <Box sx={span.twoThirds}>
+          <Box display="flex" flexDirection="column" gap={3}>
+            
+            {/* Timeline Stepper */}
+            <DashboardCard title="Service Timeline Checkpoints" subtitle="Track check-in, execution, and invoice completion">
+              <Box sx={{ mt: 2 }}>
+                <Stepper activeStep={activeStepIdx >= 0 ? activeStepIdx : 0} alternativeLabel>
+                  {JOB_TIMELINE.map((step) => (
+                    <Step key={step.key}>
+                      <StepLabel
+                        StepIconProps={{
+                          sx: {
+                            color: activeStepIdx >= JOB_TIMELINE.findIndex(s => s.key === step.key) ? tokens.colors.accent : tokens.borderColor,
+                            '&.Mui-active': { color: tokens.colors.accent },
+                            '&.Mui-completed': { color: tokens.colors.accent }
+                          }
+                        }}
+                      >
+                        <Typography variant="caption" fontWeight="800">
+                          {step.label}
+                        </Typography>
+                      </StepLabel>
+                    </Step>
+                  ))}
+                </Stepper>
+              </Box>
+            </DashboardCard>
 
-          {booking.status === 'on_the_way' && (
-            <Button
-              fullWidth
-              variant="contained"
-              onClick={() => updateJobStatus('arrived')}
-              disabled={submitting}
-              sx={{ bgcolor: '#1A73E8', color: '#ffffff', py: 1.5, borderRadius: '8px', fontWeight: '800' }}
-            >
-              Arrived at Customer Location
-            </Button>
-          )}
-
-          {booking.status === 'arrived' && (
-            <Box>
-              <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-                Scan or enter the verification check-in QR token generated on the Customer's app to unlock the service:
-              </Typography>
-              <Grid container spacing={2} alignItems="center">
-                <Grid item xs>
-                  <TextField
+            {/* Execute Milestones Card */}
+            <DashboardCard title="Execute Service Milestones" subtitle="Update booking status as you perform operations">
+              <Box sx={{ mt: 1 }}>
+                {booking.status === 'accepted' && (
+                  <Button
                     fullWidth
-                    label="Enter Customer QR Value"
-                    placeholder="e.g. 8-digit uuid start"
-                    value={qrCodeInput}
-                    onChange={(e) => setQrCodeInput(e.target.value)}
-                    slotProps={{ input: { style: { borderRadius: '8px' } } }}
-                  />
-                </Grid>
-                <Grid item>
+                    variant="contained"
+                    startIcon={<PlayArrowIcon />}
+                    onClick={() => updateJobStatus('on_the_way')}
+                    disabled={submitting}
+                    sx={{ bgcolor: tokens.colors.accent, color: '#ffffff', py: 1.5, borderRadius: `${tokens.borderRadiusSm}px`, fontWeight: '800' }}
+                  >
+                    Start Journey (Travelling)
+                  </Button>
+                )}
+
+                {booking.status === 'on_the_way' && (
+                  <Button
+                    fullWidth
+                    variant="contained"
+                    onClick={() => updateJobStatus('arrived')}
+                    disabled={submitting}
+                    sx={{ bgcolor: tokens.colors.accent, color: '#ffffff', py: 1.5, borderRadius: `${tokens.borderRadiusSm}px`, fontWeight: '800' }}
+                  >
+                    Arrived at Customer Location
+                  </Button>
+                )}
+
+                {booking.status === 'arrived' && (
+                  <Box>
+                    <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+                      Scan or enter the verification check-in QR token generated on the Customer's app to unlock the service:
+                    </Typography>
+                    <Grid container spacing={2} alignItems="center">
+                      <Grid item xs>
+                        <TextField
+                          fullWidth
+                          label="Enter Customer QR Value"
+                          placeholder="e.g. 8-digit code"
+                          value={qrCodeInput}
+                          onChange={(e) => setQrCodeInput(e.target.value)}
+                        />
+                      </Grid>
+                      <Grid item>
+                        <Button
+                          variant="contained"
+                          onClick={handleVerifyQR}
+                          disabled={submitting}
+                          startIcon={<QrCodeScannerIcon />}
+                          sx={{ bgcolor: tokens.colors.primary, color: '#ffffff', py: 2, px: 3, borderRadius: `${tokens.borderRadiusSm}px`, textTransform: 'none', fontWeight: 700 }}
+                        >
+                          Check-in (Verify QR)
+                        </Button>
+                      </Grid>
+                    </Grid>
+                  </Box>
+                )}
+
+                {booking.status === 'verified' && (
+                  <Button
+                    fullWidth
+                    variant="contained"
+                    onClick={() => updateJobStatus('inspection')}
+                    disabled={submitting}
+                    sx={{ bgcolor: tokens.colors.accent, color: '#ffffff', py: 1.5, borderRadius: `${tokens.borderRadiusSm}px`, fontWeight: '800' }}
+                  >
+                    Initiate Inspection
+                  </Button>
+                )}
+
+                {booking.status === 'inspection' && (
+                  <Button
+                    fullWidth
+                    variant="contained"
+                    onClick={() => updateJobStatus('repair_started')}
+                    disabled={submitting}
+                    sx={{ bgcolor: tokens.colors.accent, color: '#ffffff', py: 1.5, borderRadius: `${tokens.borderRadiusSm}px`, fontWeight: '800' }}
+                  >
+                    Start Repair Work
+                  </Button>
+                )}
+
+                {booking.status === 'repair_started' && (
+                  <Button
+                    fullWidth
+                    variant="contained"
+                    onClick={() => updateJobStatus('repair_completed')}
+                    disabled={submitting}
+                    sx={{ bgcolor: tokens.colors.accent, color: '#ffffff', py: 1.5, borderRadius: `${tokens.borderRadiusSm}px`, fontWeight: '800' }}
+                  >
+                    Mark Repair Completed
+                  </Button>
+                )}
+
+                {booking.status === 'repair_completed' && !existingBill && (
+                  <Typography variant="body2" color="warning.main" fontWeight="700">
+                    Work complete. Please fill out parts & labour fee below to compile the invoice and seek payment.
+                  </Typography>
+                )}
+
+                {booking.status === 'waiting_approval' && (
+                  <Typography variant="body2" color="info.main" fontWeight="700" sx={{ display: 'flex', alignItems: 'center' }}>
+                    <CheckCircleIcon sx={{ mr: 1 }} /> Invoice generated. Awaiting customer confirmation/payout.
+                  </Typography>
+                )}
+
+                {booking.status === 'completed' && (
+                  <Typography variant="body1" fontWeight="800" color="success.main" sx={{ display: 'flex', alignItems: 'center' }}>
+                    <CheckCircleIcon sx={{ mr: 1 }} /> Job runs verified & completed successfully. Payout confirmed.
+                  </Typography>
+                )}
+              </Box>
+            </DashboardCard>
+
+            {/* Invoicing Billing Builder */}
+            {booking.status === 'repair_completed' && !existingBill && (
+              <DashboardCard title="Compile Service Invoice Bill" subtitle="Log labor charges, promo discount, and spare parts used">
+                <Box sx={{ mt: 1 }}>
+                  <Grid container spacing={3} sx={{ mb: 3 }}>
+                    <Grid item xs={12} sm={6}>
+                      <TextField
+                        fullWidth
+                        label="Labour / Service Charges (₹)"
+                        type="number"
+                        value={labourCharges}
+                        onChange={(e) => setLabourCharges(e.target.value)}
+                      />
+                    </Grid>
+                    <Grid item xs={12} sm={6}>
+                      <TextField
+                        fullWidth
+                        label="Discount amount if any (₹)"
+                        type="number"
+                        value={discount}
+                        onChange={(e) => setDiscount(e.target.value)}
+                      />
+                    </Grid>
+                  </Grid>
+
+                  <Typography variant="subtitle2" sx={{ mb: 2, fontWeight: '800' }}>
+                    Spare Parts Used Details
+                  </Typography>
+
+                  {spareParts.map((part, index) => (
+                    <Grid container spacing={2} key={index} alignItems="center" sx={{ mb: 2 }}>
+                      <Grid item xs={6} sm={7}>
+                        <TextField
+                          fullWidth
+                          label="Part Description Name"
+                          value={part.part_name}
+                          onChange={(e) => handlePartChange(index, 'part_name', e.target.value)}
+                        />
+                      </Grid>
+                      <Grid item xs={3} sm={2}>
+                        <TextField
+                          fullWidth
+                          label="Qty"
+                          type="number"
+                          value={part.quantity}
+                          onChange={(e) => handlePartChange(index, 'quantity', e.target.value)}
+                        />
+                      </Grid>
+                      <Grid item xs={3} sm={2}>
+                        <TextField
+                          fullWidth
+                          label="Price (₹)"
+                          type="number"
+                          value={part.price}
+                          onChange={(e) => handlePartChange(index, 'price', e.target.value)}
+                        />
+                      </Grid>
+                      {spareParts.length > 1 && (
+                        <Grid item xs={12} sm={1}>
+                          <IconButton color="error" onClick={() => handleRemovePart(index)}>
+                            <RemoveCircleOutlinedIcon />
+                          </IconButton>
+                        </Grid>
+                      )}
+                    </Grid>
+                  ))}
+
+                  <Button
+                    startIcon={<AddCircleOutlinedIcon />}
+                    onClick={handleAddPart}
+                    sx={{ color: tokens.colors.accent, mb: 3, textTransform: 'none', fontWeight: '700' }}
+                  >
+                    Add Another Spare Part
+                  </Button>
+
+                  <Divider sx={{ my: 2 }} />
+
+                  <Typography variant="subtitle2" sx={{ mb: 1.5, fontWeight: '800' }}>
+                    OR Upload Supplier Invoice Copy (Image/PDF)
+                  </Typography>
+                  <Button variant="outlined" component="label" startIcon={<CloudUploadIcon />} sx={{ textTransform: 'none', borderRadius: `${tokens.borderRadiusSm}px`, mb: 3 }}>
+                    Select Supplier Invoice File
+                    <input type="file" hidden accept="image/*,application/pdf" onChange={(e) => setSupplierInvoice(e.target.files[0])} />
+                  </Button>
+                  {supplierInvoice && <Typography variant="caption" color="success.main" display="block" sx={{ mb: 3 }}>{supplierInvoice.name}</Typography>}
+
+                  <Button
+                    fullWidth
+                    variant="contained"
+                    onClick={handleGenerateBill}
+                    disabled={generatingBill}
+                    sx={{ bgcolor: tokens.colors.primary, color: '#ffffff', py: 1.5, borderRadius: `${tokens.borderRadiusSm}px`, fontWeight: '850', '&:hover': { bgcolor: '#23232F' } }}
+                  >
+                    {generatingBill ? 'Compiling Invoices...' : 'Generate & Submit Invoice'}
+                  </Button>
+                </Box>
+              </DashboardCard>
+            )}
+
+            {/* Bill Summary Preview Card */}
+            {existingBill && (
+              <DashboardCard title="Service Invoice Preview" subtitle={`Status: ${existingBill.is_approved ? 'APPROVED & PAID' : 'AWAITING CUSTOMER CONFIRMATION'}`}>
+                <Box sx={{ mt: 1 }}>
+                  <Typography variant="h5" fontWeight="900" sx={{ mb: 2, fontFamily: 'Outfit, sans-serif' }}>
+                    Grand Total Invoice: ₹{existingBill.grand_total}
+                  </Typography>
                   <Button
                     variant="contained"
-                    onClick={handleVerifyQR}
-                    disabled={submitting}
-                    startIcon={<QrCodeScannerIcon />}
-                    sx={{ bgcolor: '#000000', color: '#ffffff', py: 2, px: 3, borderRadius: '8px', textTransform: 'none' }}
+                    onClick={handleDownloadInvoice}
+                    sx={{ bgcolor: tokens.colors.primary, color: '#ffffff', borderRadius: `${tokens.borderRadiusSm}px`, textTransform: 'none', fontWeight: 700, '&:hover': { bgcolor: '#23232F' } }}
                   >
-                    Check-in (Verify QR)
+                    Download Official Invoice PDF
                   </Button>
-                </Grid>
-              </Grid>
-            </Box>
-          )}
+                </Box>
+              </DashboardCard>
+            )}
 
-          {booking.status === 'verified' && (
-            <Button
-              fullWidth
-              variant="contained"
-              onClick={() => updateJobStatus('inspection')}
-              disabled={submitting}
-              sx={{ bgcolor: '#1A73E8', color: '#ffffff', py: 1.5, borderRadius: '8px', fontWeight: '800' }}
-            >
-              Initiate Inspection
-            </Button>
-          )}
+            {/* Diagnostic Media Documentation Upload */}
+            {['inspection', 'repair_started', 'repair_completed'].includes(booking.status) && (
+              <DashboardCard title="Service Media Documentation" subtitle="Upload stage proofs for safety and transparency checks">
+                <Box sx={{ mt: 2 }}>
+                  <Grid container spacing={3} sx={{ mb: 3 }}>
+                    <Grid item xs={12} sm={6}>
+                      <Typography variant="caption" fontWeight="800" color="text.secondary" display="block" sx={{ mb: 1 }}>Before Repair Photo</Typography>
+                      <Button variant="outlined" component="label" fullWidth startIcon={<CloudUploadIcon />} sx={{ textTransform: 'none', borderRadius: `${tokens.borderRadiusSm}px` }}>
+                        Upload Before Photo
+                        <input type="file" hidden accept="image/*" onChange={(e) => setBeforePhoto(e.target.files[0])} />
+                      </Button>
+                      {beforePhoto && <Typography variant="caption" color="success.main" display="block">{beforePhoto.name}</Typography>}
+                    </Grid>
 
-          {booking.status === 'inspection' && (
-            <Button
-              fullWidth
-              variant="contained"
-              onClick={() => updateJobStatus('repair_started')}
-              disabled={submitting}
-              sx={{ bgcolor: '#1A73E8', color: '#ffffff', py: 1.5, borderRadius: '8px', fontWeight: '800' }}
-            >
-              Start Repair Work
-            </Button>
-          )}
+                    <Grid item xs={12} sm={6}>
+                      <Typography variant="caption" fontWeight="800" color="text.secondary" display="block" sx={{ mb: 1 }}>After Repair Photo</Typography>
+                      <Button variant="outlined" component="label" fullWidth startIcon={<CloudUploadIcon />} sx={{ textTransform: 'none', borderRadius: `${tokens.borderRadiusSm}px` }}>
+                        Upload After Photo
+                        <input type="file" hidden accept="image/*" onChange={(e) => setAfterPhoto(e.target.files[0])} />
+                      </Button>
+                      {afterPhoto && <Typography variant="caption" color="success.main" display="block">{afterPhoto.name}</Typography>}
+                    </Grid>
 
-          {booking.status === 'repair_started' && (
-            <Button
-              fullWidth
-              variant="contained"
-              onClick={() => updateJobStatus('repair_completed')}
-              disabled={submitting}
-              sx={{ bgcolor: '#1A73E8', color: '#ffffff', py: 1.5, borderRadius: '8px', fontWeight: '800' }}
-            >
-              Mark Repair Completed
-            </Button>
-          )}
+                    <Grid item xs={12} sm={6}>
+                      <Typography variant="caption" fontWeight="800" color="text.secondary" display="block" sx={{ mb: 1 }}>Spare Part Photo</Typography>
+                      <Button variant="outlined" component="label" fullWidth startIcon={<CloudUploadIcon />} sx={{ textTransform: 'none', borderRadius: `${tokens.borderRadiusSm}px` }}>
+                        Upload Parts Photo
+                        <input type="file" hidden accept="image/*" onChange={(e) => setSparePartPhoto(e.target.files[0])} />
+                      </Button>
+                      {sparePartPhoto && <Typography variant="caption" color="success.main" display="block">{sparePartPhoto.name}</Typography>}
+                    </Grid>
 
-          {booking.status === 'repair_completed' && !existingBill && (
-            <Typography variant="body2" color="warning.main" fontWeight="700">
-              Work complete. Please fill out parts & labour fee below to compile the invoice and seek payment.
-            </Typography>
-          )}
+                    <Grid item xs={12} sm={6}>
+                      <Typography variant="caption" fontWeight="800" color="text.secondary" display="block" sx={{ mb: 1 }}>Supplier Invoice Copy</Typography>
+                      <Button variant="outlined" component="label" fullWidth startIcon={<CloudUploadIcon />} sx={{ textTransform: 'none', borderRadius: `${tokens.borderRadiusSm}px` }}>
+                        Upload Invoice Image
+                        <input type="file" hidden accept="image/*" onChange={(e) => setInvoicePhoto(e.target.files[0])} />
+                      </Button>
+                      {invoicePhoto && <Typography variant="caption" color="success.main" display="block">{invoicePhoto.name}</Typography>}
+                    </Grid>
 
-          {booking.status === 'waiting_approval' && (
-            <Typography variant="body2" color="info.main" fontWeight="700" sx={{ display: 'flex', alignItems: 'center' }}>
-              <CheckCircleIcon sx={{ mr: 1 }} /> Invoice generated. Awaiting customer confirmation/payout.
-            </Typography>
-          )}
+                    <Grid item xs={12}>
+                      <Typography variant="caption" fontWeight="800" color="text.secondary" display="block" sx={{ mb: 1 }}>Optional Video (MP4/MOV)</Typography>
+                      <Button variant="outlined" component="label" fullWidth startIcon={<CloudUploadIcon />} sx={{ textTransform: 'none', borderRadius: `${tokens.borderRadiusSm}px` }}>
+                        Upload Diagnostic Video
+                        <input type="file" hidden accept="video/*" onChange={(e) => setOptionalVideo(e.target.files[0])} />
+                      </Button>
+                      {optionalVideo && <Typography variant="caption" color="success.main" display="block">{optionalVideo.name}</Typography>}
+                    </Grid>
+                  </Grid>
 
-          {booking.status === 'completed' && (
-            <Typography variant="body1" fontWeight="800" color="success.main" sx={{ display: 'flex', alignItems: 'center' }}>
-              <CheckCircleIcon sx={{ mr: 1 }} /> Job runs verified & completed successfully. Payout confirmed.
-            </Typography>
-          )}
-        </CardContent>
-      </Card>
+                  <Button
+                    variant="contained"
+                    onClick={handleUploadMedia}
+                    disabled={uploadingMedia || (!beforePhoto && !afterPhoto && !sparePartPhoto && !invoicePhoto && !optionalVideo)}
+                    sx={{ bgcolor: tokens.colors.primary, color: '#ffffff', px: 4, py: 1.25, borderRadius: `${tokens.borderRadiusSm}px`, textTransform: 'none', fontWeight: 700, '&:hover': { bgcolor: '#23232F' } }}
+                  >
+                    {uploadingMedia ? 'Uploading Files...' : 'Submit Media Documentation'}
+                  </Button>
+                </Box>
+              </DashboardCard>
+            )}
+          </Box>
+        </Box>
 
-      {/* Service Media Upload Panel */}
-      {['inspection', 'repair_started', 'repair_completed'].includes(booking.status) && (
-        <Card variant="outlined" sx={{ borderColor: '#E5E7EB', borderRadius: '16px', mb: 4 }}>
-          <CardContent sx={{ p: 4 }}>
-            <Typography variant="h6" fontWeight="900" sx={{ mb: 1, fontFamily: 'Outfit, sans-serif' }}>
-              Service Media Documentation
-            </Typography>
-            <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
-              Upload photographic evidence of the work stages to ensure transparency and safety checks.
-            </Typography>
+        {/* Right column: Customer Contact Details, Workshop Tokens, Major repair requests */}
+        <Box sx={span.oneThird}>
+          <Box display="flex" flexDirection="column" gap={3}>
+            
+            {/* Customer Details Contact Card */}
+            <DashboardCard title="Customer Contact Details" subtitle="Contact coordinates for customer location">
+              <Box sx={{ mt: 1 }}>
+                <Typography variant="subtitle1" fontWeight="800">
+                  {booking.customer?.full_name}
+                </Typography>
+                <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>
+                  Phone: <b>{booking.customer?.phone}</b>
+                </Typography>
+                <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>
+                  Address: <b>{booking.address}, {booking.city}, {booking.state} - {booking.pincode}</b>
+                </Typography>
 
-            <Grid container spacing={3} sx={{ mb: 3 }}>
-              <Grid item xs={12} sm={6}>
-                <Typography variant="caption" fontWeight="800" color="text.secondary" display="block" sx={{ mb: 1 }}>Before Repair Photo</Typography>
-                <Button variant="outlined" component="label" fullWidth startIcon={<CloudUploadIcon />} sx={{ textTransform: 'none', borderRadius: '8px' }}>
-                  Upload Before Photo
-                  <input type="file" hidden accept="image/*" onChange={(e) => setBeforePhoto(e.target.files[0])} />
-                </Button>
-                {beforePhoto && <Typography variant="caption" color="success.main">{beforePhoto.name}</Typography>}
-              </Grid>
+                <Box display="flex" gap={2} sx={{ mt: 3 }}>
+                  <Button
+                    fullWidth
+                    variant="outlined"
+                    onClick={() => window.open(`tel:${booking.customer?.phone}`)}
+                    sx={{ borderColor: tokens.colors.primary, color: tokens.colors.primary, textTransform: 'none', borderRadius: `${tokens.borderRadiusSm}px`, fontWeight: 700 }}
+                  >
+                    Call
+                  </Button>
+                  <Button
+                    fullWidth
+                    variant="outlined"
+                    onClick={() => window.open(`https://maps.google.com/?q=${encodeURIComponent(booking.address)}`)}
+                    sx={{ borderColor: tokens.colors.primary, color: tokens.colors.primary, textTransform: 'none', borderRadius: `${tokens.borderRadiusSm}px`, fontWeight: 700 }}
+                  >
+                    Navigate
+                  </Button>
+                </Box>
+              </Box>
+            </DashboardCard>
 
-              <Grid item xs={12} sm={6}>
-                <Typography variant="caption" fontWeight="800" color="text.secondary" display="block" sx={{ mb: 1 }}>After Repair Photo</Typography>
-                <Button variant="outlined" component="label" fullWidth startIcon={<CloudUploadIcon />} sx={{ textTransform: 'none', borderRadius: '8px' }}>
-                  Upload After Photo
-                  <input type="file" hidden accept="image/*" onChange={(e) => setAfterPhoto(e.target.files[0])} />
-                </Button>
-                {afterPhoto && <Typography variant="caption" color="success.main">{afterPhoto.name}</Typography>}
-              </Grid>
-
-              <Grid item xs={12} sm={6}>
-                <Typography variant="caption" fontWeight="800" color="text.secondary" display="block" sx={{ mb: 1 }}>Spare Part Photo</Typography>
-                <Button variant="outlined" component="label" fullWidth startIcon={<CloudUploadIcon />} sx={{ textTransform: 'none', borderRadius: '8px' }}>
-                  Upload Parts Photo
-                  <input type="file" hidden accept="image/*" onChange={(e) => setSparePartPhoto(e.target.files[0])} />
-                </Button>
-                {sparePartPhoto && <Typography variant="caption" color="success.main">{sparePartPhoto.name}</Typography>}
-              </Grid>
-
-              <Grid item xs={12} sm={6}>
-                <Typography variant="caption" fontWeight="800" color="text.secondary" display="block" sx={{ mb: 1 }}>Supplier Invoice Copy</Typography>
-                <Button variant="outlined" component="label" fullWidth startIcon={<CloudUploadIcon />} sx={{ textTransform: 'none', borderRadius: '8px' }}>
-                  Upload Invoice Image
-                  <input type="file" hidden accept="image/*" onChange={(e) => setInvoicePhoto(e.target.files[0])} />
-                </Button>
-                {invoicePhoto && <Typography variant="caption" color="success.main">{invoicePhoto.name}</Typography>}
-              </Grid>
-
-              <Grid item xs={12}>
-                <Typography variant="caption" fontWeight="800" color="text.secondary" display="block" sx={{ mb: 1 }}>Optional Video (MP4/MOV)</Typography>
-                <Button variant="outlined" component="label" fullWidth startIcon={<CloudUploadIcon />} sx={{ textTransform: 'none', borderRadius: '8px' }}>
-                  Upload Diagnostic Video
-                  <input type="file" hidden accept="video/*" onChange={(e) => setOptionalVideo(e.target.files[0])} />
-                </Button>
-                {optionalVideo && <Typography variant="caption" color="success.main">{optionalVideo.name}</Typography>}
-              </Grid>
-            </Grid>
-
-            <Button
-              variant="contained"
-              onClick={handleUploadMedia}
-              disabled={uploadingMedia || (!beforePhoto && !afterPhoto && !sparePartPhoto && !invoicePhoto && !optionalVideo)}
-              sx={{ bgcolor: '#000000', color: '#ffffff', px: 4, borderRadius: '8px', textTransform: 'none' }}
-            >
-              {uploadingMedia ? 'Uploading Files...' : 'Submit Media Documentation'}
-            </Button>
-          </CardContent>
-        </Card>
-      )}
-
-      {/* Workshop Repairs Token Drawer */}
-      {['inspection', 'repair_started', 'repair_completed'].includes(booking.status) && (
-        <Card variant="outlined" sx={{ borderColor: '#E5E7EB', borderRadius: '16px', mb: 4 }}>
-          <CardContent sx={{ p: 4 }}>
-            <Typography variant="h6" fontWeight="900" sx={{ mb: 1, fontFamily: 'Outfit, sans-serif' }}>
-              Workshop Repair Tokens
-            </Typography>
-            <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
-              If the appliance/item requires repair at the main workshop, allocate a tracking token for customer updates.
-            </Typography>
-
-            <Grid container spacing={2} alignItems="center">
-              <Grid item xs={12} sm={8}>
-                <TextField
-                  select
-                  fullWidth
-                  label="Workshop Progress Milestone"
-                  value={workshopStatus}
-                  onChange={(e) => setWorkshopStatus(e.target.value)}
-                  slotProps={{ input: { style: { borderRadius: '8px' } } }}
-                >
-                  <MenuItem value="item_received">Item Received</MenuItem>
-                  <MenuItem value="reached_workshop">Reached Workshop</MenuItem>
-                  <MenuItem value="inspection">Inspection Milestone</MenuItem>
-                  <MenuItem value="waiting_parts">Waiting For Spare Parts</MenuItem>
-                  <MenuItem value="repair_started">Repair Process Initiated</MenuItem>
-                  <MenuItem value="repair_completed">Workshop Repair Completed</MenuItem>
-                  <MenuItem value="returning">Item Returning</MenuItem>
-                  <MenuItem value="delivered">Item Delivered</MenuItem>
-                </TextField>
-              </Grid>
-              <Grid item xs={12} sm={4}>
-                <Button
-                  fullWidth
-                  variant="contained"
-                  onClick={handleUpdateWorkshopToken}
-                  disabled={updatingToken}
-                  sx={{ bgcolor: '#000000', color: '#ffffff', py: 1.8, borderRadius: '8px', textTransform: 'none' }}
-                >
-                  {updatingToken ? 'Updating...' : 'Update Workshop Token'}
-                </Button>
-              </Grid>
-            </Grid>
-
-            {booking.repair_token && (
-              <Box sx={{ mt: 3, p: 2, bgcolor: '#F0F7FF', borderRadius: '8px', border: '1px solid #C2E0FF' }}>
-                <Typography variant="body2">
-                  Active Tracking Token ID: <b>{booking.repair_token.token_number}</b> <br />
-                  Milestone Status: <b style={{ textTransform: 'uppercase', color: '#1A73E8' }}>{booking.repair_token.status.replace('_', ' ')}</b>
+            {/* Problem Description Callout */}
+            <DashboardCard title="Problem Statement" subtitle="Original customer ticket details">
+              <Box sx={{ p: 2, bgcolor: tokens.colors.bg, borderRadius: `${tokens.borderRadiusSm}px` }}>
+                <Typography variant="body2" fontWeight="700">
+                  {booking.problem_description || 'No detailed explanation provided.'}
                 </Typography>
               </Box>
+            </DashboardCard>
+
+            {/* Workshop Repair Token Allocation */}
+            {['inspection', 'repair_started', 'repair_completed'].includes(booking.status) && (
+              <DashboardCard title="Workshop Token" subtitle="Off-site item repair tracker details">
+                <Box sx={{ mt: 1, display: 'flex', flexDirection: 'column', gap: 2 }}>
+                  <TextField
+                    select
+                    fullWidth
+                    label="Workshop Milestone"
+                    value={workshopStatus}
+                    onChange={(e) => setWorkshopStatus(e.target.value)}
+                  >
+                    <MenuItem value="item_received">Item Received</MenuItem>
+                    <MenuItem value="reached_workshop">Reached Workshop</MenuItem>
+                    <MenuItem value="inspection">Inspection Milestone</MenuItem>
+                    <MenuItem value="waiting_parts">Waiting For Spare Parts</MenuItem>
+                    <MenuItem value="repair_started">Repair Process Initiated</MenuItem>
+                    <MenuItem value="repair_completed">Workshop Repair Completed</MenuItem>
+                    <MenuItem value="returning">Item Returning</MenuItem>
+                    <MenuItem value="delivered">Item Delivered</MenuItem>
+                  </TextField>
+                  
+                  <Button
+                    fullWidth
+                    variant="contained"
+                    onClick={handleUpdateWorkshopToken}
+                    disabled={updatingToken}
+                    sx={{ bgcolor: tokens.colors.primary, color: '#ffffff', py: 1.5, borderRadius: `${tokens.borderRadiusSm}px`, textTransform: 'none', fontWeight: 700, '&:hover': { bgcolor: '#23232F' } }}
+                  >
+                    {updatingToken ? 'Updating...' : 'Update Workshop Token'}
+                  </Button>
+
+                  {booking.repair_token && (
+                    <Box sx={{ p: 2, bgcolor: tokens.colors.accentLight, borderRadius: `${tokens.borderRadiusSm}px`, border: '1px solid rgba(26, 115, 232, 0.15)' }}>
+                      <Typography variant="caption" color="text.secondary">Active Token ID:</Typography>
+                      <Typography variant="body2" fontWeight="800">{booking.repair_token.token_number}</Typography>
+                      <Typography variant="caption" color="text.secondary" sx={{ mt: 1, display: 'block' }}>Milestone:</Typography>
+                      <Typography variant="body2" fontWeight="800" sx={{ textTransform: 'uppercase', color: tokens.colors.accent }}>
+                        {booking.repair_token.status.replace('_', ' ')}
+                      </Typography>
+                    </Box>
+                  )}
+                </Box>
+              </DashboardCard>
             )}
-          </CardContent>
-        </Card>
-      )}
 
-      {/* Major Repair Cost Approval Request Form */}
-      {['inspection', 'repair_started'].includes(booking.status) && (
-        <Card variant="outlined" sx={{ borderColor: '#E5E7EB', borderRadius: '16px', mb: 4 }}>
-          <CardContent sx={{ p: 4 }}>
-            <Typography variant="h6" fontWeight="900" sx={{ mb: 1, fontFamily: 'Outfit, sans-serif' }}>
-              Major Additional Repair Approval
-            </Typography>
-            <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
-              Require additional spare parts or extra labor fee for severe damage? Request digital estimate verification from customer.
-            </Typography>
+            {/* Major Repair Cost Estimate Authorization Requests */}
+            {['inspection', 'repair_started'].includes(booking.status) && (
+              <DashboardCard title="Major Cost Approvals" subtitle="Request cost authorizations for extensive damage">
+                <Box sx={{ mt: 1, display: 'flex', flexDirection: 'column', gap: 2 }}>
+                  <TextField
+                    fullWidth
+                    label="Description of extra parts"
+                    placeholder="e.g. Compressor replaced"
+                    value={repairReason}
+                    onChange={(e) => setRepairReason(e.target.value)}
+                  />
+                  <TextField
+                    fullWidth
+                    label="Estimated Cost (₹)"
+                    type="number"
+                    value={repairCost}
+                    onChange={(e) => setRepairCost(e.target.value)}
+                  />
+                  <Button
+                    variant="contained"
+                    onClick={handleRequestMajorRepair}
+                    disabled={requestingRepair || !repairReason || !repairCost}
+                    sx={{ bgcolor: tokens.colors.primary, color: '#ffffff', py: 1.5, borderRadius: `${tokens.borderRadiusSm}px`, textTransform: 'none', fontWeight: 700, '&:hover': { bgcolor: '#23232F' } }}
+                  >
+                    Send Authorization Request
+                  </Button>
 
-            <Grid container spacing={2}>
-              <Grid item xs={12} sm={8}>
-                <TextField
-                  fullWidth
-                  label="Description / Reason of extra parts"
-                  placeholder="e.g. Outer compressor coil replaced"
-                  value={repairReason}
-                  onChange={(e) => setRepairReason(e.target.value)}
-                  slotProps={{ input: { style: { borderRadius: '8px' } } }}
-                />
-              </Grid>
-              <Grid item xs={12} sm={4}>
-                <TextField
-                  fullWidth
-                  label="Estimated Cost (₹)"
-                  type="number"
-                  value={repairCost}
-                  onChange={(e) => setRepairCost(e.target.value)}
-                  slotProps={{ input: { style: { borderRadius: '8px' } } }}
-                />
-              </Grid>
-            </Grid>
-
-            <Button
-              variant="contained"
-              onClick={handleRequestMajorRepair}
-              disabled={requestingRepair || !repairReason || !repairCost}
-              sx={{ mt: 3, bgcolor: '#000000', color: '#ffffff', px: 4, borderRadius: '8px', textTransform: 'none' }}
-            >
-              Send Cost Request to Client
-            </Button>
-
-            {booking.major_repairs && booking.major_repairs.length > 0 && (
-              <Box sx={{ mt: 3 }}>
-                <Typography variant="subtitle2" fontWeight="700">Submitted Estimates Log:</Typography>
-                <List>
-                  {booking.major_repairs.map((rep) => (
-                    <ListItem key={rep.id} sx={{ px: 0, py: 1 }}>
-                      <ListItemText primary={rep.reason} secondary={`Estimate: ₹${rep.estimated_cost}`} />
-                      <Badge 
-                        color={rep.status === 'approved' ? 'success' : rep.status === 'rejected' ? 'error' : 'warning'}
-                        badgeContent={rep.status.toUpperCase()} 
-                      />
-                    </ListItem>
-                  ))}
-                </List>
-              </Box>
+                  {booking.major_repairs && booking.major_repairs.length > 0 && (
+                    <Box sx={{ mt: 2 }}>
+                      <Typography variant="caption" fontWeight="800" color="text.secondary">Submitted Estimates Log:</Typography>
+                      <List disablePadding sx={{ mt: 1 }}>
+                        {booking.major_repairs.map((rep) => (
+                          <ListItem key={rep.id} sx={{ px: 0, py: 1 }} divider>
+                            <ListItemText primary={rep.reason} secondary={`Estimate: ₹${rep.estimated_cost}`} primaryTypographyProps={{ fontSize: '0.85rem', fontWeight: 700 }} />
+                            <Box sx={{ 
+                              px: 1, py: 0.25, borderRadius: '4px',
+                              bgcolor: rep.status === 'approved' ? 'rgba(22, 163, 74, 0.08)' : rep.status === 'rejected' ? 'rgba(220, 38, 38, 0.08)' : 'rgba(217, 119, 6, 0.08)',
+                              border: rep.status === 'approved' ? '1px solid rgba(22, 163, 74, 0.15)' : rep.status === 'rejected' ? '1px solid rgba(220, 38, 38, 0.15)' : '1px solid rgba(217, 119, 6, 0.15)'
+                            }}>
+                              <Typography variant="caption" fontWeight="800" color={rep.status === 'approved' ? 'success.main' : rep.status === 'rejected' ? 'error.main' : 'warning.main'}>
+                                {rep.status.toUpperCase()}
+                              </Typography>
+                            </Box>
+                          </ListItem>
+                        ))}
+                      </List>
+                    </Box>
+                  )}
+                </Box>
+              </DashboardCard>
             )}
-          </CardContent>
-        </Card>
-      )}
+          </Box>
+        </Box>
+      </DashboardGrid>
 
-      {/* Spare Parts Entry & Service Invoicing Form */}
-      {booking.status === 'repair_completed' && !existingBill && (
-        <Card variant="outlined" sx={{ borderColor: '#E5E7EB', borderRadius: '16px', mb: 4 }}>
-          <CardContent sx={{ p: 4 }}>
-            <Typography variant="h6" fontWeight="900" sx={{ mb: 1, fontFamily: 'Outfit, sans-serif' }}>
-              Compile Service Invoice Bill
-            </Typography>
-            <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
-              Enter labor charges, promo discount, and log any spare parts used to compute total GST.
-            </Typography>
-
-            <Grid container spacing={2} sx={{ mb: 3 }}>
-              <Grid item xs={12} sm={6}>
-                <TextField
-                  fullWidth
-                  label="Labour / Service Charges (₹)"
-                  type="number"
-                  value={labourCharges}
-                  onChange={(e) => setLabourCharges(e.target.value)}
-                  slotProps={{ input: { style: { borderRadius: '8px' } } }}
-                />
-              </Grid>
-              <Grid item xs={12} sm={6}>
-                <TextField
-                  fullWidth
-                  label="Discount amount if any (₹)"
-                  type="number"
-                  value={discount}
-                  onChange={(e) => setDiscount(e.target.value)}
-                  slotProps={{ input: { style: { borderRadius: '8px' } } }}
-                />
-              </Grid>
-            </Grid>
-
-            <Typography variant="subtitle2" sx={{ mb: 2, fontWeight: '800' }}>
-              Spare Parts Used Details
-            </Typography>
-
-            {spareParts.map((part, index) => (
-              <Grid container spacing={2} key={index} alignItems="center" sx={{ mb: 2 }}>
-                <Grid item xs={6} sm={7}>
-                  <TextField
-                    fullWidth
-                    label="Part Description Name"
-                    value={part.part_name}
-                    onChange={(e) => handlePartChange(index, 'part_name', e.target.value)}
-                    slotProps={{ input: { style: { borderRadius: '8px' } } }}
-                  />
-                </Grid>
-                <Grid item xs={3} sm={2}>
-                  <TextField
-                    fullWidth
-                    label="Qty"
-                    type="number"
-                    value={part.quantity}
-                    onChange={(e) => handlePartChange(index, 'quantity', e.target.value)}
-                    slotProps={{ input: { style: { borderRadius: '8px' } } }}
-                  />
-                </Grid>
-                <Grid item xs={3} sm={2}>
-                  <TextField
-                    fullWidth
-                    label="Price (₹)"
-                    type="number"
-                    value={part.price}
-                    onChange={(e) => handlePartChange(index, 'price', e.target.value)}
-                    slotProps={{ input: { style: { borderRadius: '8px' } } }}
-                  />
-                </Grid>
-                {spareParts.length > 1 && (
-                  <Grid item xs={12} sm={1}>
-                    <IconButton color="error" onClick={() => handleRemovePart(index)}>
-                      <RemoveCircleOutlinedIcon />
-                    </IconButton>
-                  </Grid>
-                )}
-              </Grid>
-            ))}
-
-            <Button
-              startIcon={<AddCircleOutlinedIcon />}
-              onClick={handleAddPart}
-              sx={{ color: '#1A73E8', mb: 3, textTransform: 'none', fontWeight: '700' }}
-            >
-              Add Another Spare Part
-            </Button>
-
-            <Divider sx={{ my: 2 }} />
-
-            <Typography variant="subtitle2" sx={{ mb: 1.5, fontWeight: '800' }}>
-              OR Upload Supplier Invoice Copy (Image/PDF)
-            </Typography>
-            <Button variant="outlined" component="label" startIcon={<CloudUploadIcon />} sx={{ textTransform: 'none', borderRadius: '8px', mb: 4 }}>
-              Select Supplier Invoice File
-              <input type="file" hidden accept="image/*,application/pdf" onChange={(e) => setSupplierInvoice(e.target.files[0])} />
-            </Button>
-            {supplierInvoice && <Typography variant="caption" color="success.main" display="block">{supplierInvoice.name}</Typography>}
-
-            <Button
-              fullWidth
-              variant="contained"
-              onClick={handleGenerateBill}
-              disabled={generatingBill}
-              sx={{ bgcolor: '#000000', color: '#ffffff', py: 1.5, borderRadius: '8px', fontWeight: '850' }}
-            >
-              {generatingBill ? 'Compiling Invoices...' : 'Generate & Submit Invoice'}
-            </Button>
-          </CardContent>
-        </Card>
-      )}
-
-      {/* Bill summary preview */}
-      {existingBill && (
-        <Card variant="outlined" sx={{ borderColor: '#E5E7EB', borderRadius: '16px', mb: 4 }}>
-          <CardContent sx={{ p: 4 }}>
-            <Typography variant="caption" color="text.secondary" sx={{ fontWeight: '850' }}>
-              COMPILED SERVICE BILL SUMMARY
-            </Typography>
-            <Typography variant="h5" fontWeight="900" sx={{ mt: 1, mb: 2, fontFamily: 'Outfit, sans-serif' }}>
-              Grand Total Invoice: ₹{existingBill.grand_total}
-            </Typography>
-            <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
-              Invoice PDF Summary compiled. Customer verification status: <b>{existingBill.is_approved ? 'APPROVED & PAID' : 'AWAITING CUSTOMER CONFIRMATION'}</b>
-            </Typography>
-            
-            <Button
-              variant="contained"
-              onClick={handleDownloadInvoice}
-              sx={{ bgcolor: '#000000', color: '#ffffff', borderRadius: '8px', textTransform: 'none' }}
-            >
-              Download Official Invoice PDF
-            </Button>
-          </CardContent>
-        </Card>
-      )}
-
-      {/* Cancel Warning Modal Dialog */}
+      {/* Cancel Warning Modal */}
       <Dialog 
         open={cancelWarningOpen} 
         onClose={() => setCancelWarningOpen(false)}
-        PaperProps={{ style: { borderRadius: '12px' } }}
+        PaperProps={{ style: { borderRadius: `${tokens.borderRadius}px` } }}
       >
         <DialogTitle sx={{ fontFamily: 'Outfit, sans-serif', fontWeight: '800' }}>
           ⚠️ Cancel Job Warning
@@ -884,15 +851,15 @@ function WorkerJobDetails() {
           </DialogContentText>
         </DialogContent>
         <DialogActions>
-          <Button onClick={() => setCancelWarningOpen(false)} sx={{ color: '#000000' }}>
+          <Button onClick={() => setCancelWarningOpen(false)} sx={{ color: tokens.colors.primary }}>
             Keep Booking
           </Button>
-          <Button onClick={handleCancelBooking} color="error" variant="contained" sx={{ borderRadius: '8px' }}>
+          <Button onClick={handleCancelBooking} color="error" variant="contained" sx={{ borderRadius: `${tokens.borderRadiusSm}px` }}>
             Cancel Booking
           </Button>
         </DialogActions>
       </Dialog>
-    </Container>
+    </DashboardPage>
   );
 }
 

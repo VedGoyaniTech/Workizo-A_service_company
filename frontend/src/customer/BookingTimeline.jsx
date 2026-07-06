@@ -1,22 +1,27 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { 
-  Box, Container, Typography, Card, CardContent, Grid, Button, 
-  Divider, List, ListItem, ListItemText, Dialog, DialogTitle, 
-  DialogContent, DialogActions, Rating, TextField, LinearProgress,
-  Stepper, Step, StepLabel, CircularProgress, Badge
+  Box, Button, Typography, Divider, List, ListItem, ListItemText, 
+  Dialog, DialogTitle, DialogContent, DialogActions, Rating, TextField, 
+  LinearProgress, CircularProgress, Badge, Grid, ListItemIcon
 } from '@mui/material';
 import { motion, AnimatePresence } from 'framer-motion';
 import api from '../services/api';
 import toast from 'react-hot-toast';
 import PhoneIcon from '@mui/icons-material/Phone';
 import ChatIcon from '@mui/icons-material/Chat';
-import MapIcon from '@mui/icons-material/Map';
 import QrCode2Icon from '@mui/icons-material/QrCode2';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import DownloadIcon from '@mui/icons-material/Download';
-import HandymanIcon from '@mui/icons-material/Handyman';
 import HourglassEmptyIcon from '@mui/icons-material/HourglassEmpty';
+import TimelineIcon from '@mui/icons-material/Timeline';
+import InfoIcon from '@mui/icons-material/Info';
+
+import { tokens, span } from '../design/tokens';
+import { 
+  DashboardPage, DashboardGrid, DashboardCard, 
+  SummaryCard, SummaryGrid 
+} from '../components/dashboard';
 
 const STATUS_STEPS = [
   { key: 'searching', label: 'Searching' },
@@ -194,536 +199,514 @@ function BookingTimeline() {
 
   if (!booking) {
     return (
-      <Container sx={{ py: 6 }}>
-        <Typography variant="h6">Booking details not found.</Typography>
-      </Container>
+      <DashboardPage title="Booking Timeline" description="Booking details not found.">
+        <Typography variant="body1">This service request does not exist or has been removed.</Typography>
+      </DashboardPage>
     );
   }
 
   const activeStepIndex = STATUS_STEPS.findIndex(step => step.key === booking.status);
 
+  const summary = (
+    <SummaryGrid columns={4}>
+      <SummaryCard
+        label="Service Category"
+        value={booking.service_category_detail?.name || 'Loading...'}
+        icon={<TimelineIcon />}
+        accentColor="#1A73E8"
+        loading={loading}
+      />
+      <SummaryCard
+        label="Service Status"
+        value={booking.status.replace('_', ' ').toUpperCase()}
+        icon={<InfoIcon />}
+        accentColor={booking.status === 'completed' ? '#34A853' : '#FBBC05'}
+        loading={loading}
+      />
+      <SummaryCard
+        label="Booking Mode"
+        value={booking.booking_type === 'instant' ? 'Instant Service' : 'Slot Scheduled'}
+        icon={<AccessTimeIcon />}
+        accentColor="#EA4335"
+        loading={loading}
+      />
+      <SummaryCard
+        label="Assigned Captain"
+        value={booking.worker ? booking.worker.full_name : 'Searching...'}
+        icon={<HourglassEmptyIcon />}
+        accentColor="#8F00FF"
+        loading={loading}
+      />
+    </SummaryGrid>
+  );
+
   return (
-    <Container maxWidth="md" sx={{ py: 4 }}>
-      {/* Booking Confirmation & Tracking ID Banner */}
-      {!['completed', 'cancelled'].includes(booking.status) && (
-        <Card 
-          variant="outlined" 
-          sx={{ 
-            borderColor: '#10B981', 
-            bgcolor: 'rgba(16, 185, 129, 0.04)', 
-            borderRadius: '8px', 
-            mb: 4, 
-            p: 3, 
-            textAlign: 'center',
-            boxShadow: '0 4px 12px rgba(16, 185, 129, 0.05)'
-          }}
+    <DashboardPage
+      breadcrumbs={[
+        { label: 'Home', path: '/' },
+        { label: 'Dashboard', path: '/customer/dashboard' },
+        { label: 'Service Timeline' }
+      ]}
+      title={`Booking Timeline #${booking.id}`}
+      description={`Tracking ID: ${booking.tracking_id || booking.id}`}
+      summary={summary}
+      actions={
+        <Button
+          variant="outlined"
+          onClick={() => navigate('/customer/dashboard')}
+          sx={{ borderColor: tokens.colors.primary, color: tokens.colors.primary, borderRadius: `${tokens.borderRadiusSm}px`, textTransform: 'none', fontWeight: 700 }}
         >
-          <Typography variant="subtitle2" sx={{ color: '#10B981', fontWeight: 800, letterSpacing: '0.05rem', textTransform: 'uppercase', mb: 0.5 }}>
-            Booking Confirmed
-          </Typography>
-          <Typography variant="h5" sx={{ fontWeight: 900, mb: 1, fontFamily: 'Outfit, sans-serif' }}>
-            Tracking ID: <span style={{ color: '#10B981' }}>{booking.tracking_id}</span>
-          </Typography>
-          <Typography variant="body2" color="text.secondary" sx={{ maxWidth: '500px', mx: 'auto' }}>
-            Please keep a note of this Tracking ID! You can track the status of your service anytime by entering this ID in the <strong>Track Booking</strong> tab in the navigation menu.
-          </Typography>
-        </Card>
-      )}
+          Back to Dashboard
+        </Button>
+      }
+    >
+      <DashboardGrid>
+        {/* Left Column: Timeline and Progress Details */}
+        <Box sx={span.twoThirds}>
+          <Box display="flex" flexDirection="column" gap={3}>
+            
+            {/* Searching Radar Alert */}
+            <AnimatePresence>
+              {booking.status === 'searching' && (
+                <motion.div
+                  initial={{ opacity: 0, y: -20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -20 }}
+                >
+                  <DashboardCard title="Assigning service partner..." subtitle="Broadcasted to nearby available captains">
+                    <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', py: 4, textAlign: 'center' }}>
+                      <Box sx={{ position: 'relative', display: 'inline-flex', mb: 3 }}>
+                        <motion.div
+                          animate={{ scale: [1, 2, 1], opacity: [0.6, 0, 0.6] }}
+                          transition={{ duration: 2.5, repeat: Infinity, ease: 'easeInOut' }}
+                          style={{
+                            position: 'absolute',
+                            width: '60px',
+                            height: '60px',
+                            borderRadius: '50%',
+                            background: 'rgba(26, 115, 232, 0.08)',
+                            left: 0,
+                            top: 0
+                          }}
+                        />
+                        <Box sx={{
+                          width: '60px',
+                          height: '60px',
+                          borderRadius: '50%',
+                          background: tokens.colors.accent,
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          color: '#ffffff'
+                        }}>
+                          <HourglassEmptyIcon sx={{ animation: 'spin 3s linear infinite' }} />
+                        </Box>
+                      </Box>
+                      <Typography variant="h6" fontWeight="800" sx={{ mb: 1 }}>
+                        Searching for Captains
+                      </Typography>
+                      <Typography variant="body2" color="text.secondary" sx={{ mb: 3, maxWidth: '400px' }}>
+                        {booking.booking_type === 'instant' 
+                          ? 'Broadcast is live. A nearby worker will pick up your request shortly.' 
+                          : 'Please hold. Reaching out to local service specialists.'}
+                      </Typography>
+                      
+                      {booking.booking_type === 'instant' && (
+                        <Button
+                          variant="contained"
+                          onClick={async () => {
+                            try {
+                              await api.post(`/api/bookings/bookings/${id}/simulate-assignment/`);
+                              toast.success('Captain assigned via simulation!');
+                              fetchDetails();
+                            } catch (err) {
+                              console.error(err);
+                              toast.error(err.response?.data?.detail || 'No available workers for simulation.');
+                            }
+                          }}
+                          sx={{
+                            bgcolor: tokens.colors.primary,
+                            color: '#ffffff',
+                            fontWeight: '700',
+                            px: 3,
+                            borderRadius: `${tokens.borderRadiusSm}px`,
+                            textTransform: 'none',
+                            '&:hover': { bgcolor: '#23232F' }
+                          }}
+                        >
+                          Simulate Captain Acceptance
+                        </Button>
+                      )}
+                    </Box>
+                  </DashboardCard>
+                </motion.div>
+              )}
+            </AnimatePresence>
 
-      {/* 1. Radar Search Animation */}
-      <AnimatePresence>
-        {booking.status === 'searching' && (
-          <motion.div
-            initial={{ opacity: 0, y: -20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -20 }}
-            style={{ marginBottom: '24px' }}
-          >
-            <Card variant="outlined" sx={{ borderColor: '#E5E7EB', borderRadius: '8px', textAlign: 'center', py: 6 }}>
-              <CardContent>
-                <Box sx={{ position: 'relative', display: 'inline-flex', mb: 3 }}>
-                  <motion.div
-                    animate={{ scale: [1, 2, 1], opacity: [0.6, 0, 0.6] }}
-                    transition={{ duration: 2.5, repeat: Infinity, ease: 'easeInOut' }}
-                    style={{
-                      position: 'absolute',
-                      width: '60px',
-                      height: '60px',
-                      borderRadius: '50%',
-                      background: 'rgba(0, 0, 0, 0.08)',
-                      left: 0,
-                      top: 0
-                    }}
-                  />
-                  <Box sx={{
-                    width: '60px',
-                    height: '60px',
-                    borderRadius: '50%',
-                    background: '#000000',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    color: '#ffffff'
-                  }}>
-                    <HourglassEmptyIcon sx={{ animation: 'spin 3s linear infinite' }} />
-                    <style>{`
-                      @keyframes spin {
-                        0% { transform: rotate(0deg); }
-                        100% { transform: rotate(360deg); }
-                      }
-                    `}</style>
-                  </Box>
-                </Box>
-                 <Typography variant="h5" fontWeight="800" gutterBottom sx={{ fontFamily: 'Outfit, sans-serif' }}>
-                  {booking.booking_type === 'instant' ? 'Finding Your Nearest Captain' : 'Finding Your Local Worker'}
-                </Typography>
-                <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-                  {booking.booking_type === 'instant'
-                    ? 'Your request is broadcasted to nearby captains. Arriving in 10-40 minutes...'
-                    : 'Please hold on. We are reaching out to nearest service partners...'}
-                </Typography>
-                
-                {booking.booking_type === 'instant' && (
-                  <Button
-                    variant="outlined"
-                    onClick={async () => {
-                      try {
-                        await api.post(`/api/bookings/bookings/${id}/simulate-assignment/`);
-                        toast.success('Captain assigned via simulation!');
-                        fetchDetails();
-                      } catch (err) {
-                        console.error(err);
-                        toast.error(err.response?.data?.detail || 'No available workers for simulation.');
-                      }
-                    }}
-                    sx={{
-                      borderColor: '#000000',
-                      color: '#000000',
-                      borderRadius: '6px',
-                      textTransform: 'none',
-                      mt: 1,
-                      '&:hover': {
-                        borderColor: '#333333',
-                        background: 'rgba(0,0,0,0.04)'
-                      }
-                    }}
-                  >
-                    Simulate Captain Acceptance
-                  </Button>
-                )}
-              </CardContent>
-            </Card>
-          </motion.div>
-        )}
-      </AnimatePresence>
+            {/* Stepper Timeline Card */}
+            <DashboardCard title="Track Progress" subtitle="Step timeline updates of your service process">
+              <Box sx={{ display: 'flex', flexDirection: 'column', gap: 4, mt: 2 }}>
+                {STATUS_STEPS.map((step, idx) => {
+                  const isActive = activeStepIndex === idx;
+                  const isCompleted = activeStepIndex > idx;
+                  return (
+                    <Box 
+                      key={step.key} 
+                      sx={{ 
+                        display: 'flex', 
+                        alignItems: 'flex-start', 
+                        position: 'relative',
+                        gap: 3
+                      }}
+                    >
+                      {/* Vertical line connecting markers */}
+                      {idx < STATUS_STEPS.length - 1 && (
+                        <Box 
+                          sx={{ 
+                            position: 'absolute', 
+                            top: 28,
+                            bottom: -32,
+                            left: 14,
+                            width: '2px', 
+                            bgcolor: isCompleted ? tokens.colors.primary : tokens.colors.borderColor,
+                            zIndex: 1
+                          }}
+                        />
+                      )}
 
-      {/* 2. Assigned Worker Card */}
-      {booking.worker && (
-        <Card variant="outlined" sx={{ borderColor: '#E5E7EB', borderRadius: '8px', mb: 4 }}>
-          <CardContent sx={{ p: 3 }}>
-            <Grid container alignItems="center" spacing={2}>
-              <Grid item>
-                <Box sx={{
-                  width: '64px',
-                  height: '64px',
-                  borderRadius: '50%',
-                  background: '#FAFAFB',
-                  border: '1px solid #E5E7EB',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  overflow: 'hidden'
-                }}>
-                  {booking.worker.profile_photo ? (
-                    <img 
-                      src={`http://127.0.0.1:8001${booking.worker.profile_photo}`} 
-                      alt="captain" 
-                      style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-                    />
-                  ) : (
-                    <Typography variant="h5" fontWeight="700">{booking.worker.full_name[0]}</Typography>
+                      {/* Step Circle */}
+                      <Box 
+                        sx={{ 
+                          width: 30, 
+                          height: 30, 
+                          borderRadius: '50%', 
+                          bgcolor: isActive ? tokens.colors.primary : isCompleted ? tokens.colors.primary : '#ffffff', 
+                          border: `2px solid ${isActive || isCompleted ? tokens.colors.primary : tokens.colors.borderColor}`,
+                          color: isActive || isCompleted ? '#ffffff' : tokens.colors.textMuted,
+                          display: 'flex', 
+                          alignItems: 'center', 
+                          justifyContent: 'center',
+                          fontWeight: '800',
+                          fontSize: '0.85rem',
+                          zIndex: 2,
+                          boxShadow: isActive ? `0 0 0 4px ${tokens.colors.accentLight}` : 'none',
+                          transition: tokens.transition,
+                        }}
+                      >
+                        {idx + 1}
+                      </Box>
+
+                      {/* Step Info */}
+                      <Box sx={{ flex: 1, pt: 0.25 }}>
+                        <Typography 
+                          sx={{ 
+                            fontSize: '1rem', 
+                            fontWeight: isActive ? '800' : isCompleted ? '700' : '500', 
+                            color: isActive || isCompleted ? tokens.colors.primary : tokens.colors.textSecondary,
+                            fontFamily: 'Outfit, sans-serif'
+                          }}
+                        >
+                          {step.label}
+                        </Typography>
+                        {isActive && (
+                          <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mt: 0.5 }}>
+                            Your booking request is currently at this step.
+                          </Typography>
+                        )}
+                      </Box>
+                    </Box>
+                  );
+                })}
+              </Box>
+            </DashboardCard>
+
+            {/* Media Upload Verification Section */}
+            {(booking.before_photo || booking.after_photo) && (
+              <DashboardCard title="Job Inspection Media" subtitle="Verification photo files uploaded by your Captain">
+                <Grid container spacing={3} sx={{ mt: 1 }}>
+                  {booking.before_photo && (
+                    <Grid item xs={12} sm={6}>
+                      <Typography variant="subtitle2" fontWeight="700" sx={{ mb: 1 }}>Before Repair Photo</Typography>
+                      <Box 
+                        component="img" 
+                        src={`http://127.0.0.1:8001${booking.before_photo}`} 
+                        alt="Before repair"
+                        sx={{ width: '100%', borderRadius: `${tokens.borderRadiusSm}px`, objectFit: 'cover', border: `1px solid ${tokens.borderColor}` }}
+                      />
+                    </Grid>
                   )}
-                </Box>
-              </Grid>
-              <Grid item xs>
-                <Typography variant="subtitle1" fontWeight="800" sx={{ fontFamily: 'Outfit, sans-serif' }}>
-                  {booking.worker.full_name}
-                </Typography>
-                <Typography variant="body2" color="text.secondary">
-                  ★ 4.8 Rating | {booking.worker.phone}
-                </Typography>
-                <Typography variant="caption" sx={{ display: 'block', mt: 0.5, color: 'text.secondary' }}>
-                  Mode: <span style={{ color: '#000000', fontWeight: 'bold' }}>{booking.booking_type === 'instant' ? 'Instant Service' : 'Slot-Based'}</span> | Status: <span style={{ color: '#000000', fontWeight: 'bold' }}>{booking.status.replace('_', ' ').toUpperCase()}</span>
-                </Typography>
-              </Grid>
-              <Grid item>
-                <Grid container spacing={1}>
-                  <Grid item>
+                  {booking.after_photo && (
+                    <Grid item xs={12} sm={6}>
+                      <Typography variant="subtitle2" fontWeight="700" sx={{ mb: 1 }}>After Repair Photo</Typography>
+                      <Box 
+                        component="img" 
+                        src={`http://127.0.0.1:8001${booking.after_photo}`} 
+                        alt="After repair"
+                        sx={{ width: '100%', borderRadius: `${tokens.borderRadiusSm}px`, objectFit: 'cover', border: `1px solid ${tokens.borderColor}` }}
+                      />
+                    </Grid>
+                  )}
+                </Grid>
+              </DashboardCard>
+            )}
+
+            {/* Major Repair Approvals Card */}
+            {booking.major_repairs && booking.major_repairs.length > 0 && (
+              <Box>
+                {booking.major_repairs.map((rep) => (
+                  <DashboardCard 
+                    key={rep.id}
+                    title="Major Repair Approval Request"
+                    subtitle="Captain requires approval for extra labor/parts estimate"
+                    highlight={rep.status === 'pending'}
+                  >
+                    <Box sx={{ mt: 2, display: 'flex', flexDirection: 'column', gap: 2 }}>
+                      <Box sx={{ p: 2, bgcolor: tokens.colors.bg, borderRadius: `${tokens.borderRadiusSm}px` }}>
+                        <Typography variant="h6" fontWeight="800">
+                          Estimate: ₹{rep.estimated_cost}
+                        </Typography>
+                        <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>
+                          Reason: {rep.reason}
+                        </Typography>
+                      </Box>
+
+                      {rep.status === 'pending' ? (
+                        <Box display="flex" gap={2}>
+                          <Button 
+                            variant="contained" 
+                            color="success"
+                            onClick={() => handleApproveRepair(rep.id, 'approved')}
+                            sx={{ borderRadius: `${tokens.borderRadiusSm}px`, textTransform: 'none', fontWeight: 700 }}
+                          >
+                            Approve Estimate
+                          </Button>
+                          <Button 
+                            variant="outlined" 
+                            color="error"
+                            onClick={() => handleApproveRepair(rep.id, 'rejected')}
+                            sx={{ borderRadius: `${tokens.borderRadiusSm}px`, textTransform: 'none', fontWeight: 700 }}
+                          >
+                            Reject Estimate
+                          </Button>
+                        </Box>
+                      ) : (
+                        <Box sx={{ 
+                          alignSelf: 'flex-start',
+                          px: 2, py: 0.5, borderRadius: '20px',
+                          bgcolor: rep.status === 'approved' ? 'rgba(22, 163, 74, 0.08)' : 'rgba(220, 38, 38, 0.08)',
+                          border: rep.status === 'approved' ? '1px solid rgba(22, 163, 74, 0.15)' : '1px solid rgba(220, 38, 38, 0.15)'
+                        }}>
+                          <Typography variant="caption" fontWeight="800" color={rep.status === 'approved' ? 'success.main' : 'error.main'}>
+                            {rep.status.toUpperCase()}
+                          </Typography>
+                        </Box>
+                      )}
+                    </Box>
+                  </DashboardCard>
+                ))}
+              </Box>
+            )}
+          </Box>
+        </Box>
+
+        {/* Right Column: Captain details, QR Verification, Billing & reviews */}
+        <Box sx={span.oneThird}>
+          <Box display="flex" flexDirection="column" gap={3}>
+            
+            {/* Captain details card */}
+            {booking.worker && (
+              <DashboardCard title="Assigned Captain" subtitle="Your service partner details">
+                <Box display="flex" flexDirection="column" alignItems="center" textAlign="center" py={2}>
+                  <Avatar
+                    src={booking.worker.profile_photo ? `http://127.0.0.1:8001${booking.worker.profile_photo}` : ''}
+                    sx={{ width: 72, height: 72, mb: 2, bgcolor: tokens.colors.accent, fontWeight: 800, fontSize: '28px' }}
+                  >
+                    {booking.worker.full_name[0]}
+                  </Avatar>
+                  <Typography variant="subtitle1" fontWeight="800">
+                    {booking.worker.full_name}
+                  </Typography>
+                  <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
+                    ★ 4.8 Rating | {booking.worker.phone}
+                  </Typography>
+
+                  <Box display="flex" gap={2} width="100%">
                     <Button 
+                      fullWidth
                       variant="outlined" 
-                      size="small" 
                       onClick={() => alert(`Calling Captain at ${booking.worker.phone}...`)}
-                      sx={{ borderColor: '#000000', color: '#000000', borderRadius: '6px', textTransform: 'none' }}
+                      sx={{ borderColor: tokens.colors.primary, color: tokens.colors.primary, borderRadius: `${tokens.borderRadiusSm}px`, textTransform: 'none', fontWeight: 700 }}
                       startIcon={<PhoneIcon />}
                     >
                       Call
                     </Button>
-                  </Grid>
-                  <Grid item>
                     <Button 
+                      fullWidth
                       variant="outlined" 
-                      size="small" 
                       onClick={() => alert('Opening live chat simulation...')}
-                      sx={{ borderColor: '#000000', color: '#000000', borderRadius: '6px', textTransform: 'none' }}
+                      sx={{ borderColor: tokens.colors.primary, color: tokens.colors.primary, borderRadius: `${tokens.borderRadiusSm}px`, textTransform: 'none', fontWeight: 700 }}
                       startIcon={<ChatIcon />}
                     >
                       Chat
                     </Button>
-                  </Grid>
-                </Grid>
-              </Grid>
-            </Grid>
-          </CardContent>
-        </Card>
-      )}
-
-      {/* 3. Stepper Tracker Timeline */}
-      <Card variant="outlined" sx={{ borderColor: '#E5E7EB', borderRadius: '8px', mb: 4 }}>
-        <CardContent sx={{ p: 4 }}>
-          <Typography variant="subtitle2" color="text.secondary" align="center" gutterBottom>
-            SERVICE TIMELINE
-          </Typography>
-          <Typography variant="h6" fontWeight="800" align="center" gutterBottom sx={{ mb: 1, fontFamily: 'Outfit, sans-serif' }}>
-            Track Progress
-          </Typography>
-          <Typography variant="body2" color="text.secondary" align="center" sx={{ mb: 4, fontWeight: 700 }}>
-            Tracking ID: {booking.tracking_id}
-          </Typography>
-
-          <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', mt: 4, position: 'relative' }}>
-            {STATUS_STEPS.map((step, idx) => {
-              const isActive = activeStepIndex === idx;
-              const isCompleted = activeStepIndex > idx;
-              return (
-                <Box 
-                  key={step.key} 
-                  sx={{ 
-                    display: 'flex', 
-                    flexDirection: 'column', 
-                    alignItems: 'center', 
-                    position: 'relative', 
-                    width: '100%', 
-                    mb: idx === STATUS_STEPS.length - 1 ? 0 : 5
-                  }}
-                >
-                  
-                  {/* Connecting Line */}
-                  {idx < STATUS_STEPS.length - 1 && (
-                    <Box 
-                      sx={{ 
-                        position: 'absolute', 
-                        top: 40,
-                        bottom: -40,
-                        left: '50%',
-                        transform: 'translateX(-50%)',
-                        width: '3px', 
-                        bgcolor: isCompleted ? '#000000' : '#E5E7EB',
-                        zIndex: 1
-                      }}
-                    />
-                  )}
-                  
-                  {/* Step Circle */}
-                  <Box 
-                    sx={{ 
-                      width: 40, 
-                      height: 40, 
-                      borderRadius: '50%', 
-                      bgcolor: isActive ? '#000000' : isCompleted ? '#000000' : '#ffffff', 
-                      border: `2px solid ${isActive || isCompleted ? '#000000' : '#D1D5DB'}`,
-                      color: isActive || isCompleted ? '#ffffff' : '#9CA3AF',
-                      display: 'flex', 
-                      alignItems: 'center', 
-                      justifyContent: 'center',
-                      fontWeight: '900',
-                      fontSize: '1.1rem',
-                      zIndex: 2,
-                      boxShadow: isActive ? '0 0 0 6px rgba(0,0,0,0.08)' : 'none',
-                      transition: 'all 0.3s ease',
-                      mx: 'auto'
-                    }}
-                  >
-                    {idx + 1}
-                  </Box>
-                  
-                  {/* Step Info */}
-                  <Box sx={{ textAlign: 'center', mt: 1.5, zIndex: 2 }}>
-                    <Typography 
-                      sx={{ 
-                        fontSize: isActive ? '1.25rem' : '1.1rem', 
-                        fontWeight: isActive ? '900' : isCompleted ? '700' : '500', 
-                        color: isActive || isCompleted ? '#0F0F14' : '#9CA3AF',
-                        fontFamily: 'Outfit, sans-serif'
-                      }}
-                    >
-                      {step.label}
-                    </Typography>
-                    {isActive && (
-                      <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mt: 0.5, fontWeight: 500 }}>
-                        Current status of your booking
-                      </Typography>
-                    )}
                   </Box>
                 </Box>
-              );
-            })}
-          </Box>
-        </CardContent>
-      </Card>
+              </DashboardCard>
+            )}
 
-      {/* 4. QR Verification Drawer */}
-      {booking.worker && ['accepted', 'on_the_way', 'arrived'].includes(booking.status) && (
-        <Card variant="outlined" sx={{ borderColor: '#E5E7EB', borderRadius: '8px', mb: 4, textAlign: 'center' }}>
-          <CardContent sx={{ p: 4 }}>
-            <QrCode2Icon sx={{ fontSize: 60, mb: 1, color: '#000000' }} />
-            <Typography variant="h6" fontWeight="800" sx={{ fontFamily: 'Outfit, sans-serif' }}>
-              Service Entry QR Code
-            </Typography>
-            <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
-              Show this code to the Captain when they arrive to initiate check-in.
-            </Typography>
+            {/* Service Entry QR Code */}
+            {booking.worker && ['accepted', 'on_the_way', 'arrived'].includes(booking.status) && (
+              <DashboardCard title="Security Check-in" subtitle="Provide code on Captain arrival">
+                <Box display="flex" flexDirection="column" alignItems="center" textAlign="center" py={1}>
+                  <QrCode2Icon sx={{ fontSize: 56, color: tokens.colors.primary, mb: 1 }} />
+                  <Typography variant="body2" color="text.secondary" paragraph>
+                    Give this unique entry code to your Captain to verify identity and check in.
+                  </Typography>
+                  <Box sx={{ 
+                    p: 2, 
+                    border: `2px dashed ${tokens.colors.primary}`, 
+                    borderRadius: `${tokens.borderRadiusSm}px`, 
+                    bgcolor: tokens.colors.bg,
+                    fontFamily: 'monospace',
+                    fontSize: '20px',
+                    fontWeight: '800',
+                    letterSpacing: '1px'
+                  }}>
+                    {booking.qr_code_value.substring(0, 8).toUpperCase()}
+                  </Box>
+                </Box>
+              </DashboardCard>
+            )}
 
-            <Box sx={{ 
-              display: 'inline-block',
-              p: 2, 
-              border: '2px dashed #000000', 
-              borderRadius: '8px', 
-              bg: '#FAFAFB',
-              fontFamily: 'monospace',
-              fontSize: '18px',
-              fontWeight: '700'
-            }}>
-              {booking.qr_code_value.substring(0, 8).toUpperCase()}
-            </Box>
-          </CardContent>
-        </Card>
-      )}
-
-      {/* 5. Major Repair Approvals Card */}
-      {booking.major_repairs && booking.major_repairs.length > 0 && (
-        <Box sx={{ mb: 4 }}>
-          {booking.major_repairs.map((rep) => (
-            <Card 
-              key={rep.id} 
-              variant="outlined" 
-              sx={{ 
-                borderColor: rep.status === 'pending' ? '#ff9800' : '#E5E7EB', 
-                borderWidth: rep.status === 'pending' ? '2px' : '1px',
-                borderRadius: '8px',
-                mb: 2
-              }}
-            >
-              <CardContent sx={{ p: 3 }}>
-                <Grid container justify="space-between" alignItems="center">
-                  <Grid item xs={12} sm={8}>
-                    <Typography variant="subtitle2" color="warning.main" fontWeight="700">
-                      MAJOR REPAIR APPROVAL REQUEST
+            {/* Workshop Repair token */}
+            {booking.repair_token && (
+              <DashboardCard title="Workshop Token" subtitle="Off-site repair status tracker">
+                <Box display="flex" justify="space-between" align="center" py={1}>
+                  <Box>
+                    <Typography variant="body2" color="text.secondary">Workshop Token ID</Typography>
+                    <Typography variant="h6" fontWeight="800">{booking.repair_token.token_number}</Typography>
+                  </Box>
+                  <Box sx={{ 
+                    px: 1.5, py: 0.5, borderRadius: '4px',
+                    bgcolor: tokens.colors.accentLight,
+                    border: '1px solid rgba(26, 115, 232, 0.15)'
+                  }}>
+                    <Typography variant="caption" fontWeight="800" color="primary">
+                      {booking.repair_token.status.replace('_', ' ').toUpperCase()}
                     </Typography>
-                    <Typography variant="h6" fontWeight="800" sx={{ mt: 1, fontFamily: 'Outfit, sans-serif' }}>
-                      Estimate: ₹{rep.estimated_cost}
+                  </Box>
+                </Box>
+              </DashboardCard>
+            )}
+
+            {/* Bill Summary Invoice */}
+            {bill && (
+              <DashboardCard title="Invoice Detail" subtitle="Summary of work item charges">
+                <List disablePadding>
+                  <ListItem sx={{ py: 1.25, px: 0 }}>
+                    <ListItemText primary="Service/Labour Charges" />
+                    <Typography variant="body2" fontWeight="700">₹{bill.labour_charges}</Typography>
+                  </ListItem>
+                  <ListItem sx={{ py: 1.25, px: 0 }}>
+                    <ListItemText primary="Spare Parts Charges" />
+                    <Typography variant="body2" fontWeight="700">₹{bill.parts_charges}</Typography>
+                  </ListItem>
+                  <ListItem sx={{ py: 1.25, px: 0 }}>
+                    <ListItemText primary="GST (18%)" />
+                    <Typography variant="body2" fontWeight="700">₹{bill.gst}</Typography>
+                  </ListItem>
+                  {parseFloat(bill.discount) > 0 && (
+                    <ListItem sx={{ py: 1.25, px: 0 }}>
+                      <ListItemText primary="Promo Discount" sx={{ color: tokens.colors.success }} />
+                      <Typography variant="body2" color="success.main" fontWeight="700">-₹{bill.discount}</Typography>
+                    </ListItem>
+                  )}
+                  <Divider sx={{ my: 1.5 }} />
+                  <ListItem sx={{ py: 1.25, px: 0 }}>
+                    <ListItemText primary="Total Amount" primaryTypographyProps={{ fontWeight: '800' }} />
+                    <Typography variant="h6" fontWeight="800">
+                      ₹{bill.grand_total}
                     </Typography>
-                    <Typography variant="body2" color="text.secondary">
-                      Reason: {rep.reason}
-                    </Typography>
-                  </Grid>
-                  <Grid item xs={12} sm={4} sx={{ textAlign: { sm: 'right' }, mt: { xs: 2, sm: 0 } }}>
-                    {rep.status === 'pending' ? (
-                      <Grid container spacing={1} justify="flex-end">
-                        <Grid item>
-                          <Button 
-                            variant="contained" 
-                            color="success"
-                            size="small"
-                            onClick={() => handleApproveRepair(rep.id, 'approved')}
-                            sx={{ borderRadius: '6px', textTransform: 'none' }}
-                          >
-                            Approve
-                          </Button>
-                        </Grid>
-                        <Grid item>
-                          <Button 
-                            variant="outlined" 
-                            color="error"
-                            size="small"
-                            onClick={() => handleApproveRepair(rep.id, 'rejected')}
-                            sx={{ borderRadius: '6px', textTransform: 'none' }}
-                          >
-                            Reject
-                          </Button>
-                        </Grid>
-                      </Grid>
-                    ) : (
-                      <Typography variant="subtitle2" fontWeight="700" color={rep.status === 'approved' ? 'success.main' : 'error.main'}>
-                        {rep.status.toUpperCase()}
-                      </Typography>
-                    )}
-                  </Grid>
-                </Grid>
-              </CardContent>
-            </Card>
-          ))}
-        </Box>
-      )}
+                  </ListItem>
+                </List>
 
-      {/* 6. Workshop Repair Token Details */}
-      {booking.repair_token && (
-        <Card variant="outlined" sx={{ borderColor: '#E5E7EB', borderRadius: '8px', mb: 4 }}>
-          <CardContent sx={{ p: 4 }}>
-            <Grid container justify="space-between">
-              <Grid item>
-                <Typography variant="subtitle2" color="text.secondary">
-                  WORKSHOP REPAIR
-                </Typography>
-                <Typography variant="h6" fontWeight="800" sx={{ fontFamily: 'Outfit, sans-serif' }}>
-                  Token: {booking.repair_token.token_number}
-                </Typography>
-              </Grid>
-              <Grid item>
-                <Badge color="primary" badgeContent={booking.repair_token.status.replace('_', ' ').toUpperCase()} />
-              </Grid>
-            </Grid>
-          </CardContent>
-        </Card>
-      )}
-
-      {/* 7. Bill Card */}
-      {bill && (
-        <Card variant="outlined" sx={{ borderColor: '#E5E7EB', borderRadius: '8px', mb: 4 }}>
-          <CardContent sx={{ p: 4 }}>
-            <Typography variant="subtitle2" color="text.secondary">
-              BILL INVOICE DETAIL
-            </Typography>
-            <Typography variant="h6" fontWeight="800" sx={{ mb: 3, fontFamily: 'Outfit, sans-serif' }}>
-              Service Bill Summary
-            </Typography>
-
-            <List disablePadding>
-              <ListItem sx={{ py: 1, px: 0 }}>
-                <ListItemText primary="Service/Labour Charges" />
-                <Typography variant="body2">₹{bill.labour_charges}</Typography>
-              </ListItem>
-              <ListItem sx={{ py: 1, px: 0 }}>
-                <ListItemText primary="Spare Parts Charges" />
-                <Typography variant="body2">₹{bill.parts_charges}</Typography>
-              </ListItem>
-              <ListItem sx={{ py: 1, px: 0 }}>
-                <ListItemText primary="GST (18%)" />
-                <Typography variant="body2">₹{bill.gst}</Typography>
-              </ListItem>
-              {parseFloat(bill.discount) > 0 && (
-                <ListItem sx={{ py: 1, px: 0 }}>
-                  <ListItemText primary="Promo Discount" sx={{ color: 'success.main' }} />
-                  <Typography variant="body2" color="success.main">-₹{bill.discount}</Typography>
-                </ListItem>
-              )}
-              <Divider sx={{ my: 1.5 }} />
-              <ListItem sx={{ py: 1, px: 0 }}>
-                <ListItemText primary="Total Amount" primaryTypographyProps={{ fontWeight: '800' }} />
-                <Typography variant="h6" fontWeight="800">
-                  ₹{bill.grand_total}
-                </Typography>
-              </ListItem>
-            </List>
-
-            <Grid container spacing={2} sx={{ mt: 3 }}>
-              <Grid item xs={12} sm={6}>
-                <Button
-                  fullWidth
-                  variant="outlined"
-                  startIcon={<DownloadIcon />}
-                  onClick={handleDownloadInvoice}
-                  sx={{ borderColor: '#000000', color: '#000000', borderRadius: '6px', textTransform: 'none' }}
-                >
-                  Download Invoice PDF
-                </Button>
-              </Grid>
-
-              <Grid item xs={12} sm={6}>
-                {!bill.is_approved ? (
+                <Box display="flex" flexDirection="column" gap={2} sx={{ mt: 3 }}>
                   <Button
                     fullWidth
-                    variant="contained"
-                    onClick={handleApproveBill}
-                    sx={{ background: '#000000', color: '#ffffff', borderRadius: '6px', textTransform: 'none' }}
+                    variant="outlined"
+                    startIcon={<DownloadIcon />}
+                    onClick={handleDownloadInvoice}
+                    sx={{ borderColor: tokens.colors.primary, color: tokens.colors.primary, borderRadius: `${tokens.borderRadiusSm}px`, textTransform: 'none', fontWeight: 700 }}
                   >
-                    Approve Bill & Pay
+                    Invoice PDF
                   </Button>
-                ) : (
-                  booking.status !== 'completed' && (
+                  
+                  {!bill.is_approved ? (
                     <Button
                       fullWidth
                       variant="contained"
-                      onClick={() => setPaymentModalOpen(true)}
-                      sx={{ background: '#2e7d32', color: '#ffffff', borderRadius: '6px', textTransform: 'none' }}
+                      onClick={handleApproveBill}
+                      sx={{ bgcolor: tokens.colors.primary, color: '#ffffff', borderRadius: `${tokens.borderRadiusSm}px`, textTransform: 'none', fontWeight: 700, '&:hover': { bgcolor: '#23232F' } }}
                     >
-                      Make Payment
+                      Approve & Pay Invoice
                     </Button>
-                  )
-                )}
-              </Grid>
-            </Grid>
-          </CardContent>
-        </Card>
-      )}
+                  ) : (
+                    booking.status !== 'completed' && (
+                      <Button
+                        fullWidth
+                        variant="contained"
+                        onClick={() => setPaymentModalOpen(true)}
+                        sx={{ bgcolor: tokens.colors.success, color: '#ffffff', borderRadius: `${tokens.borderRadiusSm}px`, textTransform: 'none', fontWeight: 700, '&:hover': { bgcolor: '#15803D' } }}
+                      >
+                        Proceed to Payment
+                      </Button>
+                    )
+                  )}
+                </Box>
+              </DashboardCard>
+            )}
 
-      {/* 8. Rating & Review Form */}
-      {booking.status === 'completed' && !booking.rating && (
-        <Card variant="outlined" sx={{ borderColor: '#E5E7EB', borderRadius: '8px', mb: 4 }}>
-          <CardContent sx={{ p: 4 }}>
-            <Typography variant="h6" fontWeight="800" sx={{ mb: 1, fontFamily: 'Outfit, sans-serif' }}>
-              Rate Your Experience
-            </Typography>
-            <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
-              Your feedback helps us maintain professional safety and quality.
-            </Typography>
+            {/* Review rating card */}
+            {booking.status === 'completed' && !booking.rating && (
+              <DashboardCard title="Feedback Review" subtitle="Share details about the work quality">
+                <Box sx={{ mb: 2 }}>
+                  <Rating 
+                    value={rating} 
+                    onChange={(e, val) => setRating(val)} 
+                    size="large" 
+                    sx={{ color: tokens.colors.primary }}
+                  />
+                </Box>
 
-            <Box sx={{ mb: 3 }}>
-              <Rating 
-                value={rating} 
-                onChange={(e, val) => setRating(val)} 
-                size="large" 
-                sx={{ color: '#000000' }}
-              />
-            </Box>
+                <TextField
+                  fullWidth
+                  multiline
+                  rows={3}
+                  label="Share details about the work done..."
+                  value={review}
+                  onChange={(e) => setReview(e.target.value)}
+                  sx={{ mb: 3 }}
+                />
 
-            <TextField
-              fullWidth
-              multiline
-              rows={3}
-              label="Share details about the work done..."
-              value={review}
-              onChange={(e) => setReview(e.target.value)}
-              slotProps={{ input: { style: { borderRadius: '6px' } } }}
-              sx={{ mb: 3 }}
-            />
-
-            <Button
-              variant="contained"
-              onClick={handleSubmitRating}
-              disabled={submittingRating}
-              sx={{ background: '#000000', color: '#ffffff', px: 4, borderRadius: '6px', textTransform: 'none' }}
-            >
-              Submit Review
-            </Button>
-          </CardContent>
-        </Card>
-      )}
+                <Button
+                  variant="contained"
+                  onClick={handleSubmitRating}
+                  disabled={submittingRating}
+                  sx={{ bgcolor: tokens.colors.primary, color: '#ffffff', borderRadius: `${tokens.borderRadiusSm}px`, textTransform: 'none', fontWeight: 700, '&:hover': { bgcolor: '#23232F' } }}
+                >
+                  Submit Review
+                </Button>
+              </DashboardCard>
+            )}
+          </Box>
+        </Box>
+      </DashboardGrid>
 
       {/* Payment Selection Modal */}
       <Dialog 
         open={paymentModalOpen} 
         onClose={() => !paying && setPaymentModalOpen(false)}
-        PaperProps={{ style: { borderRadius: '12px', padding: '12px' } }}
+        PaperProps={{ style: { borderRadius: `${tokens.borderRadius}px`, padding: '12px' } }}
       >
         <DialogTitle sx={{ fontFamily: 'Outfit, sans-serif', fontWeight: '800' }}>
           Select Payment Method
@@ -747,13 +730,14 @@ function BookingTimeline() {
                       sx={{
                         py: 1.5,
                         textTransform: 'uppercase',
-                        borderRadius: '6px',
+                        borderRadius: `${tokens.borderRadiusSm}px`,
                         fontWeight: '700',
-                        borderColor: '#000000',
-                        color: selectedPaymentMethod === method ? '#ffffff' : '#000000',
-                        background: selectedPaymentMethod === method ? '#000000' : 'transparent',
+                        borderColor: tokens.colors.primary,
+                        color: selectedPaymentMethod === method ? '#ffffff' : tokens.colors.primary,
+                        background: selectedPaymentMethod === method ? tokens.colors.primary : 'transparent',
                         '&:hover': {
-                          background: selectedPaymentMethod === method ? '#1a1a1a' : 'rgba(0,0,0,0.04)'
+                          background: selectedPaymentMethod === method ? '#23232F' : 'rgba(0,0,0,0.04)',
+                          borderColor: tokens.colors.primary,
                         }
                       }}
                     >
@@ -767,21 +751,21 @@ function BookingTimeline() {
         </DialogContent>
         {!paymentSuccess && (
           <DialogActions>
-            <Button onClick={() => setPaymentModalOpen(false)} disabled={paying} sx={{ color: '#000000' }}>
+            <Button onClick={() => setPaymentModalOpen(false)} disabled={paying} sx={{ color: tokens.colors.primary }}>
               Cancel
             </Button>
             <Button 
               onClick={handleProcessPayment} 
               variant="contained" 
               disabled={paying}
-              sx={{ background: '#000000', color: '#ffffff', borderRadius: '6px' }}
+              sx={{ bgcolor: tokens.colors.primary, color: '#ffffff', borderRadius: `${tokens.borderRadiusSm}px` }}
             >
               {paying ? <CircularProgress size={20} color="inherit" /> : 'Pay Now'}
             </Button>
           </DialogActions>
         )}
       </Dialog>
-    </Container>
+    </DashboardPage>
   );
 }
 

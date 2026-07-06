@@ -255,7 +255,7 @@ const CustomerLayout = () => {
       </AppBar>
 
       {/* Main Page Content */}
-      <Box component="main" sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column' }}>
+      <Box component="main" sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column', bgcolor: '#F4F6F9' }}>
         <Outlet />
       </Box>
 

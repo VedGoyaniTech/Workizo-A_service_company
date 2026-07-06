@@ -3,10 +3,14 @@ import { useAuth } from '../context/AuthContext';
 import { useForm } from 'react-hook-form';
 import api from '../services/api';
 import {
-  Container, Paper, Grid, Typography, TextField, Button, Box,
-  Divider, CircularProgress
+  Grid, TextField, Button, Box, CircularProgress
 } from '@mui/material';
 import toast from 'react-hot-toast';
+
+import { tokens, span } from '../design/tokens';
+import { 
+  DashboardPage, DashboardGrid, DashboardCard 
+} from '../components/dashboard';
 
 const CustomerProfile = () => {
   const { user, updateProfileState } = useAuth();
@@ -71,21 +75,24 @@ const CustomerProfile = () => {
   };
 
   return (
-    <Container maxWidth="md" sx={{ mt: 6, mb: 8 }}>
-      <Grid container spacing={4}>
+    <DashboardPage
+      breadcrumbs={[
+        { label: 'Home', path: '/' },
+        { label: 'Dashboard', path: '/customer/dashboard' },
+        { label: 'Profile Settings' }
+      ]}
+      title="Profile Settings"
+      description="Update your contact particulars, addresses, and secure account credentials."
+    >
+      <DashboardGrid>
         {/* Profile Info Form */}
-        <Grid item xs={12} md={7}>
-          <Paper sx={{ p: 4 }}>
-            <Typography variant="h5" fontWeight="bold" sx={{ mb: 1 }}>
-              Profile Settings
-            </Typography>
-            <Typography variant="body2" color="text.secondary" sx={{ mb: 4 }}>
-              Update your account details and contact address
-            </Typography>
-            <Divider sx={{ mb: 3 }} />
-
-            <Box component="form" onSubmit={handleSubmitProfile(onProfileSubmit)} noValidate>
-              <Grid container spacing={2}>
+        <Box sx={span.twoThirds}>
+          <DashboardCard
+            title="Account Information"
+            subtitle="Update your name, contact phone, and service location details"
+          >
+            <Box component="form" onSubmit={handleSubmitProfile(onProfileSubmit)} noValidate sx={{ mt: 2 }}>
+              <Grid container spacing={3}>
                 <Grid item xs={12}>
                   <TextField
                     required
@@ -146,29 +153,33 @@ const CustomerProfile = () => {
               <Button
                 type="submit"
                 variant="contained"
-                color="primary"
                 disabled={profileLoading}
-                sx={{ mt: 4, py: 1 }}
+                sx={{ 
+                  mt: 4, 
+                  py: 1.25, 
+                  px: 4,
+                  bgcolor: tokens.colors.primary, 
+                  color: '#ffffff', 
+                  borderRadius: `${tokens.borderRadiusSm}px`,
+                  textTransform: 'none',
+                  fontWeight: 700,
+                  '&:hover': { bgcolor: '#23232F' }
+                }}
               >
                 {profileLoading ? <CircularProgress size={24} color="inherit" /> : 'Save Changes'}
               </Button>
             </Box>
-          </Paper>
-        </Grid>
+          </DashboardCard>
+        </Box>
 
         {/* Change Password Form */}
-        <Grid item xs={12} md={5}>
-          <Paper sx={{ p: 4 }}>
-            <Typography variant="h5" fontWeight="bold" sx={{ mb: 1 }}>
-              Change Password
-            </Typography>
-            <Typography variant="body2" color="text.secondary" sx={{ mb: 4 }}>
-              Ensure your account is using a secure password
-            </Typography>
-            <Divider sx={{ mb: 3 }} />
-
-            <Box component="form" onSubmit={handleSubmitPassword(onPasswordSubmit)} noValidate>
-              <Grid container spacing={2}>
+        <Box sx={span.oneThird}>
+          <DashboardCard
+            title="Change Password"
+            subtitle="Ensure your account is using a secure password"
+          >
+            <Box component="form" onSubmit={handleSubmitPassword(onPasswordSubmit)} noValidate sx={{ mt: 2 }}>
+              <Grid container spacing={3}>
                 <Grid item xs={12}>
                   <TextField
                     required
@@ -203,18 +214,27 @@ const CustomerProfile = () => {
 
               <Button
                 type="submit"
-                variant="outlined"
-                color="primary"
+                variant="contained"
                 disabled={passwordLoading}
-                sx={{ mt: 4, py: 1 }}
+                sx={{ 
+                  mt: 4, 
+                  py: 1.25, 
+                  px: 4,
+                  bgcolor: tokens.colors.error, 
+                  color: '#ffffff', 
+                  borderRadius: `${tokens.borderRadiusSm}px`,
+                  textTransform: 'none',
+                  fontWeight: 700,
+                  '&:hover': { bgcolor: '#B91C1C' }
+                }}
               >
                 {passwordLoading ? <CircularProgress size={24} color="inherit" /> : 'Change Password'}
               </Button>
             </Box>
-          </Paper>
-        </Grid>
-      </Grid>
-    </Container>
+          </DashboardCard>
+        </Box>
+      </DashboardGrid>
+    </DashboardPage>
   );
 };
 

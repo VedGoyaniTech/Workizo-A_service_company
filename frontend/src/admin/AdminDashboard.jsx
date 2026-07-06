@@ -35,6 +35,8 @@ import DateRangeIcon from '@mui/icons-material/DateRange';
 import CheckIcon from '@mui/icons-material/Check';
 
 import toast from 'react-hot-toast';
+import { tokens } from '../design/tokens';
+import { DashboardPage } from '../components/dashboard';
 
 const COLORS = ['#1A73E8', '#34A853', '#FBBC05', '#EA4335', '#8F00FF', '#00C9FF'];
 
@@ -43,28 +45,104 @@ const AdminDashboard = () => {
   const queryParams = new URLSearchParams(location.search);
   const activeTab = queryParams.get('tab') || 'dashboard';
 
+  const getTabDetails = () => {
+    switch (activeTab) {
+      case 'dashboard':
+        return {
+          title: 'Platform Overview',
+          description: 'Real-time analytics and platform performance metrics.'
+        };
+      case 'bookings':
+        return {
+          title: 'Booking Management',
+          description: 'Inspect timelines, view bills, cancel bookings, or reassign service professionals.'
+        };
+      case 'workers':
+        return {
+          title: 'Captain Directory',
+          description: 'Onboard new captains, review government documents, verify KYC details, or suspend credentials.'
+        };
+      case 'customers':
+        return {
+          title: 'Customer Registry',
+          description: 'Inspect user profile stats, service addresses, and historic order logs.'
+        };
+      case 'categories':
+        return {
+          title: 'Service Categories',
+          description: 'Manage supported repair skills, edit flat labor rates, and configure active categories.'
+        };
+      case 'payments':
+        return {
+          title: 'Payout Requests',
+          description: 'Process settlement payouts and verify transactions.'
+        };
+      case 'bills':
+        return {
+          title: 'Billing Records',
+          description: 'View and download compiled PDF invoices.'
+        };
+      case 'reviews':
+        return {
+          title: 'Customer Feedback',
+          description: 'Monitor review history, ratings, and customer opinions.'
+        };
+      case 'reports':
+        return {
+          title: 'Advanced Reports',
+          description: 'Analyze long-term revenue growth and category performance.'
+        };
+      case 'notifications':
+        return {
+          title: 'Announcements Panel',
+          description: 'Send notifications and broadcasts to users.'
+        };
+      case 'settings':
+        return {
+          title: 'System Settings',
+          description: 'Configure parameters and variables.'
+        };
+      case 'profile':
+        return {
+          title: 'My Settings',
+          description: 'Manage admin credentials.'
+        };
+      default:
+        return {
+          title: 'Admin Dashboard',
+          description: 'Manage your application.'
+        };
+    }
+  };
+
+  const { title, description } = getTabDetails();
+
   return (
-    <Container maxWidth={false} sx={{ mb: 6, px: { xs: 0, sm: 1, md: 2 } }}>
-      {activeTab === 'dashboard' && <DashboardView />}
-      {activeTab === 'bookings' && <BookingsView />}
-      {activeTab === 'workers' && <WorkersView />}
-      {activeTab === 'customers' && <CustomersView />}
-      {activeTab === 'categories' && <CategoriesView />}
-      {activeTab === 'payments' && <PaymentsView />}
-      {activeTab === 'bills' && <BillsView />}
-      {activeTab === 'reviews' && <ReviewsView />}
-      {activeTab === 'reports' && <ReportsView />}
-      {activeTab === 'notifications' && <NotificationsView />}
-      {activeTab === 'settings' && <SettingsView />}
-      {activeTab === 'profile' && <ProfileView />}
-    </Container>
+    <DashboardPage
+      breadcrumbs={[{ label: 'Admin', path: '/admin/dashboard' }, { label: activeTab.toUpperCase() }]}
+      title={title}
+      description={description}
+    >
+      {activeTab === 'dashboard' && <DashboardView hideHeader />}
+      {activeTab === 'bookings' && <BookingsView hideHeader />}
+      {activeTab === 'workers' && <WorkersView hideHeader />}
+      {activeTab === 'customers' && <CustomersView hideHeader />}
+      {activeTab === 'categories' && <CategoriesView hideHeader />}
+      {activeTab === 'payments' && <PaymentsView hideHeader />}
+      {activeTab === 'bills' && <BillsView hideHeader />}
+      {activeTab === 'reviews' && <ReviewsView hideHeader />}
+      {activeTab === 'reports' && <ReportsView hideHeader />}
+      {activeTab === 'notifications' && <NotificationsView hideHeader />}
+      {activeTab === 'settings' && <SettingsView hideHeader />}
+      {activeTab === 'profile' && <ProfileView hideHeader />}
+    </DashboardPage>
   );
 };
 
 // ----------------------------------------------------
 // 1. DASHBOARD VIEW
 // ----------------------------------------------------
-const DashboardView = () => {
+const DashboardView = ({ hideHeader }) => {
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
 
@@ -108,16 +186,18 @@ const DashboardView = () => {
 
   return (
     <Box>
-      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 4 }}>
-        <Box>
-          <Typography variant="h4" fontWeight="900" fontFamily="Outfit" color="#0F0F14">
-            Dashboard
-          </Typography>
-          <Typography variant="body2" color="text.secondary">
-            Real-time analytics and platform performance metrics.
-          </Typography>
+      {!hideHeader && (
+        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 4 }}>
+          <Box>
+            <Typography variant="h4" fontWeight="900" fontFamily="Outfit" color="#0F0F14">
+              Dashboard
+            </Typography>
+            <Typography variant="body2" color="text.secondary">
+              Real-time analytics and platform performance metrics.
+            </Typography>
+          </Box>
         </Box>
-      </Box>
+      )}
 
       {/* Metric Cards Grid */}
       <Grid container spacing={3} sx={{ mb: 4 }}>
@@ -264,7 +344,7 @@ const DashboardView = () => {
 // ----------------------------------------------------
 // 2. BOOKINGS VIEW
 // ----------------------------------------------------
-const BookingsView = () => {
+const BookingsView = ({ hideHeader }) => {
   const [bookings, setBookings] = useState([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
@@ -382,14 +462,16 @@ const BookingsView = () => {
 
   return (
     <Box>
-      <Box sx={{ mb: 4 }}>
-        <Typography variant="h4" fontWeight="900" fontFamily="Outfit" color="#0F0F14">
-          Booking Management
-        </Typography>
-        <Typography variant="body2" color="text.secondary">
-          Inspect timelines, view bills, cancel bookings, or reassign service professionals.
-        </Typography>
-      </Box>
+      {!hideHeader && (
+        <Box sx={{ mb: 4 }}>
+          <Typography variant="h4" fontWeight="900" fontFamily="Outfit" color="#0F0F14">
+            Booking Management
+          </Typography>
+          <Typography variant="body2" color="text.secondary">
+            Inspect timelines, view bills, cancel bookings, or reassign service professionals.
+          </Typography>
+        </Box>
+      )}
 
       {/* Filters & Search Header */}
       <Paper sx={{ p: 2.5, mb: 3, borderRadius: 2, boxShadow: '0 2px 10px rgba(0,0,0,0.03)' }}>
@@ -669,7 +751,7 @@ const BookingsView = () => {
 // ----------------------------------------------------
 // 3. WORKERS (CAPTAIN) VIEW
 // ----------------------------------------------------
-const WorkersView = () => {
+const WorkersView = ({ hideHeader }) => {
   const [workers, setWorkers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedWorker, setSelectedWorker] = useState(null);
@@ -723,14 +805,16 @@ const WorkersView = () => {
 
   return (
     <Box>
-      <Box sx={{ mb: 4 }}>
-        <Typography variant="h4" fontWeight="900" fontFamily="Outfit" color="#0F0F14">
-          Worker (Captain) Management
-        </Typography>
-        <Typography variant="body2" color="text.secondary">
-          Approve registrations, check KYC documents, suspend accounts, and view wallets.
-        </Typography>
-      </Box>
+      {!hideHeader && (
+        <Box sx={{ mb: 4 }}>
+          <Typography variant="h4" fontWeight="900" fontFamily="Outfit" color="#0F0F14">
+            Worker (Captain) Management
+          </Typography>
+          <Typography variant="body2" color="text.secondary">
+            Approve registrations, check KYC documents, suspend accounts, and view wallets.
+          </Typography>
+        </Box>
+      )}
 
       {loading ? (
         <LinearProgress color="primary" />
@@ -927,7 +1011,7 @@ const WorkersView = () => {
 // ----------------------------------------------------
 // 4. CUSTOMERS VIEW
 // ----------------------------------------------------
-const CustomersView = () => {
+const CustomersView = ({ hideHeader }) => {
   const [customers, setCustomers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedCustomer, setSelectedCustomer] = useState(null);
@@ -970,14 +1054,16 @@ const CustomersView = () => {
 
   return (
     <Box>
-      <Box sx={{ mb: 4 }}>
-        <Typography variant="h4" fontWeight="900" fontFamily="Outfit" color="#0F0F14">
-          Customer Directory
-        </Typography>
-        <Typography variant="body2" color="text.secondary">
-          Track customer profiles, block user accounts, and audit complete service booking histories.
-        </Typography>
-      </Box>
+      {!hideHeader && (
+        <Box sx={{ mb: 4 }}>
+          <Typography variant="h4" fontWeight="900" fontFamily="Outfit" color="#0F0F14">
+            Customer Directory
+          </Typography>
+          <Typography variant="body2" color="text.secondary">
+            Track customer profiles, block user accounts, and audit complete service booking histories.
+          </Typography>
+        </Box>
+      )}
 
       {loading ? (
         <LinearProgress color="primary" />
@@ -1124,7 +1210,7 @@ const CustomersView = () => {
 // ----------------------------------------------------
 // 5. SERVICE CATEGORIES VIEW
 // ----------------------------------------------------
-const CategoriesView = () => {
+const CategoriesView = ({ hideHeader }) => {
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedCategory, setSelectedCategory] = useState(null);
@@ -1178,14 +1264,16 @@ const CategoriesView = () => {
 
   return (
     <Box>
-      <Box sx={{ mb: 4 }}>
-        <Typography variant="h4" fontWeight="900" fontFamily="Outfit" color="#0F0F14">
-          Service Categories Management
-        </Typography>
-        <Typography variant="body2" color="text.secondary">
-          Configure baseline labour rates, toggle service availability, and descriptions for the core listings.
-        </Typography>
-      </Box>
+      {!hideHeader && (
+        <Box sx={{ mb: 4 }}>
+          <Typography variant="h4" fontWeight="900" fontFamily="Outfit" color="#0F0F14">
+            Service Categories Management
+          </Typography>
+          <Typography variant="body2" color="text.secondary">
+            Configure baseline labour rates, toggle service availability, and descriptions for the core listings.
+          </Typography>
+        </Box>
+      )}
 
       {loading ? (
         <LinearProgress color="primary" />
@@ -1284,7 +1372,7 @@ const CategoriesView = () => {
 // ----------------------------------------------------
 // 6. PAYMENTS VIEW
 // ----------------------------------------------------
-const PaymentsView = () => {
+const PaymentsView = ({ hideHeader }) => {
   const [payments, setPayments] = useState([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
@@ -1315,14 +1403,16 @@ const PaymentsView = () => {
 
   return (
     <Box>
-      <Box sx={{ mb: 4 }}>
-        <Typography variant="h4" fontWeight="900" fontFamily="Outfit" color="#0F0F14">
-          Payment Management
-        </Typography>
-        <Typography variant="body2" color="text.secondary">
-          Track transaction details, payout methods, and audit payments success rates.
-        </Typography>
-      </Box>
+      {!hideHeader && (
+        <Box sx={{ mb: 4 }}>
+          <Typography variant="h4" fontWeight="900" fontFamily="Outfit" color="#0F0F14">
+            Payment Management
+          </Typography>
+          <Typography variant="body2" color="text.secondary">
+            Track transaction details, payout methods, and audit payments success rates.
+          </Typography>
+        </Box>
+      )}
 
       {/* Search Header */}
       <Paper sx={{ p: 2, mb: 3, borderRadius: 2, boxShadow: '0 2px 10px rgba(0,0,0,0.03)' }}>
@@ -1396,7 +1486,7 @@ const PaymentsView = () => {
 // ----------------------------------------------------
 // 7. BILLS VIEW
 // ----------------------------------------------------
-const BillsView = () => {
+const BillsView = ({ hideHeader }) => {
   const [bills, setBills] = useState([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
@@ -1434,14 +1524,16 @@ const BillsView = () => {
 
   return (
     <Box>
-      <Box sx={{ mb: 4 }}>
-        <Typography variant="h4" fontWeight="900" fontFamily="Outfit" color="#0F0F14">
-          Invoice & Bill Registry
-        </Typography>
-        <Typography variant="body2" color="text.secondary">
-          Track labour fees, spare parts receipts, and inspect copies of uploaded supplier invoices.
-        </Typography>
-      </Box>
+      {!hideHeader && (
+        <Box sx={{ mb: 4 }}>
+          <Typography variant="h4" fontWeight="900" fontFamily="Outfit" color="#0F0F14">
+            Invoice & Bill Registry
+          </Typography>
+          <Typography variant="body2" color="text.secondary">
+            Track labour fees, spare parts receipts, and inspect copies of uploaded supplier invoices.
+          </Typography>
+        </Box>
+      )}
 
       {/* Search Header */}
       <Paper sx={{ p: 2, mb: 3, borderRadius: 2, boxShadow: '0 2px 10px rgba(0,0,0,0.03)' }}>
@@ -1593,7 +1685,7 @@ const BillsView = () => {
 // ----------------------------------------------------
 // 8. RATINGS & REVIEWS VIEW
 // ----------------------------------------------------
-const ReviewsView = () => {
+const ReviewsView = ({ hideHeader }) => {
   const [reviews, setReviews] = useState([]);
   const [loading, setLoading] = useState(true);
   const [ratingVal, setRatingVal] = useState('');
@@ -1627,14 +1719,16 @@ const ReviewsView = () => {
 
   return (
     <Box>
-      <Box sx={{ mb: 4 }}>
-        <Typography variant="h4" fontWeight="900" fontFamily="Outfit" color="#0F0F14">
-          Ratings & Reviews
-        </Typography>
-        <Typography variant="body2" color="text.secondary">
-          Monitor service feedback, filter ratings, and hide inappropriate or bad language reviews.
-        </Typography>
-      </Box>
+      {!hideHeader && (
+        <Box sx={{ mb: 4 }}>
+          <Typography variant="h4" fontWeight="900" fontFamily="Outfit" color="#0F0F14">
+            Ratings & Reviews
+          </Typography>
+          <Typography variant="body2" color="text.secondary">
+            Monitor service feedback, filter ratings, and hide inappropriate or bad language reviews.
+          </Typography>
+        </Box>
+      )}
 
       {/* Filter Header */}
       <Paper sx={{ p: 2, mb: 3, borderRadius: 2, boxShadow: '0 2px 10px rgba(0,0,0,0.03)' }}>
@@ -1709,7 +1803,7 @@ const ReviewsView = () => {
 // ----------------------------------------------------
 // 9. REPORTS & ANALYTICS VIEW
 // ----------------------------------------------------
-const ReportsView = () => {
+const ReportsView = ({ hideHeader }) => {
   const [reportData, setReportData] = useState(null);
   const [loading, setLoading] = useState(true);
 
@@ -1749,24 +1843,26 @@ const ReportsView = () => {
 
   return (
     <Box>
-      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 4 }}>
-        <Box>
-          <Typography variant="h4" fontWeight="900" fontFamily="Outfit" color="#0F0F14">
-            Reports & Analytics
-          </Typography>
-          <Typography variant="body2" color="text.secondary">
-            Generate detailed platform audit logs, check category revenues, and export CSV logs.
-          </Typography>
+      {!hideHeader && (
+        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 4 }}>
+          <Box>
+            <Typography variant="h4" fontWeight="900" fontFamily="Outfit" color="#0F0F14">
+              Reports & Analytics
+            </Typography>
+            <Typography variant="body2" color="text.secondary">
+              Generate detailed platform audit logs, check category revenues, and export CSV logs.
+            </Typography>
+          </Box>
+          <Button
+            variant="contained"
+            onClick={handleExport}
+            startIcon={<FileDownloadIcon />}
+            sx={{ bgcolor: '#1A73E8', '&:hover': { bgcolor: '#155cb0' } }}
+          >
+            Export CSV Report
+          </Button>
         </Box>
-        <Button
-          variant="contained"
-          onClick={handleExport}
-          startIcon={<FileDownloadIcon />}
-          sx={{ bgcolor: '#1A73E8', '&:hover': { bgcolor: '#155cb0' } }}
-        >
-          Export CSV Report
-        </Button>
-      </Box>
+      )}
 
       <Grid container spacing={4} sx={{ mb: 4 }}>
         <Grid item xs={12} sm={6}>
@@ -1820,7 +1916,7 @@ const ReportsView = () => {
 // ----------------------------------------------------
 // 10. NOTIFICATIONS BROADCAST VIEW
 // ----------------------------------------------------
-const NotificationsView = () => {
+const NotificationsView = ({ hideHeader }) => {
   const [announcements, setAnnouncements] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -1867,14 +1963,16 @@ const NotificationsView = () => {
 
   return (
     <Box>
-      <Box sx={{ mb: 4 }}>
-        <Typography variant="h4" fontWeight="900" fontFamily="Outfit" color="#0F0F14">
-          Broadcast Announcements
-        </Typography>
-        <Typography variant="body2" color="text.secondary">
-          Send platform maintenance notices, support announcements, or service updates to users.
-        </Typography>
-      </Box>
+      {!hideHeader && (
+        <Box sx={{ mb: 4 }}>
+          <Typography variant="h4" fontWeight="900" fontFamily="Outfit" color="#0F0F14">
+            Broadcast Announcements
+          </Typography>
+          <Typography variant="body2" color="text.secondary">
+            Send platform maintenance notices, support announcements, or service updates to users.
+          </Typography>
+        </Box>
+      )}
 
       <Grid container spacing={4}>
         {/* Creator Form */}
@@ -1959,7 +2057,7 @@ const NotificationsView = () => {
 // ----------------------------------------------------
 // 11. SYSTEM SETTINGS VIEW
 // ----------------------------------------------------
-const SettingsView = () => {
+const SettingsView = ({ hideHeader }) => {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
 
@@ -2020,14 +2118,16 @@ const SettingsView = () => {
 
   return (
     <Box>
-      <Box sx={{ mb: 4 }}>
-        <Typography variant="h4" fontWeight="900" fontFamily="Outfit" color="#0F0F14">
-          System Settings
-        </Typography>
-        <Typography variant="body2" color="text.secondary">
-          Configure platform parameters, GST values, support channels, and legal copy.
-        </Typography>
-      </Box>
+      {!hideHeader && (
+        <Box sx={{ mb: 4 }}>
+          <Typography variant="h4" fontWeight="900" fontFamily="Outfit" color="#0F0F14">
+            System Settings
+          </Typography>
+          <Typography variant="body2" color="text.secondary">
+            Configure platform parameters, GST values, support channels, and legal copy.
+          </Typography>
+        </Box>
+      )}
 
       <Paper sx={{ p: 4, borderRadius: 2, boxShadow: '0 2px 10px rgba(0,0,0,0.03)', maxWidth: 800 }}>
         <form onSubmit={handleSave}>
@@ -2118,7 +2218,7 @@ const SettingsView = () => {
 // ----------------------------------------------------
 // 12. ADMIN PROFILE VIEW
 // ----------------------------------------------------
-const ProfileView = () => {
+const ProfileView = ({ hideHeader }) => {
   const [profileLoading, setProfileLoading] = useState(true);
   const [profileSaving, setProfileSaving] = useState(false);
   const [passwordSaving, setPasswordSaving] = useState(false);
@@ -2194,14 +2294,16 @@ const ProfileView = () => {
 
   return (
     <Box>
-      <Box sx={{ mb: 4 }}>
-        <Typography variant="h4" fontWeight="900" fontFamily="Outfit" color="#0F0F14">
-          Admin Profile Settings
-        </Typography>
-        <Typography variant="body2" color="text.secondary">
-          Manage your account credentials, notifications phone, and updates password.
-        </Typography>
-      </Box>
+      {!hideHeader && (
+        <Box sx={{ mb: 4 }}>
+          <Typography variant="h4" fontWeight="900" fontFamily="Outfit" color="#0F0F14">
+            Admin Profile Settings
+          </Typography>
+          <Typography variant="body2" color="text.secondary">
+            Manage your account credentials, notifications phone, and updates password.
+          </Typography>
+        </Box>
+      )}
 
       <Grid container spacing={4}>
         {/* Info Edit */}

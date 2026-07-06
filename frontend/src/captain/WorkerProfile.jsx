@@ -3,13 +3,17 @@ import { useAuth } from '../context/AuthContext';
 import { useForm } from 'react-hook-form';
 import api, { buildMediaUrl } from '../services/api';
 import {
-  Container, Paper, Grid, Typography, TextField, Button, Box,
-  Divider, MenuItem, CircularProgress, Alert, Chip
+  Grid, TextField, Button, Box, CircularProgress, Alert, Chip, MenuItem
 } from '@mui/material';
 import toast from 'react-hot-toast';
 import HourglassEmptyIcon from '@mui/icons-material/HourglassEmpty';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import CancelIcon from '@mui/icons-material/Cancel';
+
+import { tokens, span } from '../design/tokens';
+import { 
+  DashboardPage, DashboardGrid, DashboardCard 
+} from '../components/dashboard';
 
 const WorkerProfile = () => {
   const { user, updateProfileState } = useAuth();
@@ -122,45 +126,37 @@ const WorkerProfile = () => {
   const getStatusChip = () => {
     const status = user?.profile?.approval_status || 'pending';
     if (status === 'approved') {
-      return <Chip icon={<CheckCircleIcon />} label="Approved" color="success" />;
+      return <Chip icon={<CheckCircleIcon />} label="Approved" color="success" sx={{ fontWeight: 'bold' }} />;
     } else if (status === 'rejected') {
-      return <Chip icon={<CancelIcon />} label="Rejected" color="error" />;
+      return <Chip icon={<CancelIcon />} label="Rejected" color="error" sx={{ fontWeight: 'bold' }} />;
     }
-    return <Chip icon={<HourglassEmptyIcon />} label="Pending Verification" color="warning" />;
+    return <Chip icon={<HourglassEmptyIcon />} label="Pending Verification" color="warning" sx={{ fontWeight: 'bold' }} />;
   };
 
   return (
-    <Container maxWidth="lg" sx={{ mt: 6, mb: 8 }}>
-      {/* Alert status header */}
-      <Box sx={{ mb: 4, p: 3, backgroundColor: '#ffffff', border: '1px solid #E5E7EB', borderRadius: 2, display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 2 }}>
-        <Box>
-          <Typography variant="h5" fontWeight="bold">Onboarding & Verification Portal</Typography>
-          <Typography variant="body2" color="text.secondary">Provide details to begin receiving customer requests.</Typography>
-        </Box>
-        <Box display="flex" alignItems="center" gap={2}>
-          <Typography variant="subtitle2" color="text.secondary">Verification Status:</Typography>
-          {getStatusChip()}
-        </Box>
-      </Box>
-
+    <DashboardPage
+      breadcrumbs={[
+        { label: 'Home', path: '/' },
+        { label: 'Dashboard', path: '/captain/dashboard' },
+        { label: 'Profile' }
+      ]}
+      title="Profile & KYC Settings"
+      description="Keep your personal, KYC documents, and direct settlement bank account information up to date."
+      actions={getStatusChip()}
+    >
       {user?.profile?.approval_status === 'rejected' && (
-        <Alert severity="error" sx={{ mb: 4 }}>
+        <Alert severity="error" sx={{ mb: 1, borderRadius: `${tokens.borderRadiusSm}px` }}>
           Your KYC documents were rejected by the administrator. Please review your details and re-upload clear photos.
         </Alert>
       )}
 
-      <Grid container spacing={4}>
-        {/* Profile Info Form */}
-        <Grid item xs={12} md={8}>
-          <Paper sx={{ p: 4 }}>
-            <Typography variant="h6" fontWeight="bold" sx={{ mb: 3 }}>
-              Onboarding Form & Bank Info
-            </Typography>
-            <Divider sx={{ mb: 3 }} />
-
-            <Box component="form" onSubmit={handleSubmitProfile(onProfileSubmit)} noValidate>
-              <Grid container spacing={2.5}>
-                {/* Section: Personal Info */}
+      <DashboardGrid>
+        {/* Onboarding & Bank Info Form */}
+        <Box sx={span.twoThirds}>
+          <DashboardCard title="Onboarding Form & Bank Info" subtitle="Provide government KYC and settlement account details">
+            <Box component="form" onSubmit={handleSubmitProfile(onProfileSubmit)} noValidate sx={{ mt: 2 }}>
+              <Grid container spacing={3}>
+                {/* Personal Info */}
                 <Grid item xs={12} sm={6}>
                   <TextField
                     required
@@ -178,7 +174,7 @@ const WorkerProfile = () => {
                   />
                 </Grid>
 
-                {/* Section: Work Category & Experience */}
+                {/* Work Category & Experience */}
                 <Grid item xs={12} sm={6}>
                   <TextField
                     required
@@ -206,7 +202,7 @@ const WorkerProfile = () => {
                   />
                 </Grid>
 
-                {/* Section: Location Address */}
+                {/* Location Address */}
                 <Grid item xs={12}>
                   <TextField
                     fullWidth
@@ -238,10 +234,10 @@ const WorkerProfile = () => {
                   />
                 </Grid>
 
-                {/* Section: KYC Details */}
-                <Grid item xs={12}>
-                  <Typography variant="subtitle2" color="secondary" sx={{ mt: 1, mb: 1, fontWeight: 'bold' }}>
-                    Government KYC Details
+                {/* KYC Details */}
+                <Grid item xs={12} sx={{ mt: 1 }}>
+                  <Typography variant="subtitle2" color="primary" sx={{ mb: 1, fontWeight: '800' }}>
+                    Government KYC Numbers
                   </Typography>
                   <Divider />
                 </Grid>
@@ -262,9 +258,9 @@ const WorkerProfile = () => {
                   />
                 </Grid>
 
-                {/* Section: Bank Details */}
-                <Grid item xs={12}>
-                  <Typography variant="subtitle2" color="secondary" sx={{ mt: 1, mb: 1, fontWeight: 'bold' }}>
+                {/* Bank Details */}
+                <Grid item xs={12} sx={{ mt: 1 }}>
+                  <Typography variant="subtitle2" color="primary" sx={{ mb: 1, fontWeight: '800' }}>
                     Direct Settlement Bank Account
                   </Typography>
                   <Divider />
@@ -284,19 +280,19 @@ const WorkerProfile = () => {
                   />
                 </Grid>
 
-                {/* Section: Document Upload Actions */}
-                <Grid item xs={12}>
-                  <Typography variant="subtitle2" color="secondary" sx={{ mt: 1, mb: 1, fontWeight: 'bold' }}>
+                {/* Document Uploads */}
+                <Grid item xs={12} sx={{ mt: 1 }}>
+                  <Typography variant="subtitle2" color="primary" sx={{ mb: 1, fontWeight: '800' }}>
                     KYC Upload Documents (Image Files)
                   </Typography>
                   <Divider />
                 </Grid>
                 
                 <Grid item xs={12} sm={4}>
-                  <Typography variant="caption" color="text.secondary" display="block" sx={{ mb: 1 }}>
+                  <Typography variant="caption" color="text.secondary" display="block" sx={{ mb: 1, fontWeight: 700 }}>
                     Profile Photo
                   </Typography>
-                  <Button variant="outlined" component="label" fullWidth size="medium">
+                  <Button variant="outlined" component="label" fullWidth sx={{ textTransform: 'none', py: 1 }}>
                     Upload Photo
                     <input
                       type="file"
@@ -306,21 +302,21 @@ const WorkerProfile = () => {
                     />
                   </Button>
                   {profilePhotoFile ? (
-                    <Typography variant="caption" color="success.main" display="block" sx={{ mt: 0.5 }}>
+                    <Typography variant="caption" color="success.main" display="block" sx={{ mt: 1 }}>
                       File: {profilePhotoFile.name}
                     </Typography>
-                  ) : user.profile?.profile_photo && (
-                    <Box sx={{ mt: 1, textAlign: 'center' }}>
-                      <img src={buildMediaUrl(user.profile.profile_photo)} alt="Profile" style={{ width: '50px', height: '50px', borderRadius: '50%', objectFit: 'cover', border: '1px solid #E5E7EB' }} />
+                  ) : user?.profile?.profile_photo && (
+                    <Box sx={{ mt: 1.5, textAlign: 'center' }}>
+                      <img src={buildMediaUrl(user.profile.profile_photo)} alt="Profile" style={{ width: '50px', height: '50px', borderRadius: '50%', objectFit: 'cover', border: `1px solid ${tokens.borderColor}` }} />
                     </Box>
                   )}
                 </Grid>
 
                 <Grid item xs={12} sm={4}>
-                  <Typography variant="caption" color="text.secondary" display="block" sx={{ mb: 1 }}>
+                  <Typography variant="caption" color="text.secondary" display="block" sx={{ mb: 1, fontWeight: 700 }}>
                     Aadhaar Card Copy
                   </Typography>
-                  <Button variant="outlined" component="label" fullWidth size="medium">
+                  <Button variant="outlined" component="label" fullWidth sx={{ textTransform: 'none', py: 1 }}>
                     Upload Aadhaar
                     <input
                       type="file"
@@ -330,21 +326,21 @@ const WorkerProfile = () => {
                     />
                   </Button>
                   {aadhaarPhotoFile ? (
-                    <Typography variant="caption" color="success.main" display="block" sx={{ mt: 0.5 }}>
+                    <Typography variant="caption" color="success.main" display="block" sx={{ mt: 1 }}>
                       File: {aadhaarPhotoFile.name}
                     </Typography>
-                  ) : user.profile?.aadhaar_photo && (
-                    <Box sx={{ mt: 1.5, textAlign: 'center' }}>
-                      <a href={buildMediaUrl(user.profile.aadhaar_photo)} target="_blank" rel="noreferrer" style={{ fontSize: '11px', textDecoration: 'none', color: '#1A73E8', fontWeight: 'bold' }}>View Aadhaar Image</a>
+                  ) : user?.profile?.aadhaar_photo && (
+                    <Box sx={{ mt: 1.5, textAlign: 'center', pt: 1 }}>
+                      <a href={buildMediaUrl(user.profile.aadhaar_photo)} target="_blank" rel="noreferrer" style={{ fontSize: '12px', textDecoration: 'none', color: tokens.colors.accent, fontWeight: '800' }}>View Aadhaar Image</a>
                     </Box>
                   )}
                 </Grid>
 
                 <Grid item xs={12} sm={4}>
-                  <Typography variant="caption" color="text.secondary" display="block" sx={{ mb: 1 }}>
+                  <Typography variant="caption" color="text.secondary" display="block" sx={{ mb: 1, fontWeight: 700 }}>
                     PAN Card Copy
                   </Typography>
-                  <Button variant="outlined" component="label" fullWidth size="medium">
+                  <Button variant="outlined" component="label" fullWidth sx={{ textTransform: 'none', py: 1 }}>
                     Upload PAN
                     <input
                       type="file"
@@ -354,41 +350,44 @@ const WorkerProfile = () => {
                     />
                   </Button>
                   {panPhotoFile ? (
-                    <Typography variant="caption" color="success.main" display="block" sx={{ mt: 0.5 }}>
+                    <Typography variant="caption" color="success.main" display="block" sx={{ mt: 1 }}>
                       File: {panPhotoFile.name}
                     </Typography>
-                  ) : user.profile?.pan_photo && (
-                    <Box sx={{ mt: 1.5, textAlign: 'center' }}>
-                      <a href={buildMediaUrl(user.profile.pan_photo)} target="_blank" rel="noreferrer" style={{ fontSize: '11px', textDecoration: 'none', color: '#1A73E8', fontWeight: 'bold' }}>View PAN Image</a>
+                  ) : user?.profile?.pan_photo && (
+                    <Box sx={{ mt: 1.5, textAlign: 'center', pt: 1 }}>
+                      <a href={buildMediaUrl(user.profile.pan_photo)} target="_blank" rel="noreferrer" style={{ fontSize: '12px', textDecoration: 'none', color: tokens.colors.accent, fontWeight: '800' }}>View PAN Image</a>
                     </Box>
                   )}
                 </Grid>
-
               </Grid>
 
               <Button
                 type="submit"
                 variant="contained"
-                color="secondary"
                 disabled={profileLoading}
-                sx={{ mt: 5, py: 1 }}
+                sx={{ 
+                  mt: 5, 
+                  py: 1.5, 
+                  px: 4, 
+                  bgcolor: tokens.colors.primary, 
+                  color: '#ffffff', 
+                  borderRadius: `${tokens.borderRadiusSm}px`,
+                  textTransform: 'none',
+                  fontWeight: 700,
+                  '&:hover': { bgcolor: '#23232F' }
+                }}
               >
                 {profileLoading ? <CircularProgress size={24} color="inherit" /> : 'Save Onboarding Profile'}
               </Button>
             </Box>
-          </Paper>
-        </Grid>
+          </DashboardCard>
+        </Box>
 
-        {/* Change Password Form */}
-        <Grid item xs={12} md={4}>
-          <Paper sx={{ p: 4 }}>
-            <Typography variant="h6" fontWeight="bold" sx={{ mb: 3 }}>
-              Security Settings
-            </Typography>
-            <Divider sx={{ mb: 3 }} />
-
-            <Box component="form" onSubmit={handleSubmitPassword(onPasswordSubmit)} noValidate>
-              <Grid container spacing={2}>
+        {/* Change Password Security Card */}
+        <Box sx={span.oneThird}>
+          <DashboardCard title="Security Credentials" subtitle="Ensure your account is using a secure password">
+            <Box component="form" onSubmit={handleSubmitPassword(onPasswordSubmit)} noValidate sx={{ mt: 2 }}>
+              <Grid container spacing={3}>
                 <Grid item xs={12}>
                   <TextField
                     required
@@ -423,18 +422,27 @@ const WorkerProfile = () => {
 
               <Button
                 type="submit"
-                variant="outlined"
-                color="secondary"
+                variant="contained"
                 disabled={passwordLoading}
-                sx={{ mt: 4, py: 1 }}
+                sx={{ 
+                  mt: 4, 
+                  py: 1.5, 
+                  px: 4, 
+                  bgcolor: tokens.colors.error, 
+                  color: '#ffffff', 
+                  borderRadius: `${tokens.borderRadiusSm}px`,
+                  textTransform: 'none',
+                  fontWeight: 700,
+                  '&:hover': { bgcolor: '#B91C1C' }
+                }}
               >
                 {passwordLoading ? <CircularProgress size={24} color="inherit" /> : 'Update Password'}
               </Button>
             </Box>
-          </Paper>
-        </Grid>
-      </Grid>
-    </Container>
+          </DashboardCard>
+        </Box>
+      </DashboardGrid>
+    </DashboardPage>
   );
 };
 

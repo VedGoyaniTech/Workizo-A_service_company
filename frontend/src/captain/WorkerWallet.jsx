@@ -1,9 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { 
-  Container, Typography, Box, Card, CardContent, Grid, Button, 
-  Divider, TextField, Dialog, DialogTitle, DialogContent, DialogContentText,
-  DialogActions, List, ListItem, ListItemText, Skeleton
+  Box, Button, Typography, Divider, TextField, Dialog, DialogTitle, DialogContent, DialogContentText,
+  DialogActions, List, ListItem, ListItemText, Skeleton, Grid
 } from '@mui/material';
 import { motion } from 'framer-motion';
 import AccountBalanceWalletIcon from '@mui/icons-material/AccountBalanceWallet';
@@ -13,6 +12,12 @@ import HourglassEmptyIcon from '@mui/icons-material/HourglassEmpty';
 import PaymentsIcon from '@mui/icons-material/Payments';
 import api from '../services/api';
 import toast from 'react-hot-toast';
+
+import { tokens, span } from '../design/tokens';
+import { 
+  DashboardPage, DashboardGrid, DashboardCard, 
+  SummaryCard, SummaryGrid 
+} from '../components/dashboard';
 
 function WorkerWallet() {
   const navigate = useNavigate();
@@ -67,172 +72,157 @@ function WorkerWallet() {
     }
   };
 
+  const summary = (
+    <SummaryGrid columns={4}>
+      <SummaryCard
+        label="Settlement Balance"
+        value={`₹${wallet?.current_balance || '0.00'}`}
+        icon={<AccountBalanceWalletIcon />}
+        accentColor="#1A73E8"
+        loading={loading}
+      />
+      <SummaryCard
+        label="Pending Payouts"
+        value={`₹${wallet?.pending_balance || '0.00'}`}
+        icon={<HourglassEmptyIcon />}
+        accentColor="#FBBC05"
+        loading={loading}
+      />
+      <SummaryCard
+        label="Weekly Income"
+        value={`₹${stats?.weekly_earnings || '0.00'}`}
+        icon={<TrendingUpIcon />}
+        accentColor="#34A853"
+        loading={loading}
+      />
+      <SummaryCard
+        label="Monthly Income"
+        value={`₹${stats?.monthly_earnings || '0.00'}`}
+        icon={<PaymentsIcon />}
+        accentColor="#EA4335"
+        loading={loading}
+      />
+    </SummaryGrid>
+  );
+
   return (
-    <Container maxWidth="lg" sx={{ py: 6 }}>
-      {/* Back to Dashboard */}
-      <Button 
-        startIcon={<ArrowBackIcon />} 
-        onClick={() => navigate('/captain/dashboard')}
-        sx={{ mb: 3, color: '#000000', textTransform: 'none' }}
-      >
-        Back to Dashboard
-      </Button>
-
-      {/* Main Title Banner */}
-      <Box display="flex" alignItems="center" gap={1.5} sx={{ mb: 4 }}>
-        <AccountBalanceWalletIcon sx={{ fontSize: 40, color: '#000000' }} />
-        <Box>
-          <Typography variant="h4" fontWeight="800" sx={{ fontFamily: 'Outfit, sans-serif' }}>
-            Settlement Wallet & Payouts
-          </Typography>
-          <Typography variant="body2" color="text.secondary">
-            Manage your settlement transactions, view earnings milestones, and execute bank payouts.
-          </Typography>
-        </Box>
-      </Box>
-
-      {loading ? (
-        <Grid container spacing={4}>
-          <Grid item xs={12} md={5}>
-            <Skeleton variant="rectangular" height={220} sx={{ borderRadius: '12px' }} />
-          </Grid>
-          <Grid item xs={12} md={7}>
-            <Skeleton variant="rectangular" height={350} sx={{ borderRadius: '12px' }} />
-          </Grid>
-        </Grid>
-      ) : (
-        <Grid container spacing={4}>
-          {/* Left Column: Wallet Balance Card & Earnings Milestone */}
-          <Grid item xs={12} md={5}>
-            {/* Balance Card */}
-            <Card 
-              variant="outlined" 
-              sx={{ 
-                borderColor: '#000000', 
-                borderWidth: '2px', 
-                borderRadius: '16px', 
-                bgcolor: '#ffffff',
-                mb: 3
-              }}
-            >
-              <CardContent sx={{ p: 4 }}>
-                <Typography variant="subtitle2" color="text.secondary" fontWeight="700">
-                  AVAILABLE SETTLEMENT BALANCE
+    <DashboardPage
+      breadcrumbs={[
+        { label: 'Home', path: '/' },
+        { label: 'Dashboard', path: '/captain/dashboard' },
+        { label: 'Settlement Wallet' }
+      ]}
+      title="Settlement Wallet & Payouts"
+      description="Manage direct bank deposits, review weekly statements, and execute payouts."
+      summary={summary}
+      loading={loading}
+      actions={
+        <Button 
+          startIcon={<ArrowBackIcon />} 
+          onClick={() => navigate('/captain/dashboard')}
+          sx={{ color: tokens.colors.primary, textTransform: 'none', fontWeight: 700 }}
+        >
+          Back to Dashboard
+        </Button>
+      }
+    >
+      <DashboardGrid>
+        {/* Left Column: Balance Card & Timelines */}
+        <Box sx={span.oneThird}>
+          <Box display="flex" flexDirection="column" gap={3}>
+            
+            {/* Withdrawal Card */}
+            <DashboardCard title="Bank Payout Transfer" subtitle="Instantly transfer wallet funds into your bank account">
+              <Box sx={{ mt: 1 }}>
+                <Typography variant="body2" color="text.secondary" paragraph>
+                  Verify bank details under profile settings prior to issuing transactions.
                 </Typography>
-                <Typography variant="h3" fontWeight="900" sx={{ my: 1.5, fontFamily: 'Outfit, sans-serif' }}>
-                  ₹{wallet?.current_balance}
-                </Typography>
-                
-                <Box display="flex" alignItems="center" gap={1} sx={{ mb: 3 }}>
-                  <HourglassEmptyIcon sx={{ fontSize: 16, color: '#ed6c02' }} />
-                  <Typography variant="caption" color="text.secondary">
-                    Pending Verification Payout: <b>₹{wallet?.pending_balance || '0.00'}</b>
-                  </Typography>
-                </Box>
-
                 <Button
                   fullWidth
                   variant="contained"
                   onClick={() => setWithdrawModalOpen(true)}
                   disabled={parseFloat(wallet?.current_balance) <= 0}
                   sx={{ 
-                    bgcolor: '#000000', 
+                    bgcolor: tokens.colors.primary, 
                     color: '#ffffff', 
                     py: 1.5, 
-                    borderRadius: '8px', 
+                    borderRadius: `${tokens.borderRadiusSm}px`, 
                     textTransform: 'none',
                     fontWeight: '700',
-                    '&:hover': { bgcolor: '#222' }
+                    '&:hover': { bgcolor: '#23232F' }
                   }}
                 >
                   Withdraw Payout to Bank
                 </Button>
-              </CardContent>
-            </Card>
+              </Box>
+            </DashboardCard>
 
             {/* Earnings Milestones */}
-            <Card variant="outlined" sx={{ borderColor: '#E5E7EB', borderRadius: '16px', bgcolor: '#ffffff' }}>
-              <CardContent sx={{ p: 3 }}>
-                <Typography variant="subtitle1" fontWeight="800" sx={{ mb: 2, fontFamily: 'Outfit, sans-serif' }}>
-                  Earnings Timeline
-                </Typography>
-                <Divider sx={{ mb: 2 }} />
+            <DashboardCard title="Earnings Milestones" subtitle="Summary of periodic payouts">
+              <List disablePadding>
+                <ListItem sx={{ px: 0, py: 1.25 }} divider>
+                  <ListItemText primary="Today's Earnings" />
+                  <Typography variant="body2" fontWeight="800">
+                    ₹{stats?.today_earnings}
+                  </Typography>
+                </ListItem>
+                <ListItem sx={{ px: 0, py: 1.25 }} divider>
+                  <ListItemText primary="Weekly Earnings" />
+                  <Typography variant="body2" fontWeight="800">
+                    ₹{stats?.weekly_earnings}
+                  </Typography>
+                </ListItem>
+                <ListItem sx={{ px: 0, py: 1.25 }}>
+                  <ListItemText primary="Monthly Earnings" />
+                  <Typography variant="body2" fontWeight="800">
+                    ₹{stats?.monthly_earnings}
+                  </Typography>
+                </ListItem>
+              </List>
+            </DashboardCard>
+          </Box>
+        </Box>
 
-                <Box display="flex" justifyContent="space-between" alignItems="center" sx={{ mb: 2 }}>
-                  <Box display="flex" alignItems="center" gap={1}>
-                    <TrendingUpIcon color="success" />
-                    <Typography variant="body2" color="text.secondary">Today's Earnings</Typography>
-                  </Box>
-                  <Typography variant="body1" fontWeight="800">₹{stats?.today_earnings}</Typography>
+        {/* Right Column: Transaction History Ledger */}
+        <Box sx={span.twoThirds}>
+          <DashboardCard title="Wallet Transactions Ledger" subtitle="Detailed audit logging of completed invoices and payouts">
+            <List disablePadding>
+              {wallet?.transactions?.length === 0 ? (
+                <Box sx={{ textAlign: 'center', py: 8 }}>
+                  <PaymentsIcon sx={{ fontSize: 48, color: tokens.colors.textMuted, mb: 1.5 }} />
+                  <Typography variant="body2" color="text.secondary">No wallet activity logs found</Typography>
                 </Box>
-
-                <Box display="flex" justifyContent="space-between" alignItems="center" sx={{ mb: 2 }}>
-                  <Box display="flex" alignItems="center" gap={1}>
-                    <TrendingUpIcon color="success" />
-                    <Typography variant="body2" color="text.secondary">Weekly Earnings</Typography>
-                  </Box>
-                  <Typography variant="body1" fontWeight="800">₹{stats?.weekly_earnings}</Typography>
-                </Box>
-
-                <Box display="flex" justifyContent="space-between" alignItems="center">
-                  <Box display="flex" alignItems="center" gap={1}>
-                    <TrendingUpIcon color="success" />
-                    <Typography variant="body2" color="text.secondary">Monthly Earnings</Typography>
-                  </Box>
-                  <Typography variant="body1" fontWeight="800">₹{stats?.monthly_earnings}</Typography>
-                </Box>
-              </CardContent>
-            </Card>
-          </Grid>
-
-          {/* Right Column: Transaction History Ledger */}
-          <Grid item xs={12} md={7}>
-            <Card variant="outlined" sx={{ borderColor: '#E5E7EB', borderRadius: '16px', bgcolor: '#ffffff', minHeight: '400px' }}>
-              <CardContent sx={{ p: 4 }}>
-                <Typography variant="h6" fontWeight="800" sx={{ mb: 3, fontFamily: 'Outfit, sans-serif' }}>
-                  Wallet Transactions Ledger
-                </Typography>
-                <Divider sx={{ mb: 2 }} />
-
-                <List disablePadding>
-                  {wallet?.transactions?.length === 0 ? (
-                    <Box sx={{ textAlign: 'center', py: 8 }}>
-                      <PaymentsIcon sx={{ fontSize: 48, color: 'text.disabled', mb: 1.5 }} />
-                      <Typography variant="body2" color="text.secondary">No wallet activity logs found</Typography>
-                    </Box>
-                  ) : (
-                    wallet?.transactions?.map((txn) => (
-                      <React.Fragment key={txn.id}>
-                        <ListItem sx={{ py: 2, px: 0 }}>
-                          <ListItemText
-                            primary={txn.description}
-                            primaryTypographyProps={{ fontWeight: '700', variant: 'body2' }}
-                            secondary={new Date(txn.created_at).toLocaleString('en-US', { dateStyle: 'medium', timeStyle: 'short' })}
-                          />
-                          <Typography 
-                            variant="body1" 
-                            fontWeight="800" 
-                            color={txn.transaction_type === 'credit' ? 'success.main' : 'error.main'}
-                          >
-                            {txn.transaction_type === 'credit' ? '+' : '-'}₹{txn.amount}
-                          </Typography>
-                        </ListItem>
-                        <Divider />
-                      </React.Fragment>
-                    ))
-                  )}
-                </List>
-              </CardContent>
-            </Card>
-          </Grid>
-        </Grid>
-      )}
+              ) : (
+                wallet?.transactions?.map((txn, index) => (
+                  <React.Fragment key={txn.id}>
+                    <ListItem sx={{ py: 2, px: 0 }}>
+                      <ListItemText
+                        primary={txn.description}
+                        primaryTypographyProps={{ fontWeight: '700', variant: 'body2' }}
+                        secondary={new Date(txn.created_at).toLocaleString('en-US', { dateStyle: 'medium', timeStyle: 'short' })}
+                      />
+                      <Typography 
+                        variant="body1" 
+                        fontWeight="800" 
+                        color={txn.transaction_type === 'credit' ? 'success.main' : 'error.main'}
+                      >
+                        {txn.transaction_type === 'credit' ? '+' : '-'}₹{txn.amount}
+                      </Typography>
+                    </ListItem>
+                    {index < wallet.transactions.length - 1 && <Divider />}
+                  </React.Fragment>
+                ))
+              )}
+            </List>
+          </DashboardCard>
+        </Box>
+      </DashboardGrid>
 
       {/* Payout Withdrawal Dialog */}
       <Dialog 
         open={withdrawModalOpen} 
         onClose={() => !withdrawing && setWithdrawModalOpen(false)}
-        PaperProps={{ style: { borderRadius: '12px', padding: '8px' } }}
+        PaperProps={{ style: { borderRadius: `${tokens.borderRadius}px`, padding: '8px' } }}
       >
         <DialogTitle sx={{ fontFamily: 'Outfit, sans-serif', fontWeight: '800' }}>
           Execute Bank Payout Transfer
@@ -249,24 +239,23 @@ function WorkerWallet() {
             type="number"
             value={withdrawAmount}
             onChange={(e) => setWithdrawAmount(e.target.value)}
-            slotProps={{ input: { style: { borderRadius: '8px' } } }}
           />
         </DialogContent>
         <DialogActions>
-          <Button onClick={() => setWithdrawModalOpen(false)} disabled={withdrawing} sx={{ color: '#000000' }}>
+          <Button onClick={() => setWithdrawModalOpen(false)} disabled={withdrawing} sx={{ color: tokens.colors.primary }}>
             Cancel
           </Button>
           <Button 
             onClick={handleWithdrawFunds} 
             variant="contained" 
             disabled={withdrawing}
-            sx={{ background: '#000000', color: '#ffffff', borderRadius: '8px' }}
+            sx={{ bgcolor: tokens.colors.primary, color: '#ffffff', borderRadius: `${tokens.borderRadiusSm}px` }}
           >
             {withdrawing ? 'Processing...' : 'Confirm Bank Payout'}
           </Button>
         </DialogActions>
       </Dialog>
-    </Container>
+    </DashboardPage>
   );
 }
 

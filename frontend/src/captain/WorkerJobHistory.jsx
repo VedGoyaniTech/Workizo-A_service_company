@@ -1,12 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { 
-  Container, Typography, Box, Card, CardContent, Grid, Button, 
-  Divider, TextField, MenuItem, Tabs, Tab, Skeleton, InputAdornment
+  Box, Button, Typography, Divider, TextField, MenuItem, Skeleton, InputAdornment, Grid
 } from '@mui/material';
 import { motion } from 'framer-motion';
 import SearchIcon from '@mui/icons-material/Search';
-import FilterListIcon from '@mui/icons-material/FilterList';
 import HistoryIcon from '@mui/icons-material/History';
 import DownloadIcon from '@mui/icons-material/Download';
 import HandymanIcon from '@mui/icons-material/Handyman';
@@ -14,6 +12,12 @@ import OpenInNewIcon from '@mui/icons-material/OpenInNew';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import api, { buildApiUrl } from '../services/api';
 import toast from 'react-hot-toast';
+
+import { tokens, span } from '../design/tokens';
+import { 
+  DashboardPage, DashboardGrid, DashboardCard, 
+  SummaryCard, SummaryGrid 
+} from '../components/dashboard';
 
 function WorkerJobHistory() {
   const navigate = useNavigate();
@@ -54,199 +58,260 @@ function WorkerJobHistory() {
     return matchesSearch;
   });
 
-  const getStatusColor = (status) => {
+  const getStatusStyle = (status) => {
     switch (status) {
-      case 'completed': return '#2e7d32';
-      case 'cancelled': return '#d32f2f';
-      case 'searching': return '#0288d1';
-      default: return '#ed6c02'; // travelling, arrived, verified, in_progress, etc.
+      case 'completed': return { color: 'success.main', bg: 'rgba(22, 163, 74, 0.08)', border: '1px solid rgba(22, 163, 74, 0.15)' };
+      case 'cancelled': return { color: 'error.main', bg: 'rgba(220, 38, 38, 0.08)', border: '1px solid rgba(220, 38, 38, 0.15)' };
+      case 'searching': return { color: 'info.main', bg: 'rgba(2, 136, 209, 0.08)', border: '1px solid rgba(2, 136, 209, 0.15)' };
+      default: return { color: 'warning.main', bg: 'rgba(217, 119, 6, 0.08)', border: '1px solid rgba(217, 119, 6, 0.15)' };
     }
   };
 
+  const activeJobs = jobs.filter(j => !['completed', 'cancelled', 'searching'].includes(j.status));
+  const completedJobs = jobs.filter(j => j.status === 'completed');
+  const cancelledJobs = jobs.filter(j => j.status === 'cancelled');
+
+  const summary = (
+    <SummaryGrid columns={4}>
+      <SummaryCard
+        label="Total Job Requests"
+        value={jobs.length}
+        icon={<HistoryIcon />}
+        accentColor="#1A73E8"
+        loading={loading}
+      />
+      <SummaryCard
+        label="Completed Job Runs"
+        value={completedJobs.length}
+        icon={<HandymanIcon />}
+        accentColor="#34A853"
+        loading={loading}
+      />
+      <SummaryCard
+        label="Cancelled / Rejected"
+        value={cancelledJobs.length}
+        icon={<CancelIcon />}
+        accentColor="#EA4335"
+        loading={loading}
+      />
+      <SummaryCard
+        label="Active Operations"
+        value={activeJobs.length}
+        icon={<OpenInNewIcon />}
+        accentColor="#FBBC05"
+        loading={loading}
+      />
+    </SummaryGrid>
+  );
+
   return (
-    <Container maxWidth="lg" sx={{ py: 6 }}>
-      {/* Header Back Link */}
-      <Button 
-        startIcon={<ArrowBackIcon />} 
-        onClick={() => navigate('/captain/dashboard')}
-        sx={{ mb: 3, color: '#000000', textTransform: 'none' }}
-      >
-        Back to Dashboard
-      </Button>
+    <DashboardPage
+      breadcrumbs={[
+        { label: 'Home', path: '/' },
+        { label: 'Dashboard', path: '/captain/dashboard' },
+        { label: 'Job History' }
+      ]}
+      title="Job History Ledger"
+      description="Review settled accounts, active operations, and download PDF invoices."
+      summary={summary}
+      actions={
+        <Button 
+          startIcon={<ArrowBackIcon />} 
+          onClick={() => navigate('/captain/dashboard')}
+          sx={{ color: tokens.colors.primary, textTransform: 'none', fontWeight: 700 }}
+        >
+          Back to Dashboard
+        </Button>
+      }
+    >
+      <DashboardGrid>
+        {/* Left Column: Filter Controls and List */}
+        <Box sx={span.twoThirds}>
+          <Box display="flex" flexDirection="column" gap={3}>
+            
+            {/* Search Filters */}
+            <DashboardCard title="Search & Filter Ledger" subtitle="Look up specific tasks by client name or ID">
+              <Grid container spacing={2} sx={{ mt: 1 }}>
+                <Grid item xs={12} sm={8}>
+                  <TextField
+                    fullWidth
+                    placeholder="Search by Job ID, Customer Name, or Problem..."
+                    value={search}
+                    onChange={(e) => setSearch(e.target.value)}
+                    InputProps={{
+                      startAdornment: (
+                        <InputAdornment position="start">
+                          <SearchIcon />
+                        </InputAdornment>
+                      ),
+                    }}
+                  />
+                </Grid>
+                <Grid item xs={12} sm={4}>
+                  <TextField
+                    select
+                    fullWidth
+                    label="Filter Status"
+                    value={statusFilter}
+                    onChange={(e) => setStatusFilter(e.target.value)}
+                  >
+                    <MenuItem value="all">All Jobs</MenuItem>
+                    <MenuItem value="completed">Completed</MenuItem>
+                    <MenuItem value="pending">Active / Pending</MenuItem>
+                    <MenuItem value="cancelled">Cancelled</MenuItem>
+                  </TextField>
+                </Grid>
+              </Grid>
+            </DashboardCard>
 
-      {/* Main Title Banner */}
-      <Box display="flex" alignItems="center" gap={1.5} sx={{ mb: 4 }}>
-        <HistoryIcon sx={{ fontSize: 40, color: '#1A73E8' }} />
-        <Box>
-          <Typography variant="h4" fontWeight="800" sx={{ fontFamily: 'Outfit, sans-serif' }}>
-            Job History Ledger
-          </Typography>
-          <Typography variant="body2" color="text.secondary">
-            Search, filter, and review all your assigned job runs and invoices.
-          </Typography>
-        </Box>
-      </Box>
+            {/* List */}
+            {loading ? (
+              <Box display="flex" flexDirection="column" gap={2}>
+                {[1, 2, 3].map((n) => (
+                  <Skeleton key={n} variant="rectangular" height={140} sx={{ borderRadius: `${tokens.borderRadius}px` }} />
+                ))}
+              </Box>
+            ) : filteredJobs.length === 0 ? (
+              <DashboardCard title="No Job Runs Found">
+                <Box sx={{ py: 6, textAlign: 'center' }}>
+                  <HandymanIcon sx={{ fontSize: 48, color: tokens.colors.textMuted, mb: 1 }} />
+                  <Typography variant="body2" color="text.secondary">
+                    No jobs matched your current filter criteria.
+                  </Typography>
+                </Box>
+              </DashboardCard>
+            ) : (
+              <Box display="flex" flexDirection="column" gap={2}>
+                {filteredJobs.map((job, idx) => {
+                  const style = getStatusStyle(job.status);
+                  return (
+                    <motion.div
+                      key={job.id}
+                      initial={{ opacity: 0, y: 15 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ duration: 0.3, delay: idx * 0.04 }}
+                    >
+                      <Box sx={{
+                        p: 3, 
+                        borderRadius: `${tokens.borderRadius}px`,
+                        border: `1px solid ${tokens.borderColor}`,
+                        bgcolor: tokens.colors.paper,
+                        display: 'flex',
+                        flexDirection: 'column',
+                        justifyContent: 'space-between',
+                        transition: tokens.transition,
+                        '&:hover': {
+                          boxShadow: tokens.shadowHover,
+                          borderColor: tokens.colors.accent,
+                        }
+                      }}>
+                        <Grid container spacing={3} alignItems="center">
+                          <Grid item xs={12} md={8}>
+                            <Box display="flex" alignItems="center" gap={1.5} sx={{ mb: 1.5 }}>
+                              <Typography variant="subtitle1" fontWeight="800">
+                                Job #{job.id}
+                              </Typography>
+                              <Box sx={{ px: 1.25, py: 0.25, borderRadius: '4px', bgcolor: style.bg, border: style.border }}>
+                                <Typography variant="caption" fontWeight="800" color={style.color}>
+                                  {job.status.replace('_', ' ').toUpperCase()}
+                                </Typography>
+                              </Box>
+                            </Box>
 
-      {/* Search & Filter Controls */}
-      <Card variant="outlined" sx={{ borderColor: '#E5E7EB', borderRadius: '12px', mb: 4, bgcolor: '#ffffff' }}>
-        <CardContent sx={{ p: 3 }}>
-          <Grid container spacing={2} alignItems="center">
-            <Grid item xs={12} md={7}>
-              <TextField
-                fullWidth
-                placeholder="Search by Job ID, Customer Name, or Service Problem..."
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-                slotProps={{
-                  input: {
-                    startAdornment: (
-                      <InputAdornment position="start">
-                        <SearchIcon color="action" />
-                      </InputAdornment>
-                    ),
-                    style: { borderRadius: '8px' }
-                  }
-                }}
-              />
-            </Grid>
-            <Grid item xs={12} md={5}>
-              <TextField
-                select
-                fullWidth
-                label="Filter by Status"
-                value={statusFilter}
-                onChange={(e) => setStatusFilter(e.target.value)}
-                slotProps={{ input: { style: { borderRadius: '8px' } } }}
-              >
-                <MenuItem value="all">All Jobs</MenuItem>
-                <MenuItem value="completed">Completed</MenuItem>
-                <MenuItem value="pending">Active / Pending In Progress</MenuItem>
-                <MenuItem value="cancelled">Cancelled</MenuItem>
-              </TextField>
-            </Grid>
-          </Grid>
-        </CardContent>
-      </Card>
-
-      {/* History List Grid */}
-      {loading ? (
-        <Grid container spacing={3}>
-          {[1, 2, 3].map((n) => (
-            <Grid item xs={12} key={n}>
-              <Skeleton variant="rectangular" height={160} sx={{ borderRadius: '12px' }} />
-            </Grid>
-          ))}
-        </Grid>
-      ) : filteredJobs.length === 0 ? (
-        <Card variant="outlined" sx={{ borderColor: '#E5E7EB', borderRadius: '12px', textAlign: 'center', py: 8 }}>
-          <CardContent>
-            <HandymanIcon sx={{ fontSize: 50, color: 'text.disabled', mb: 2 }} />
-            <Typography variant="h6" fontWeight="700">No jobs found</Typography>
-            <Typography variant="body2" color="text.secondary">
-              Try adjusting your filters or search terms.
-            </Typography>
-          </CardContent>
-        </Card>
-      ) : (
-        <Grid container spacing={3}>
-          {filteredJobs.map((job, idx) => (
-            <Grid item xs={12} key={job.id}>
-              <motion.div
-                initial={{ opacity: 0, y: 15 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.3, delay: idx * 0.05 }}
-              >
-                <Card 
-                  variant="outlined" 
-                  sx={{ 
-                    borderColor: '#E5E7EB', 
-                    borderRadius: '12px', 
-                    boxShadow: '0 4px 6px -1px rgba(0,0,0,0.02)',
-                    '&:hover': {
-                      boxShadow: '0 10px 15px -3px rgba(0,0,0,0.04)',
-                      borderColor: '#1A73E8'
-                    },
-                    transition: 'all 0.2s ease-in-out'
-                  }}
-                >
-                  <CardContent sx={{ p: 3 }}>
-                    <Grid container spacing={3} alignItems="center">
-                      <Grid item xs={12} md={7}>
-                        <Box display="flex" alignItems="center" gap={1.5} sx={{ mb: 1.5 }}>
-                          <Typography variant="subtitle1" fontWeight="800" sx={{ fontFamily: 'Outfit, sans-serif' }}>
-                            Job #{job.id}
-                          </Typography>
-                          <Box 
-                            sx={{ 
-                              px: 1.5, py: 0.4, borderRadius: '12px', fontSize: '11px', fontWeight: '800',
-                              color: '#ffffff', bgcolor: getStatusColor(job.status), textTransform: 'uppercase'
-                            }}
-                          >
-                            {job.status.replace('_', ' ')}
-                          </Box>
-                        </Box>
-
-                        <Typography variant="body2" fontWeight="700" sx={{ mb: 0.5 }}>
-                          Customer: {job.customer?.full_name}
-                        </Typography>
-                        <Typography variant="body2" color="text.secondary" sx={{ mb: 0.5 }}>
-                          Problem: {job.problem_type} — {job.problem_description?.substring(0, 75)}...
-                        </Typography>
-                        <Typography variant="caption" color="text.secondary" display="block">
-                          Schedule: <b>{job.preferred_date} | {job.preferred_time}</b>
-                        </Typography>
-                        
-                        {job.repair_token && (
-                          <Box sx={{ mt: 1.5, display: 'inline-flex', px: 1.5, py: 0.5, bgcolor: '#F0F7FF', border: '1px solid #C2E0FF', borderRadius: '6px' }}>
-                            <Typography variant="caption" color="primary.main" fontWeight="700">
-                              Workshop Token: {job.repair_token.token_number} ({job.repair_token.status.replace('_', ' ').toUpperCase()})
+                            <Typography variant="body2" fontWeight="700">
+                              Customer: {job.customer?.full_name}
                             </Typography>
-                          </Box>
-                        )}
-                      </Grid>
+                            <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>
+                              Problem: {job.problem_type} — {job.problem_description?.substring(0, 80)}...
+                            </Typography>
+                            <Typography variant="caption" color="text.secondary" sx={{ mt: 1, display: 'block' }}>
+                              Schedule: <b>{job.preferred_date} | {job.preferred_time}</b>
+                            </Typography>
+                          </Grid>
 
-                      <Grid item xs={12} md={5} sx={{ display: 'flex', flexDirection: 'column', alignItems: { md: 'flex-end' }, gap: 1.5 }}>
-                        <Box sx={{ textAlign: { md: 'right' } }}>
-                          <Typography variant="caption" color="text.secondary">Completed Date</Typography>
-                          <Typography variant="body2" fontWeight="800">
-                            {new Date(job.updated_at).toLocaleDateString('en-US', { dateStyle: 'medium' })}
-                          </Typography>
-                        </Box>
+                          <Grid item xs={12} md={4} sx={{ display: 'flex', flexDirection: 'column', alignItems: { md: 'flex-end' }, gap: 2 }}>
+                            <Box sx={{ textAlign: { md: 'right' } }}>
+                              <Typography variant="caption" color="text.secondary">Completion Date</Typography>
+                              <Typography variant="body2" fontWeight="800">
+                                {new Date(job.updated_at).toLocaleDateString('en-US', { dateStyle: 'medium' })}
+                              </Typography>
+                            </Box>
 
-                        <Box display="flex" gap={1.5}>
-                          <Button
-                            variant="outlined"
-                            size="small"
-                            onClick={() => navigate(`/captain/job/${job.id}`)}
-                            endIcon={<OpenInNewIcon fontSize="small" />}
-                            sx={{ textTransform: 'none', borderRadius: '6px', borderColor: '#000000', color: '#000000' }}
-                          >
-                            Job Details
-                          </Button>
-                          
-                          {job.status === 'completed' && (
-                            <Button
-                              variant="contained"
-                              size="small"
-                              onClick={() => handleDownloadInvoice(job.id)}
-                              startIcon={<DownloadIcon />}
-                              sx={{ textTransform: 'none', borderRadius: '6px', bgcolor: '#000000', color: '#ffffff' }}
-                            >
-                              Invoice
-                            </Button>
-                          )}
-                        </Box>
-                      </Grid>
-                    </Grid>
-                  </CardContent>
-                </Card>
-              </motion.div>
-            </Grid>
-          ))}
-        </Grid>
-      )}
-    </Container>
+                            <Box display="flex" gap={1.5}>
+                              <Button
+                                variant="outlined"
+                                size="small"
+                                onClick={() => navigate(`/captain/job/${job.id}`)}
+                                endIcon={<OpenInNewIcon fontSize="small" />}
+                                sx={{ textTransform: 'none', borderRadius: `${tokens.borderRadiusSm}px`, borderColor: tokens.colors.primary, color: tokens.colors.primary, fontWeight: 700 }}
+                              >
+                                Details
+                              </Button>
+                              
+                              {job.status === 'completed' && (
+                                <Button
+                                  variant="contained"
+                                  size="small"
+                                  onClick={() => handleDownloadInvoice(job.id)}
+                                  startIcon={<DownloadIcon />}
+                                  sx={{ textTransform: 'none', borderRadius: `${tokens.borderRadiusSm}px`, bgcolor: tokens.colors.primary, color: '#ffffff', fontWeight: 700, '&:hover': { bgcolor: '#23232F' } }}
+                                >
+                                  Invoice
+                                </Button>
+                              )}
+                            </Box>
+                          </Grid>
+                        </Grid>
+                      </Box>
+                    </motion.div>
+                  );
+                })}
+              </Box>
+            )}
+          </Box>
+        </Box>
+
+        {/* Right Column: Information Guide / Policy Details */}
+        <Box sx={span.oneThird}>
+          <Box display="flex" flexDirection="column" gap={3}>
+            <DashboardCard title="Ledger Information" subtitle="Understanding your history reports">
+              <Typography variant="body2" color="text.secondary" paragraph>
+                This ledger logs all customer requests you have accepted. You can download invoice PDFs for completed orders at any time.
+              </Typography>
+              <Typography variant="body2" color="text.secondary">
+                To disputing settlement payouts, contact technical support with the respective <b>Job ID #</b>.
+              </Typography>
+            </DashboardCard>
+
+            <DashboardCard title="Performance Review" subtitle="How completed jobs impact rating">
+              <Typography variant="body2" color="text.secondary" paragraph>
+                Client reviews and completion rates are updated live. Consistently completing requests on time maintains a higher status and visibility ranking on customer search queries.
+              </Typography>
+            </DashboardCard>
+          </Box>
+        </Box>
+      </DashboardGrid>
+    </DashboardPage>
   );
 }
+
+const CancelIcon = (props) => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    width="20"
+    height="20"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    {...props}
+  >
+    <circle cx="12" cy="12" r="10" />
+    <line x1="15" y1="9" x2="9" y2="15" />
+    <line x1="9" y1="9" x2="15" y2="15" />
+  </svg>
+);
 
 export default WorkerJobHistory;

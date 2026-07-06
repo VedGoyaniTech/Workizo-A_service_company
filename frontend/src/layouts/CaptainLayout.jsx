@@ -436,10 +436,11 @@ const CaptainLayout = () => {
         component="main"
         sx={{
           flexGrow: 1,
-          p: { xs: 2, sm: 4 },
+          p: 0,
           width: { md: `calc(100% - ${currentDrawerWidth}px)` },
           ml: { md: `${currentDrawerWidth}px` },
           mt: '64px',
+          bgcolor: '#F4F6F9',
           display: 'flex',
           flexDirection: 'column',
           transition: theme.transitions.create(['width', 'margin'], {

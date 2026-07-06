@@ -1,135 +1,153 @@
 import { createTheme } from '@mui/material/styles';
+import { tokens } from './design/tokens';
 
 const theme = createTheme({
   palette: {
     mode: 'light',
     primary: {
-      main: '#000000', // Premium black
-      light: '#222222',
+      main: tokens.colors.primary,
+      light: '#374151',
       dark: '#000000',
       contrastText: '#ffffff',
     },
     secondary: {
-      main: '#4f46e5', // Royal Indigo for links/special highlights
-      light: '#6366f1',
-      dark: '#3730a3',
+      main: tokens.colors.accent,
+      light: '#4285F4',
+      dark: '#1557B0',
       contrastText: '#ffffff',
     },
+    success: { main: tokens.colors.success },
+    warning: { main: tokens.colors.warning },
+    error: { main: tokens.colors.error },
     background: {
-      default: '#FAFAFB', // Soft clean background
-      paper: '#ffffff', // Clean white containers
+      default: tokens.colors.bg,
+      paper: tokens.colors.paper,
     },
     text: {
-      primary: '#0F0F14', // Deep Charcoal
-      secondary: '#6E7280', // Slate gray
-      disabled: '#9CA3AF',
+      primary: tokens.colors.primary,
+      secondary: tokens.colors.textSecondary,
+      disabled: tokens.colors.textMuted,
     },
-    divider: '#E5E7EB', // Soft gray lines
+    divider: tokens.borderColor,
   },
   typography: {
     fontFamily: '"Outfit", "Inter", "Roboto", "Helvetica", sans-serif',
-    h1: {
-      fontWeight: 800,
-      letterSpacing: '-0.03em',
-      color: '#0F0F14',
-    },
-    h2: {
-      fontWeight: 700,
-      letterSpacing: '-0.02em',
-      color: '#0F0F14',
-    },
-    h3: {
-      fontWeight: 700,
-      letterSpacing: '-0.01em',
-      color: '#0F0F14',
-    },
-    h4: {
-      fontWeight: 600,
-      color: '#0F0F14',
-    },
-    h5: {
-      fontWeight: 600,
-      color: '#0F0F14',
-    },
-    h6: {
-      fontWeight: 600,
-      color: '#0F0F14',
-    },
-    button: {
-      textTransform: 'none',
-      fontWeight: 600,
-    },
+    h1: { fontWeight: 800, letterSpacing: '-0.03em' },
+    h2: { fontWeight: 700, letterSpacing: '-0.02em' },
+    h3: { fontWeight: 700, letterSpacing: '-0.01em' },
+    h4: { fontWeight: 700, letterSpacing: '-0.02em' },
+    h5: { fontWeight: 600 },
+    h6: { fontWeight: 600 },
+    button: { textTransform: 'none', fontWeight: 600 },
   },
   shape: {
-    borderRadius: 6, // Crisp edges like Urban Company
+    borderRadius: tokens.borderRadiusSm,
   },
   components: {
+    MuiCssBaseline: {
+      styleOverrides: {
+        body: {
+          backgroundColor: tokens.colors.bg,
+        },
+      },
+    },
     MuiButton: {
       styleOverrides: {
         root: {
-          borderRadius: 6,
+          borderRadius: tokens.borderRadiusSm,
           padding: '10px 20px',
           boxShadow: 'none',
-          '&:hover': {
-            boxShadow: 'none',
-          },
+          fontWeight: 600,
+          '&:hover': { boxShadow: 'none' },
         },
         containedPrimary: {
-          backgroundColor: '#000000',
-          color: '#ffffff',
-          '&:hover': {
-            backgroundColor: '#222222',
-          },
+          backgroundColor: tokens.colors.primary,
+          '&:hover': { backgroundColor: '#222222' },
         },
         outlinedPrimary: {
-          borderColor: '#000000',
-          color: '#000000',
+          borderColor: tokens.borderColor,
+          color: tokens.colors.primary,
           '&:hover': {
-            borderColor: '#000000',
-            backgroundColor: 'rgba(0,0,0,0.04)',
+            borderColor: tokens.colors.primary,
+            backgroundColor: 'rgba(15, 15, 20, 0.04)',
           },
         },
       },
     },
     MuiTextField: {
-      defaultProps: {
-        variant: 'outlined',
-        size: 'small',
-      },
+      defaultProps: { variant: 'outlined', size: 'small' },
     },
     MuiOutlinedInput: {
       styleOverrides: {
         root: {
-          backgroundColor: '#ffffff',
+          backgroundColor: tokens.colors.paper,
+          borderRadius: tokens.borderRadiusSm,
           '&:hover .MuiOutlinedInput-notchedOutline': {
-            borderColor: '#9CA3AF',
+            borderColor: tokens.colors.textMuted,
           },
           '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
-            borderColor: '#000000',
+            borderColor: tokens.colors.accent,
+            borderWidth: 2,
           },
         },
-        notchedOutline: {
-          borderColor: '#E5E7EB',
-        },
+        notchedOutline: { borderColor: tokens.borderColor },
       },
     },
     MuiPaper: {
       styleOverrides: {
         root: {
           backgroundImage: 'none',
-          backgroundColor: '#ffffff',
-          border: '1px solid #E5E7EB',
-          boxShadow: '0 1px 3px rgba(0,0,0,0.05), 0 1px 2px rgba(0,0,0,0.02)',
+          backgroundColor: tokens.colors.paper,
+          border: `1px solid ${tokens.borderColor}`,
+          boxShadow: tokens.shadow,
+          borderRadius: tokens.borderRadius,
+        },
+      },
+    },
+    MuiCard: {
+      styleOverrides: {
+        root: {
+          borderRadius: tokens.borderRadius,
+          border: `1px solid ${tokens.borderColor}`,
+          boxShadow: tokens.shadow,
+          transition: tokens.transition,
+          '&:hover': {
+            boxShadow: tokens.shadowHover,
+          },
         },
       },
     },
     MuiAppBar: {
       styleOverrides: {
         root: {
-          backgroundColor: '#ffffff',
-          color: '#0F0F14',
-          borderBottom: '1px solid #E5E7EB',
+          backgroundColor: tokens.colors.paper,
+          color: tokens.colors.primary,
+          borderBottom: `1px solid ${tokens.borderColor}`,
+          boxShadow: 'none',
         },
+      },
+    },
+    MuiDrawer: {
+      styleOverrides: {
+        paper: {
+          borderRight: `1px solid ${tokens.borderColor}`,
+        },
+      },
+    },
+    MuiTableCell: {
+      styleOverrides: {
+        head: {
+          fontWeight: 700,
+          color: tokens.colors.textSecondary,
+          textTransform: 'uppercase',
+          fontSize: '0.7rem',
+          letterSpacing: '0.06em',
+        },
+      },
+    },
+    MuiChip: {
+      styleOverrides: {
+        root: { fontWeight: 600 },
       },
     },
   },
