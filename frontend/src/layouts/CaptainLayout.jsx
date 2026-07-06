@@ -15,6 +15,8 @@ import SettingsIcon from '@mui/icons-material/Settings';
 import LogoutIcon from '@mui/icons-material/Logout';
 import HandymanIcon from '@mui/icons-material/Handyman';
 import NotificationsIcon from '@mui/icons-material/Notifications';
+import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
+import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import api from '../services/api';
 import toast from 'react-hot-toast';
 
@@ -28,10 +30,14 @@ const CaptainLayout = () => {
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
 
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [isCollapsed, setIsCollapsed] = useState(false);
   const [togglingOnline, setTogglingOnline] = useState(false);
   const [anchorEl, setAnchorEl] = useState(null);
 
   const isOnline = !!user?.profile?.online_status;
+  
+  // Dynamic desktop drawer width
+  const currentDrawerWidth = isCollapsed ? 80 : 260;
 
   const handleDrawerToggle = () => {
     setMobileOpen(!mobileOpen);
@@ -78,70 +84,104 @@ const CaptainLayout = () => {
 
   const drawerContent = (
     <Box sx={{ display: 'flex', flexDirection: 'column', height: '100%', bgcolor: '#0F0F14', color: '#ffffff' }}>
-      {/* Branding Logo */}
+      {/* Branding Logo & Collapse Trigger */}
       <Box 
-        onClick={() => navigate('/captain/dashboard')} 
         sx={{ 
-          p: 3, 
+          p: isCollapsed ? 2 : 3, 
           display: 'flex', 
           alignItems: 'center', 
-          cursor: 'pointer', 
-          gap: 1.5,
-          borderBottom: '1px solid #1E1E24'
+          justifyContent: isCollapsed ? 'center' : 'space-between',
+          borderBottom: '1px solid #1E1E24',
+          height: '75px'
         }}
       >
-        <Box component="img" src="/logo.png" sx={{ width: 32, height: 32, objectFit: 'contain' }} />
-        <Box>
-          <Typography
-            variant="h6"
-            sx={{
-              fontFamily: 'Outfit',
-              fontWeight: 900,
-              letterSpacing: '.05rem',
-              color: '#ffffff',
-              lineHeight: 1.2
+        {!isCollapsed ? (
+          <>
+            <Box 
+              onClick={() => navigate('/captain/dashboard')} 
+              sx={{ display: 'flex', alignItems: 'center', cursor: 'pointer', gap: 1.5 }}
+            >
+              <Box component="img" src="/logo.png" sx={{ width: 32, height: 32, objectFit: 'contain' }} />
+              <Box>
+                <Typography
+                  variant="h6"
+                  sx={{
+                    fontFamily: 'Outfit',
+                    fontWeight: 900,
+                    letterSpacing: '.05rem',
+                    color: '#ffffff',
+                    lineHeight: 1.2
+                  }}
+                >
+                  WORKIZO
+                </Typography>
+                <Typography variant="caption" sx={{ color: '#888888', letterSpacing: '.1rem', fontWeight: 600 }}>
+                  CAPTAIN PANEL
+                </Typography>
+              </Box>
+            </Box>
+            {!isMobile && (
+              <IconButton 
+                onClick={() => setIsCollapsed(true)} 
+                sx={{ 
+                  color: '#9CA3AF', 
+                  '&:hover': { color: '#ffffff', bgcolor: 'rgba(255, 255, 255, 0.08)' } 
+                }}
+              >
+                <ChevronLeftIcon />
+              </IconButton>
+            )}
+          </>
+        ) : (
+          <IconButton 
+            onClick={() => setIsCollapsed(false)} 
+            sx={{ 
+              color: '#3b82f6', 
+              '&:hover': { bgcolor: 'rgba(255, 255, 255, 0.08)' } 
             }}
           >
-            WORKIZO
-          </Typography>
-          <Typography variant="caption" sx={{ color: '#888888', letterSpacing: '.1rem', fontWeight: 600 }}>
-            CAPTAIN PANEL
-          </Typography>
-        </Box>
+            <ChevronRightIcon />
+          </IconButton>
+        )}
       </Box>
 
       {/* Navigation List */}
-      <List sx={{ px: 2, py: 3, flexGrow: 1 }}>
+      <List sx={{ px: isCollapsed ? 1 : 2, py: 3, flexGrow: 1 }}>
         {menuItems.map((item) => {
           const isActive = location.pathname === item.path;
           return (
             <ListItem key={item.text} disablePadding sx={{ mb: 1 }}>
-              <ListItemButton
-                onClick={() => {
-                  navigate(item.path);
-                  if (isMobile) setMobileOpen(false);
-                }}
-                sx={{
-                  borderRadius: '8px',
-                  py: 1.2,
-                  px: 2,
-                  backgroundColor: isActive ? 'rgba(26, 115, 232, 0.15)' : 'transparent',
-                  color: isActive ? '#3b82f6' : '#9CA3AF',
-                  '&:hover': {
-                    backgroundColor: 'rgba(255, 255, 255, 0.05)',
-                    color: '#ffffff'
-                  },
-                  transition: 'all 0.2s'
-                }}
-              >
-                <ListItemIcon sx={{ color: isActive ? '#3b82f6' : '#9CA3AF', minWidth: 40 }}>
-                  {item.icon}
-                </ListItemIcon>
-                <ListItemText 
-                  primary={item.text} 
-                  primaryTypographyProps={{ fontSize: '0.95rem', fontWeight: isActive ? 700 : 500 }} 
-                />
-              </ListItemButton>
+              <Tooltip title={item.text} placement="right" disableHoverListener={!isCollapsed}>
+                <ListItemButton
+                  onClick={() => {
+                    navigate(item.path);
+                    if (isMobile) setMobileOpen(false);
+                  }}
+                  sx={{
+                    borderRadius: '8px',
+                    py: 1.2,
+                    px: isCollapsed ? 1.5 : 2,
+                    justifyContent: isCollapsed ? 'center' : 'initial',
+                    backgroundColor: isActive ? 'rgba(26, 115, 232, 0.15)' : 'transparent',
+                    color: isActive ? '#3b82f6' : '#9CA3AF',
+                    '&:hover': {
+                      backgroundColor: 'rgba(255, 255, 255, 0.05)',
+                      color: '#ffffff'
+                    },
+                    transition: 'all 0.2s'
+                  }}
+                >
+                  <ListItemIcon sx={{ color: isActive ? '#3b82f6' : '#9CA3AF', minWidth: isCollapsed ? 0 : 40, justifyContent: 'center' }}>
+                    {item.icon}
+                  </ListItemIcon>
+                  {!isCollapsed && (
+                    <ListItemText 
+                      primary={item.text} 
+                      primaryTypographyProps={{ fontSize: '0.95rem', fontWeight: isActive ? 700 : 500 }} 
+                    />
+                  )}
+                </ListItemButton>
+              </Tooltip>
             </ListItem>
           );
         })}
@@ -150,26 +190,47 @@ const CaptainLayout = () => {
       <Divider sx={{ borderColor: '#1E1E24' }} />
 
       {/* Footer / Account Profile */}
-      <Box sx={{ p: 2.5, display: 'flex', alignItems: 'center', gap: 1.5, borderTop: '1px solid #1E1E24' }}>
+      <Box 
+        sx={{ 
+          p: isCollapsed ? 1.5 : 2.5, 
+          display: 'flex', 
+          flexDirection: isCollapsed ? 'column' : 'row',
+          alignItems: 'center', 
+          justifyContent: 'center', 
+          gap: isCollapsed ? 2 : 1.5, 
+          borderTop: '1px solid #1E1E24' 
+        }}
+      >
         <Avatar
           src={user?.profile_photo ? `http://127.0.0.1:8001${user.profile_photo}` : ''}
           sx={{ bgcolor: '#1A73E8', width: 40, height: 40, fontWeight: 700 }}
         >
           {user?.full_name?.charAt(0).toUpperCase()}
         </Avatar>
-        <Box sx={{ minWidth: 0, flexGrow: 1 }}>
-          <Typography variant="subtitle2" noWrap sx={{ fontWeight: 700 }}>
-            {user?.full_name}
-          </Typography>
-          <Typography variant="caption" color="text.secondary" noWrap display="block" sx={{ color: '#888888' }}>
-            Captain
-          </Typography>
-        </Box>
-        <Tooltip title="Log Out">
-          <IconButton onClick={handleLogout} sx={{ color: '#ef4444' }}>
-            <LogoutIcon size="small" />
-          </IconButton>
-        </Tooltip>
+        
+        {!isCollapsed ? (
+          <>
+            <Box sx={{ minWidth: 0, flexGrow: 1 }}>
+              <Typography variant="subtitle2" noWrap sx={{ fontWeight: 700 }}>
+                {user?.full_name}
+              </Typography>
+              <Typography variant="caption" color="text.secondary" noWrap display="block" sx={{ color: '#888888' }}>
+                Captain
+              </Typography>
+            </Box>
+            <Tooltip title="Log Out">
+              <IconButton onClick={handleLogout} sx={{ color: '#ef4444' }}>
+                <LogoutIcon fontSize="small" />
+              </IconButton>
+            </Tooltip>
+          </>
+        ) : (
+          <Tooltip title="Log Out" placement="right">
+            <IconButton onClick={handleLogout} sx={{ color: '#ef4444', p: 0.5 }}>
+              <LogoutIcon fontSize="small" />
+            </IconButton>
+          </Tooltip>
+        )}
       </Box>
     </Box>
   );
@@ -181,12 +242,16 @@ const CaptainLayout = () => {
         position="fixed"
         elevation={0}
         sx={{
-          width: { md: `calc(100% - ${drawerWidth}px)` },
-          ml: { md: `${drawerWidth}px` },
+          width: { md: `calc(100% - ${currentDrawerWidth}px)` },
+          ml: { md: `${currentDrawerWidth}px` },
           background: 'rgba(255, 255, 255, 0.95)',
           backdropFilter: 'blur(12px)',
           borderBottom: '1px solid #E5E7EB',
-          color: '#0F0F14'
+          color: '#0F0F14',
+          transition: theme.transitions.create(['width', 'margin'], {
+            easing: theme.transitions.easing.sharp,
+            duration: theme.transitions.duration.enteringScreen,
+          }),
         }}
       >
         <Toolbar sx={{ justifyContent: 'space-between', px: { xs: 2, sm: 3 } }}>
@@ -311,7 +376,7 @@ const CaptainLayout = () => {
       {/* Left Sidebar Drawer */}
       <Box
         component="nav"
-        sx={{ width: { md: drawerWidth }, flexShrink: { md: 0 } }}
+        sx={{ width: { md: currentDrawerWidth }, flexShrink: { md: 0 } }}
       >
         {/* Mobile Drawer */}
         <Drawer
@@ -334,7 +399,16 @@ const CaptainLayout = () => {
           variant="permanent"
           sx={{
             display: { xs: 'none', md: 'block' },
-            '& .MuiDrawer-paper': { boxSizing: 'border-box', width: drawerWidth, borderRight: '1px solid #E5E7EB' },
+            '& .MuiDrawer-paper': { 
+              boxSizing: 'border-box', 
+              width: currentDrawerWidth, 
+              borderRight: '1px solid #E5E7EB',
+              transition: theme.transitions.create('width', {
+                easing: theme.transitions.easing.sharp,
+                duration: theme.transitions.duration.enteringScreen,
+              }),
+              overflowX: 'hidden'
+            },
           }}
           open
         >
@@ -348,10 +422,16 @@ const CaptainLayout = () => {
         sx={{
           flexGrow: 1,
           p: { xs: 2, sm: 4 },
-          width: { md: `calc(100% - ${drawerWidth}px)` },
+          width: { md: `calc(100% - ${currentDrawerWidth}px)` },
+          ml: { md: `${currentDrawerWidth}px` },
           mt: '64px',
           display: 'flex',
-          flexDirection: 'column'
+          flexDirection: 'column',
+          transition: theme.transitions.create(['width', 'margin'], {
+            easing: theme.transitions.easing.sharp,
+            duration: theme.transitions.duration.enteringScreen,
+          }),
+          minWidth: 0
         }}
       >
         <Outlet />
