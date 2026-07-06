@@ -1,16 +1,18 @@
 import React, { useState } from 'react';
 import {
-  Container, Paper, Typography, TextField, Button, Box, Grid,
-  Card, CardContent, Divider, Stepper, Step, StepLabel, Alert,
+  Typography, TextField, Button, Box, Divider, Stepper, Step, StepLabel, Alert,
   CircularProgress
 } from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
 import BuildIcon from '@mui/icons-material/Build';
-import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import HandymanIcon from '@mui/icons-material/Handyman';
 import AccessTimeIcon from '@mui/icons-material/AccessTime';
-import RoomIcon from '@mui/icons-material/Room';
 import api from '../services/api';
+
+import { tokens, span } from '../design/tokens';
+import { 
+  DashboardPage, DashboardGrid, DashboardCard 
+} from '../components/dashboard';
 
 const steps = [
   { label: 'Booking Placed', desc: 'Finding the nearest Captain' },
@@ -72,191 +74,168 @@ const BookingTracker = () => {
   const activeStep = booking ? getActiveStep(booking.status) : 0;
 
   return (
-    <Container maxWidth="md" sx={{ py: 8 }}>
-      {/* Title */}
-      <Box sx={{ textAlign: 'center', mb: 6 }}>
-        <Typography variant="caption" sx={{ color: '#000000', fontWeight: 800, letterSpacing: '0.1rem', textTransform: 'uppercase' }}>
-          Real-Time Status
-        </Typography>
-        <Typography variant="h3" sx={{ fontWeight: 900, mt: 1, mb: 2, fontFamily: 'Outfit, sans-serif' }}>
-          Track Your Service
-        </Typography>
-        <Typography variant="body1" sx={{ color: '#6B7280', maxWidth: '500px', mx: 'auto' }}>
-          Enter your unique Tracking ID to track the real-time status of your local repair job.
-        </Typography>
-      </Box>
-
-      {/* Input Search Panel */}
-      <Paper
-        variant="outlined"
-        sx={{
-          p: 3,
-          mb: 6,
-          borderColor: '#E5E7EB',
-          borderRadius: '12px',
-          boxShadow: '0 4px 12px rgba(0, 0, 0, 0.02)'
-        }}
-      >
-        <Box component="form" onSubmit={handleTrack} sx={{ display: 'flex', gap: 2, flexDirection: { xs: 'column', sm: 'row' } }}>
-          <TextField
-            fullWidth
-            placeholder="Enter Tracking ID (e.g. WRK-10001)"
-            value={trackingId}
-            onChange={(e) => setTrackingId(e.target.value)}
-            InputProps={{
-              startAdornment: <SearchIcon sx={{ color: '#9CA3AF', mr: 1 }} />
-            }}
-            sx={{
-              '& .MuiOutlinedInput-root': {
-                borderRadius: '8px',
-                bgcolor: '#ffffff'
-              }
-            }}
-          />
-          <Button
-            type="submit"
-            variant="contained"
-            disabled={loading}
-            sx={{
-              bgcolor: '#000000',
-              color: '#ffffff',
-              borderRadius: '8px',
-              px: 4,
-              py: 1.5,
-              fontWeight: 'bold',
-              textTransform: 'none',
-              '&:hover': {
-                bgcolor: '#222222'
-              }
-            }}
-          >
-            {loading ? <CircularProgress size={24} color="inherit" /> : 'Track Booking'}
-          </Button>
+    <DashboardPage
+      breadcrumbs={[{ label: 'Home', path: '/' }, { label: 'Track Booking' }]}
+      title="Track Your Service"
+      description="Enter your unique Tracking ID to track the real-time status of your local repair job."
+    >
+      <DashboardGrid>
+        {/* Input Search Panel */}
+        <Box sx={span.full}>
+          <DashboardCard title="Live Service Tracker Lookup" subtitle="Verify updates and assigned captain timelines instantly">
+            <Box component="form" onSubmit={handleTrack} sx={{ mt: 1, display: 'flex', gap: 2, flexDirection: { xs: 'column', sm: 'row' } }}>
+              <TextField
+                placeholder="Enter Tracking ID (e.g. WRK-10001)"
+                value={trackingId}
+                onChange={(e) => setTrackingId(e.target.value)}
+                InputProps={{
+                  startAdornment: <SearchIcon sx={{ color: '#9CA3AF', mr: 1 }} />
+                }}
+                sx={{
+                  flexGrow: 1,
+                  '& .MuiOutlinedInput-root': {
+                    borderRadius: `${tokens.borderRadiusSm}px`,
+                    bgcolor: tokens.colors.paper
+                  }
+                }}
+              />
+              <Button
+                type="submit"
+                variant="contained"
+                disabled={loading}
+                sx={{
+                  bgcolor: tokens.colors.primary,
+                  color: '#ffffff',
+                  borderRadius: `${tokens.borderRadiusSm}px`,
+                  px: 4,
+                  py: 1.5,
+                  fontWeight: 'bold',
+                  textTransform: 'none',
+                  '&:hover': {
+                    bgcolor: '#23232F'
+                  }
+                }}
+              >
+                {loading ? <CircularProgress size={24} color="inherit" /> : 'Track Booking'}
+              </Button>
+            </Box>
+          </DashboardCard>
         </Box>
-      </Paper>
 
-      {/* Error Alert */}
-      {error && (
-        <Alert severity="error" sx={{ mb: 4, borderRadius: '8px' }}>
-          {error}
-        </Alert>
-      )}
+        {/* Error Alert */}
+        {error && (
+          <Box sx={span.full}>
+            <Alert severity="error" sx={{ borderRadius: `${tokens.borderRadiusSm}px` }}>
+              {error}
+            </Alert>
+          </Box>
+        )}
 
-      {/* Booking Status Timeline Panel */}
-      {booking && (
-        <Grid container spacing={4}>
-          {/* Timeline Tracker */}
-          <Grid item xs={12}>
-            <Card variant="outlined" sx={{ p: 4, borderRadius: '12px', borderColor: '#E5E7EB' }}>
-              <Box display="flex" justifyContent="space-between" flexWrap="wrap" gap={2} sx={{ mb: 4, borderBottom: '1px solid #E5E7EB', pb: 2 }}>
-                <Box>
-                  <Typography variant="caption" color="text.secondary">TRACKING ID</Typography>
-                  <Typography variant="h6" fontWeight="bold" sx={{ color: '#000000' }}>{booking.tracking_id}</Typography>
-                </Box>
-                <Box sx={{ textAlign: { sm: 'right' } }}>
-                  <Typography variant="caption" color="text.secondary">SERVICE CATEGORY</Typography>
-                  <Typography variant="h6" fontWeight="bold" sx={{ color: '#000000' }}>
-                    {booking.service_category_detail?.name}
-                  </Typography>
-                </Box>
-              </Box>
-
-              {isCancelled ? (
-                <Alert severity="error" sx={{ borderRadius: '8px' }}>
-                  This booking has been cancelled. If you require assistance, please schedule a new request.
-                </Alert>
-              ) : (
-                <Stepper activeStep={activeStep} orientation="vertical">
-                  {steps.map((step, idx) => (
-                    <Step key={step.label}>
-                      <StepLabel
-                        optional={
-                          <Typography variant="caption" color="text.secondary">
-                            {step.desc}
-                          </Typography>
-                        }
-                        StepIconProps={{
-                          sx: {
-                            '&.Mui-active': { color: '#000000' },
-                            '&.Mui-completed': { color: '#000000' }
-                          }
-                        }}
-                      >
-                        <Typography variant="subtitle2" fontWeight="800">
-                          {step.label}
-                        </Typography>
-                      </StepLabel>
-                    </Step>
-                  ))}
-                </Stepper>
-              )}
-            </Card>
-          </Grid>
-
-          {/* Booking Summary Details */}
-          <Grid item xs={12}>
-            <Card variant="outlined" sx={{ p: 3, borderRadius: '12px', borderColor: '#E5E7EB' }}>
-              <Typography variant="subtitle2" fontWeight="800" sx={{ mb: 2, display: 'flex', alignItems: 'center', gap: 1 }}>
-                <HandymanIcon fontSize="small" /> Job Summary
-              </Typography>
-              <Divider sx={{ mb: 2 }} />
-
-              <Box sx={{ mb: 2 }}>
-                <Typography variant="caption" color="text.secondary" display="block">Problem Type</Typography>
-                <Typography variant="body2" fontWeight="700">{booking.problem_type}</Typography>
-              </Box>
-              <Box sx={{ mb: 2 }}>
-                <Typography variant="caption" color="text.secondary" display="block">Preferred Slot Schedule</Typography>
-                <Typography variant="body2" fontWeight="700">
-                  {booking.preferred_date ? `${booking.preferred_date} | ` : ''} {booking.preferred_time || 'Instant'}
-                </Typography>
-              </Box>
-              <Box>
-                <Typography variant="caption" color="text.secondary" display="block">Assigned Captain</Typography>
-                <Typography variant="body2" fontWeight="700">
-                  {booking.worker_name ? `Captain ${booking.worker_name}` : 'Searching for nearest Captain...'}
-                </Typography>
-              </Box>
-            </Card>
-          </Grid>
-
-          {/* Workshop / Offsite token Details */}
-          <Grid item xs={12}>
-            <Card variant="outlined" sx={{ p: 3, borderRadius: '12px', borderColor: '#E5E7EB', display: 'flex', flexDirection: 'column' }}>
-              <Typography variant="subtitle2" fontWeight="800" sx={{ mb: 2, display: 'flex', alignItems: 'center', gap: 1 }}>
-                <BuildIcon fontSize="small" /> Workshop Repair Ledger
-              </Typography>
-              <Divider sx={{ mb: 2 }} />
-
-              {booking.repair_token ? (
-                <Box>
-                  <Alert severity="info" sx={{ mb: 2.5, borderRadius: '8px' }}>
-                    Your item was taken offsite to the Workizo service workshop.
+        {/* Booking Status Timeline Panel */}
+        {booking && (
+          <>
+            {/* Left Column: Timeline Tracker */}
+            <Box sx={span.twoThirds}>
+              <DashboardCard 
+                title="Service Progress Timeline" 
+                subtitle={`Tracking ID: ${booking.tracking_id} | Category: ${booking.service_category_detail?.name}`}
+                highlight
+              >
+                {isCancelled ? (
+                  <Alert severity="error" sx={{ borderRadius: `${tokens.borderRadiusSm}px` }}>
+                    This booking has been cancelled. If you require assistance, please schedule a new request.
                   </Alert>
-                  <Box sx={{ mb: 2 }}>
-                    <Typography variant="caption" color="text.secondary" display="block">Token Number</Typography>
-                    <Typography variant="body2" fontWeight="700">{booking.repair_token.token_number}</Typography>
+                ) : (
+                  <Box sx={{ mt: 2 }}>
+                    <Stepper activeStep={activeStep} orientation="vertical">
+                      {steps.map((step, idx) => (
+                        <Step key={step.label}>
+                          <StepLabel
+                            optional={
+                              <Typography variant="caption" color="text.secondary">
+                                {step.desc}
+                              </Typography>
+                            }
+                            StepIconProps={{
+                              sx: {
+                                '&.Mui-active': { color: tokens.colors.accent },
+                                '&.Mui-completed': { color: tokens.colors.success }
+                              }
+                            }}
+                          >
+                            <Typography variant="subtitle2" fontWeight="800">
+                              {step.label}
+                            </Typography>
+                          </StepLabel>
+                        </Step>
+                      ))}
+                    </Stepper>
                   </Box>
-                  <Box>
-                    <Typography variant="caption" color="text.secondary" display="block">Workshop Status</Typography>
-                    <Typography variant="body2" fontWeight="700" sx={{ textTransform: 'capitalize', color: '#1A73E8' }}>
-                      {booking.repair_token.status.replace('_', ' ')}
-                    </Typography>
+                )}
+              </DashboardCard>
+            </Box>
+
+            {/* Right Column: Summaries & Offsite Workshop Status */}
+            <Box sx={span.oneThird}>
+              <Box display="flex" flexDirection="column" gap={`${tokens.cardGap}px`}>
+                
+                {/* Booking Summary Details */}
+                <DashboardCard title="Job Summary" subtitle="Details of requested repair">
+                  <Box sx={{ mt: 1 }}>
+                    <Box sx={{ mb: 2 }}>
+                      <Typography variant="caption" color="text.secondary" display="block">Problem Type</Typography>
+                      <Typography variant="body2" fontWeight="700">{booking.problem_type}</Typography>
+                    </Box>
+                    <Box sx={{ mb: 2 }}>
+                      <Typography variant="caption" color="text.secondary" display="block">Preferred Slot Schedule</Typography>
+                      <Typography variant="body2" fontWeight="700">
+                        {booking.preferred_date ? `${booking.preferred_date} | ` : ''} {booking.preferred_time || 'Instant'}
+                      </Typography>
+                    </Box>
+                    <Box>
+                      <Typography variant="caption" color="text.secondary" display="block">Assigned Captain</Typography>
+                      <Typography variant="body2" fontWeight="700">
+                        {booking.worker_name ? `Captain ${booking.worker_name}` : 'Searching for nearest Captain...'}
+                      </Typography>
+                    </Box>
                   </Box>
-                </Box>
-              ) : (
-                <Box display="flex" flexDirection="column" alignItems="center" justifyContent="center" flexGrow={1} sx={{ color: 'text.secondary', textAlign: 'center', py: 2 }}>
-                  <AccessTimeIcon sx={{ fontSize: 36, mb: 1, color: '#9CA3AF' }} />
-                  <Typography variant="body2">
-                    No offsite workshop repair initiated. Work is currently scheduled/occurring on-site at customer premises.
-                  </Typography>
-                </Box>
-              )}
-            </Card>
-          </Grid>
-        </Grid>
-      )}
-    </Container>
+                </DashboardCard>
+
+                {/* Workshop / Offsite token Details */}
+                <DashboardCard title="Workshop Repair Ledger" subtitle="Offsite work details">
+                  <Box sx={{ mt: 1 }}>
+                    {booking.repair_token ? (
+                      <Box>
+                        <Alert severity="info" sx={{ mb: 2, borderRadius: `${tokens.borderRadiusSm}px` }}>
+                          Your item was taken offsite to the Workizo service workshop.
+                        </Alert>
+                        <Box sx={{ mb: 2 }}>
+                          <Typography variant="caption" color="text.secondary" display="block">Token Number</Typography>
+                          <Typography variant="body2" fontWeight="700">{booking.repair_token.token_number}</Typography>
+                        </Box>
+                        <Box>
+                          <Typography variant="caption" color="text.secondary" display="block">Workshop Status</Typography>
+                          <Typography variant="body2" fontWeight="700" sx={{ textTransform: 'capitalize', color: tokens.colors.accent }}>
+                            {booking.repair_token.status.replace('_', ' ')}
+                          </Typography>
+                        </Box>
+                      </Box>
+                    ) : (
+                      <Box display="flex" flexDirection="column" alignItems="center" justifyContent="center" sx={{ color: 'text.secondary', textAlign: 'center', py: 2 }}>
+                        <AccessTimeIcon sx={{ fontSize: 36, mb: 1, color: tokens.colors.textMuted }} />
+                        <Typography variant="body2">
+                          No offsite workshop repair initiated. Work is currently scheduled/occurring on-site at customer premises.
+                        </Typography>
+                      </Box>
+                    )}
+                  </Box>
+                </DashboardCard>
+              </Box>
+            </Box>
+          </>
+        )}
+      </DashboardGrid>
+    </DashboardPage>
   );
 };
 

@@ -3,7 +3,7 @@ import { useAuth } from '../context/AuthContext';
 import { useForm } from 'react-hook-form';
 import api from '../services/api';
 import {
-  Grid, TextField, Button, Box, CircularProgress
+  TextField, Button, Box, CircularProgress
 } from '@mui/material';
 import toast from 'react-hot-toast';
 
@@ -92,16 +92,16 @@ const CustomerProfile = () => {
             subtitle="Update your name, contact phone, and service location details"
           >
             <Box component="form" onSubmit={handleSubmitProfile(onProfileSubmit)} noValidate sx={{ mt: 2 }}>
-              <Grid container spacing={3}>
-                <Grid item xs={12}>
+              <DashboardGrid sx={{ gap: 2.5 }}>
+                <Box sx={span.full}>
                   <TextField
                     required
                     fullWidth
                     label="Full Name"
                     {...registerProfile('fullName', { required: true })}
                   />
-                </Grid>
-                <Grid item xs={12} sm={6}>
+                </Box>
+                <Box sx={span.half}>
                   <TextField
                     required
                     fullWidth
@@ -109,16 +109,16 @@ const CustomerProfile = () => {
                     disabled
                     value={user?.email || ''}
                   />
-                </Grid>
-                <Grid item xs={12} sm={6}>
+                </Box>
+                <Box sx={span.half}>
                   <TextField
                     required
                     fullWidth
                     label="Phone Number"
                     {...registerProfile('phone', { required: true })}
                   />
-                </Grid>
-                <Grid item xs={12}>
+                </Box>
+                <Box sx={span.full}>
                   <TextField
                     fullWidth
                     multiline
@@ -126,29 +126,29 @@ const CustomerProfile = () => {
                     label="Street Address"
                     {...registerProfile('address')}
                   />
-                </Grid>
-                <Grid item xs={12} sm={4}>
+                </Box>
+                <Box sx={span.third}>
                   <TextField
                     fullWidth
                     label="City"
                     {...registerProfile('city')}
                   />
-                </Grid>
-                <Grid item xs={12} sm={4}>
+                </Box>
+                <Box sx={span.third}>
                   <TextField
                     fullWidth
                     label="State"
                     {...registerProfile('state')}
                   />
-                </Grid>
-                <Grid item xs={12} sm={4}>
+                </Box>
+                <Box sx={span.third}>
                   <TextField
                     fullWidth
                     label="Pincode"
                     {...registerProfile('pincode')}
                   />
-                </Grid>
-              </Grid>
+                </Box>
+              </DashboardGrid>
 
               <Button
                 type="submit"
@@ -179,8 +179,8 @@ const CustomerProfile = () => {
             subtitle="Ensure your account is using a secure password"
           >
             <Box component="form" onSubmit={handleSubmitPassword(onPasswordSubmit)} noValidate sx={{ mt: 2 }}>
-              <Grid container spacing={3}>
-                <Grid item xs={12}>
+              <DashboardGrid sx={{ gap: 2.5 }}>
+                <Box sx={span.full}>
                   <TextField
                     required
                     fullWidth
@@ -188,8 +188,8 @@ const CustomerProfile = () => {
                     label="Current Password"
                     {...registerPassword('oldPassword', { required: true })}
                   />
-                </Grid>
-                <Grid item xs={12}>
+                </Box>
+                <Box sx={span.full}>
                   <TextField
                     required
                     fullWidth
@@ -197,8 +197,8 @@ const CustomerProfile = () => {
                     label="New Password"
                     {...registerPassword('newPassword', { required: true, minLength: 6 })}
                   />
-                </Grid>
-                <Grid item xs={12}>
+                </Box>
+                <Box sx={span.full}>
                   <TextField
                     required
                     fullWidth
@@ -209,8 +209,8 @@ const CustomerProfile = () => {
                       validate: (v) => v === newPassword || 'Passwords do not match'
                     })}
                   />
-                </Grid>
-              </Grid>
+                </Box>
+              </DashboardGrid>
 
               <Button
                 type="submit"

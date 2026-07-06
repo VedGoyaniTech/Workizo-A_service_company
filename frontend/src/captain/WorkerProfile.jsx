@@ -3,7 +3,7 @@ import { useAuth } from '../context/AuthContext';
 import { useForm } from 'react-hook-form';
 import api, { buildMediaUrl } from '../services/api';
 import {
-  Grid, TextField, Button, Box, CircularProgress, Alert, Chip, MenuItem
+  TextField, Button, Box, CircularProgress, Alert, Chip, MenuItem, Typography, Divider
 } from '@mui/material';
 import toast from 'react-hot-toast';
 import HourglassEmptyIcon from '@mui/icons-material/HourglassEmpty';
@@ -155,27 +155,27 @@ const WorkerProfile = () => {
         <Box sx={span.twoThirds}>
           <DashboardCard title="Onboarding Form & Bank Info" subtitle="Provide government KYC and settlement account details">
             <Box component="form" onSubmit={handleSubmitProfile(onProfileSubmit)} noValidate sx={{ mt: 2 }}>
-              <Grid container spacing={3}>
+              <DashboardGrid sx={{ gap: 2.5 }}>
                 {/* Personal Info */}
-                <Grid item xs={12} sm={6}>
+                <Box sx={span.half}>
                   <TextField
                     required
                     fullWidth
                     label="Full Name"
                     {...registerProfile('fullName', { required: true })}
                   />
-                </Grid>
-                <Grid item xs={12} sm={6}>
+                </Box>
+                <Box sx={span.half}>
                   <TextField
                     required
                     fullWidth
                     label="Phone Number"
                     {...registerProfile('phone', { required: true })}
                   />
-                </Grid>
+                </Box>
 
                 {/* Work Category & Experience */}
-                <Grid item xs={12} sm={6}>
+                <Box sx={span.half}>
                   <TextField
                     required
                     fullWidth
@@ -191,8 +191,8 @@ const WorkerProfile = () => {
                       </MenuItem>
                     ))}
                   </TextField>
-                </Grid>
-                <Grid item xs={12} sm={6}>
+                </Box>
+                <Box sx={span.half}>
                   <TextField
                     required
                     fullWidth
@@ -200,10 +200,10 @@ const WorkerProfile = () => {
                     label="Years of Experience"
                     {...registerProfile('experience', { required: true })}
                   />
-                </Grid>
+                </Box>
 
                 {/* Location Address */}
-                <Grid item xs={12}>
+                <Box sx={span.full}>
                   <TextField
                     fullWidth
                     multiline
@@ -211,84 +211,84 @@ const WorkerProfile = () => {
                     label="Street Address"
                     {...registerProfile('address')}
                   />
-                </Grid>
-                <Grid item xs={12} sm={4}>
+                </Box>
+                <Box sx={span.third}>
                   <TextField
                     fullWidth
                     label="City"
                     {...registerProfile('city')}
                   />
-                </Grid>
-                <Grid item xs={12} sm={4}>
+                </Box>
+                <Box sx={span.third}>
                   <TextField
                     fullWidth
                     label="State"
                     {...registerProfile('state')}
                   />
-                </Grid>
-                <Grid item xs={12} sm={4}>
+                </Box>
+                <Box sx={span.third}>
                   <TextField
                     fullWidth
                     label="Pincode"
                     {...registerProfile('pincode')}
                   />
-                </Grid>
+                </Box>
 
                 {/* KYC Details */}
-                <Grid item xs={12} sx={{ mt: 1 }}>
+                <Box sx={span.full} style={{ marginTop: '8px' }}>
                   <Typography variant="subtitle2" color="primary" sx={{ mb: 1, fontWeight: '800' }}>
                     Government KYC Numbers
                   </Typography>
                   <Divider />
-                </Grid>
-                <Grid item xs={12} sm={6}>
+                </Box>
+                <Box sx={span.half}>
                   <TextField
                     fullWidth
                     label="Aadhaar Card Number (12 digit)"
                     inputProps={{ maxLength: 12 }}
                     {...registerProfile('aadhaarNumber')}
                   />
-                </Grid>
-                <Grid item xs={12} sm={6}>
+                </Box>
+                <Box sx={span.half}>
                   <TextField
                     fullWidth
                     label="PAN Card Number (10 digit)"
                     inputProps={{ maxLength: 10 }}
                     {...registerProfile('panNumber')}
                   />
-                </Grid>
+                </Box>
 
                 {/* Bank Details */}
-                <Grid item xs={12} sx={{ mt: 1 }}>
+                <Box sx={span.full} style={{ marginTop: '8px' }}>
                   <Typography variant="subtitle2" color="primary" sx={{ mb: 1, fontWeight: '800' }}>
                     Direct Settlement Bank Account
                   </Typography>
                   <Divider />
-                </Grid>
-                <Grid item xs={12} sm={6}>
+                </Box>
+                <Box sx={span.half}>
                   <TextField
                     fullWidth
                     label="Bank Account Number"
                     {...registerProfile('bankAccount')}
                   />
-                </Grid>
-                <Grid item xs={12} sm={6}>
+                </Box>
+                <Box sx={span.half}>
                   <TextField
                     fullWidth
                     label="Bank IFSC Code"
                     {...registerProfile('ifscCode')}
                   />
-                </Grid>
+                </Box>
 
                 {/* Document Uploads */}
-                <Grid item xs={12} sx={{ mt: 1 }}>
+                <Box sx={span.full} style={{ marginTop: '8px' }}>
                   <Typography variant="subtitle2" color="primary" sx={{ mb: 1, fontWeight: '800' }}>
                     KYC Upload Documents (Image Files)
                   </Typography>
                   <Divider />
-                </Grid>
+                </Box>
                 
-                <Grid item xs={12} sm={4}>
+                <Box sx={span.third}>
                   <Typography variant="caption" color="text.secondary" display="block" sx={{ mb: 1, fontWeight: 700 }}>
                     Profile Photo
                   </Typography>
@@ -310,9 +310,9 @@ const WorkerProfile = () => {
                       <img src={buildMediaUrl(user.profile.profile_photo)} alt="Profile" style={{ width: '50px', height: '50px', borderRadius: '50%', objectFit: 'cover', border: `1px solid ${tokens.borderColor}` }} />
                     </Box>
                   )}
-                </Grid>
+                </Box>
 
-                <Grid item xs={12} sm={4}>
+                <Box sx={span.third}>
                   <Typography variant="caption" color="text.secondary" display="block" sx={{ mb: 1, fontWeight: 700 }}>
                     Aadhaar Card Copy
                   </Typography>
@@ -334,9 +334,9 @@ const WorkerProfile = () => {
                       <a href={buildMediaUrl(user.profile.aadhaar_photo)} target="_blank" rel="noreferrer" style={{ fontSize: '12px', textDecoration: 'none', color: tokens.colors.accent, fontWeight: '800' }}>View Aadhaar Image</a>
                     </Box>
                   )}
-                </Grid>
+                </Box>
 
-                <Grid item xs={12} sm={4}>
+                <Box sx={span.third}>
                   <Typography variant="caption" color="text.secondary" display="block" sx={{ mb: 1, fontWeight: 700 }}>
                     PAN Card Copy
                   </Typography>
@@ -358,8 +358,8 @@ const WorkerProfile = () => {
                       <a href={buildMediaUrl(user.profile.pan_photo)} target="_blank" rel="noreferrer" style={{ fontSize: '12px', textDecoration: 'none', color: tokens.colors.accent, fontWeight: '800' }}>View PAN Image</a>
                     </Box>
                   )}
-                </Grid>
-              </Grid>
+                </Box>
+              </DashboardGrid>
 
               <Button
                 type="submit"
@@ -387,8 +387,8 @@ const WorkerProfile = () => {
         <Box sx={span.oneThird}>
           <DashboardCard title="Security Credentials" subtitle="Ensure your account is using a secure password">
             <Box component="form" onSubmit={handleSubmitPassword(onPasswordSubmit)} noValidate sx={{ mt: 2 }}>
-              <Grid container spacing={3}>
-                <Grid item xs={12}>
+              <DashboardGrid sx={{ gap: 2.5 }}>
+                <Box sx={span.full}>
                   <TextField
                     required
                     fullWidth
@@ -396,8 +396,8 @@ const WorkerProfile = () => {
                     label="Current Password"
                     {...registerPassword('oldPassword', { required: true })}
                   />
-                </Grid>
-                <Grid item xs={12}>
+                </Box>
+                <Box sx={span.full}>
                   <TextField
                     required
                     fullWidth
@@ -405,8 +405,8 @@ const WorkerProfile = () => {
                     label="New Password"
                     {...registerPassword('newPassword', { required: true, minLength: 6 })}
                   />
-                </Grid>
-                <Grid item xs={12}>
+                </Box>
+                <Box sx={span.full}>
                   <TextField
                     required
                     fullWidth
@@ -417,8 +417,8 @@ const WorkerProfile = () => {
                       validate: (v) => v === newPassword || 'Passwords do not match'
                     })}
                   />
-                </Grid>
-              </Grid>
+                </Box>
+              </DashboardGrid>
 
               <Button
                 type="submit"

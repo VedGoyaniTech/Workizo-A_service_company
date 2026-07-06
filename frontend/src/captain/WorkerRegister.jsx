@@ -3,10 +3,11 @@ import { useNavigate, Link as RouterLink } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useForm } from 'react-hook-form';
 import {
-  Container, Paper, Typography, TextField, Button, Box, Link,
-  CircularProgress
+  TextField, Button, Box, Link, CircularProgress, Typography
 } from '@mui/material';
 import toast from 'react-hot-toast';
+import { tokens } from '../design/tokens';
+import { AuthPageShell } from '../components/dashboard';
 
 const WorkerRegister = () => {
   const { register: registerAuth, isAuthenticated, user } = useAuth();
@@ -51,116 +52,120 @@ const WorkerRegister = () => {
   };
 
   return (
-    <Container maxWidth="xs" sx={{ mt: 6, mb: 6, display: 'flex', flexDirection: 'column', justifyContent: 'center', flexGrow: 1 }}>
-      <Paper sx={{ p: 4, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-        <Typography variant="h5" component="h1" fontWeight="bold" gutterBottom>
-          Register as Captain
-        </Typography>
-        <Typography variant="body2" color="text.secondary" align="center" sx={{ mb: 3 }}>
-          Earn money by offering services near you
-        </Typography>
+    <AuthPageShell
+      title="Register as Captain"
+      subtitle="Earn money by offering services near you"
+    >
+      <Box component="form" onSubmit={handleSubmit(onSubmit)} noValidate sx={{ mt: 1, width: '100%' }}>
+        <TextField
+          margin="normal"
+          required
+          fullWidth
+          id="fullName"
+          label="Full Name"
+          autoFocus
+          {...register('fullName', { required: 'Full name is required' })}
+          error={!!errors.fullName}
+          helperText={errors.fullName?.message}
+        />
+        <TextField
+          margin="normal"
+          required
+          fullWidth
+          id="email"
+          label="Email Address"
+          autoComplete="email"
+          {...register('email', { 
+            required: 'Email is required',
+            pattern: {
+              value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
+              message: 'Invalid email address'
+            }
+          })}
+          error={!!errors.email}
+          helperText={errors.email?.message}
+        />
+        <TextField
+          margin="normal"
+          required
+          fullWidth
+          id="phone"
+          label="Phone Number"
+          {...register('phone', { 
+            required: 'Phone number is required',
+            pattern: {
+              value: /^[0-9]{10}$/,
+              message: 'Enter a valid 10-digit phone number'
+            }
+          })}
+          error={!!errors.phone}
+          helperText={errors.phone?.message}
+        />
+        <TextField
+          margin="normal"
+          required
+          fullWidth
+          name="password"
+          label="Password"
+          type="password"
+          id="password"
+          {...register('password', { 
+            required: 'Password is required',
+            minLength: {
+              value: 6,
+              message: 'Password must be at least 6 characters'
+            }
+          })}
+          error={!!errors.password}
+          helperText={errors.password?.message}
+        />
+        <TextField
+          margin="normal"
+          required
+          fullWidth
+          name="confirmPassword"
+          label="Confirm Password"
+          type="password"
+          id="confirmPassword"
+          {...register('confirmPassword', { 
+            required: 'Confirm password is required',
+            validate: (val) => val === password || 'Passwords do not match'
+          })}
+          error={!!errors.confirmPassword}
+          helperText={errors.confirmPassword?.message}
+        />
 
-        <Box component="form" onSubmit={handleSubmit(onSubmit)} noValidate sx={{ mt: 1, width: '100%' }}>
-          <TextField
-            margin="normal"
-            required
-            fullWidth
-            id="fullName"
-            label="Full Name"
-            autoFocus
-            {...register('fullName', { required: 'Full name is required' })}
-            error={!!errors.fullName}
-            helperText={errors.fullName?.message}
-          />
-          <TextField
-            margin="normal"
-            required
-            fullWidth
-            id="email"
-            label="Email Address"
-            autoComplete="email"
-            {...register('email', { 
-              required: 'Email is required',
-              pattern: {
-                value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
-                message: 'Invalid email address'
-              }
-            })}
-            error={!!errors.email}
-            helperText={errors.email?.message}
-          />
-          <TextField
-            margin="normal"
-            required
-            fullWidth
-            id="phone"
-            label="Phone Number"
-            {...register('phone', { 
-              required: 'Phone number is required',
-              pattern: {
-                value: /^[0-9]{10}$/,
-                message: 'Enter a valid 10-digit phone number'
-              }
-            })}
-            error={!!errors.phone}
-            helperText={errors.phone?.message}
-          />
-          <TextField
-            margin="normal"
-            required
-            fullWidth
-            name="password"
-            label="Password"
-            type="password"
-            id="password"
-            {...register('password', { 
-              required: 'Password is required',
-              minLength: {
-                value: 6,
-                message: 'Password must be at least 6 characters'
-              }
-            })}
-            error={!!errors.password}
-            helperText={errors.password?.message}
-          />
-          <TextField
-            margin="normal"
-            required
-            fullWidth
-            name="confirmPassword"
-            label="Confirm Password"
-            type="password"
-            id="confirmPassword"
-            {...register('confirmPassword', { 
-              required: 'Confirm password is required',
-              validate: (val) => val === password || 'Passwords do not match'
-            })}
-            error={!!errors.confirmPassword}
-            helperText={errors.confirmPassword?.message}
-          />
+        <Button
+          type="submit"
+          fullWidth
+          variant="contained"
+          color="secondary"
+          disabled={loading}
+          sx={{
+            py: 1.2,
+            mt: 3,
+            mb: 2,
+            bgcolor: tokens.colors.primary,
+            color: '#ffffff',
+            borderRadius: `${tokens.borderRadiusSm}px`,
+            textTransform: 'none',
+            fontWeight: 700,
+            '&:hover': { bgcolor: '#23232F' }
+          }}
+        >
+          {loading ? <CircularProgress size={24} color="inherit" /> : 'Register as Captain'}
+        </Button>
 
-          <Button
-            type="submit"
-            fullWidth
-            variant="contained"
-            color="secondary"
-            disabled={loading}
-            sx={{ py: 1.2, mt: 3, mb: 2 }}
-          >
-            {loading ? <CircularProgress size={24} color="inherit" /> : 'Register as Captain'}
-          </Button>
-
-          <Box display="flex" justifyContent="center">
-            <Typography variant="body2" color="text.secondary">
-              Already registered?{' '}
-              <Link component={RouterLink} to="/captain/login" color="secondary" fontWeight="bold">
-                Log In
-              </Link>
-            </Typography>
-          </Box>
+        <Box display="flex" justifyContent="center">
+          <Typography variant="body2" color="text.secondary">
+            Already registered?{' '}
+            <Link component={RouterLink} to="/captain/login" color="secondary" fontWeight="bold">
+              Log In
+            </Link>
+          </Typography>
         </Box>
-      </Paper>
-    </Container>
+      </Box>
+    </AuthPageShell>
   );
 };
 

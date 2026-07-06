@@ -35,8 +35,11 @@ import DateRangeIcon from '@mui/icons-material/DateRange';
 import CheckIcon from '@mui/icons-material/Check';
 
 import toast from 'react-hot-toast';
-import { tokens } from '../design/tokens';
-import { DashboardPage } from '../components/dashboard';
+import { tokens, span } from '../design/tokens';
+import { 
+  DashboardPage, DashboardGrid, DashboardCard, 
+  SummaryCard, SummaryGrid, EmptyState 
+} from '../components/dashboard';
 
 const COLORS = ['#1A73E8', '#34A853', '#FBBC05', '#EA4335', '#8F00FF', '#00C9FF'];
 
@@ -174,63 +177,51 @@ const DashboardView = ({ hideHeader }) => {
   const { cards, charts, activities } = data || {};
 
   const cardList = [
-    { title: 'Total Customers', val: cards.totalCustomers, icon: <PeopleIcon sx={{ color: '#1A73E8', fontSize: 32 }} /> },
-    { title: 'Total Captains', val: cards.totalCaptains, icon: <SupervisorAccountIcon sx={{ color: '#34A853', fontSize: 32 }} /> },
-    { title: 'Online Captains', val: cards.onlineCaptains, icon: <CheckCircleIcon sx={{ color: '#34A853', fontSize: 32 }} /> },
-    { title: 'Pending Captains', val: cards.pendingApprovals, icon: <SupervisorAccountIcon sx={{ color: '#FBBC05', fontSize: 32 }} /> },
-    { title: 'Total Bookings', val: cards.totalBookings, icon: <ReceiptLongIcon sx={{ color: '#1A73E8', fontSize: 32 }} /> },
-    { title: 'Active Bookings', val: cards.activeBookings, icon: <ReceiptLongIcon sx={{ color: '#FBBC05', fontSize: 32 }} /> },
-    { title: 'Today\'s Revenue', val: `₹${cards.todayRevenue.toFixed(2)}`, icon: <PaymentIcon sx={{ color: '#34A853', fontSize: 32 }} /> },
-    { title: 'Monthly Revenue', val: `₹${cards.monthlyRevenue.toFixed(2)}`, icon: <PaymentIcon sx={{ color: '#1A73E8', fontSize: 32 }} /> },
+    { title: 'Total Customers', val: cards.totalCustomers, icon: <PeopleIcon />, color: '#1A73E8' },
+    { title: 'Total Captains', val: cards.totalCaptains, icon: <SupervisorAccountIcon />, color: '#34A853' },
+    { title: 'Online Captains', val: cards.onlineCaptains, icon: <CheckCircleIcon />, color: '#34A853' },
+    { title: 'Pending Captains', val: cards.pendingApprovals, icon: <SupervisorAccountIcon />, color: '#FBBC05' },
+    { title: 'Total Bookings', val: cards.totalBookings, icon: <ReceiptLongIcon />, color: '#1A73E8' },
+    { title: 'Active Bookings', val: cards.activeBookings, icon: <ReceiptLongIcon />, color: '#FBBC05' },
+    { title: 'Today\'s Revenue', val: `₹${cards.todayRevenue.toFixed(2)}`, icon: <PaymentIcon />, color: '#34A853' },
+    { title: 'Monthly Revenue', val: `₹${cards.monthlyRevenue.toFixed(2)}`, icon: <PaymentIcon />, color: '#1A73E8' },
   ];
 
   return (
-    <Box>
+    <Box display="flex" flexDirection="column" gap={3}>
       {!hideHeader && (
-        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 4 }}>
-          <Box>
-            <Typography variant="h4" fontWeight="900" fontFamily="Outfit" color="#0F0F14">
-              Dashboard
-            </Typography>
-            <Typography variant="body2" color="text.secondary">
-              Real-time analytics and platform performance metrics.
-            </Typography>
-          </Box>
+        <Box sx={{ mb: 1 }}>
+          <Typography variant="h4" fontWeight="900" fontFamily="Outfit" color="#0F0F14">
+            Dashboard
+          </Typography>
+          <Typography variant="body2" color="text.secondary">
+            Real-time analytics and platform performance metrics.
+          </Typography>
         </Box>
       )}
 
       {/* Metric Cards Grid */}
-      <Grid container spacing={3} sx={{ mb: 4 }}>
+      <SummaryGrid columns={4}>
         {cardList.map((card, idx) => (
-          <Grid item xs={12} sm={6} md={3} key={idx}>
-            <Card sx={{ height: '100%', boxShadow: '0 2px 10px rgba(0,0,0,0.03)', borderRadius: 2 }}>
-              <CardContent sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', p: 3, '&:last-child': { pb: 3 } }}>
-                <Box sx={{ mr: 2, minWidth: 0 }}>
-                  <Typography variant="subtitle2" fontWeight="700" sx={{ color: '#6E7280', textTransform: 'uppercase', tracking: 1, display: 'block' }}>
-                    {card.title}
-                  </Typography>
-                  <Typography variant="h4" fontWeight="900" sx={{ color: '#0F0F14', mt: 1, fontFamily: 'Outfit' }}>
-                    {card.val}
-                  </Typography>
-                </Box>
-                <Box sx={{ bgcolor: 'rgba(0,0,0,0.02)', p: 1.5, borderRadius: 1.5, flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', width: 52, height: 52 }}>
-                  {card.icon}
-                </Box>
-              </CardContent>
-            </Card>
-          </Grid>
+          <SummaryCard
+            key={idx}
+            label={card.title}
+            value={card.val}
+            icon={card.icon}
+            accentColor={card.color}
+            loading={loading}
+          />
         ))}
-      </Grid>
+      </SummaryGrid>
 
       {/* Charts Grid */}
-      <Grid container spacing={4} sx={{ mb: 4 }}>
+      <DashboardGrid>
         {/* Daily Bookings Chart */}
-        <Grid item xs={12} md={8}>
-          <Paper sx={{ p: 3, borderRadius: 2, boxShadow: '0 2px 10px rgba(0,0,0,0.03)' }}>
-            <Typography variant="subtitle1" fontWeight="bold" sx={{ mb: 3, fontFamily: 'Outfit' }}>
-              Daily Bookings (Last 30 Days)
-            </Typography>
-            <Box height={300}>
+        <Box sx={span.twoThirds}>
+          <DashboardCard
+            title="Daily Bookings (Last 30 Days)"
+          >
+            <Box height={300} sx={{ mt: 2 }}>
               <ResponsiveContainer width="100%" height="100%">
                 <AreaChart data={charts.dailyBookings}>
                   <defs>
@@ -247,16 +238,16 @@ const DashboardView = ({ hideHeader }) => {
                 </AreaChart>
               </ResponsiveContainer>
             </Box>
-          </Paper>
-        </Grid>
+          </DashboardCard>
+        </Box>
 
         {/* Category Share Distribution */}
-        <Grid item xs={12} md={4}>
-          <Paper sx={{ p: 3, borderRadius: 2, boxShadow: '0 2px 10px rgba(0,0,0,0.03)', height: '100%' }}>
-            <Typography variant="subtitle1" fontWeight="bold" sx={{ mb: 3, fontFamily: 'Outfit' }}>
-              Service Category Share
-            </Typography>
-            <Box height={280} sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+        <Box sx={span.oneThird}>
+          <DashboardCard
+            title="Service Category Share"
+            sx={{ height: '100%' }}
+          >
+            <Box height={280} sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', mt: 2 }}>
               <ResponsiveContainer width="100%" height="100%">
                 <PieChart>
                   <Pie
@@ -277,19 +268,18 @@ const DashboardView = ({ hideHeader }) => {
                 </PieChart>
               </ResponsiveContainer>
             </Box>
-          </Paper>
-        </Grid>
-      </Grid>
+          </DashboardCard>
+        </Box>
+      </DashboardGrid>
 
       {/* Analytics Part 2 */}
-      <Grid container spacing={4}>
+      <DashboardGrid>
         {/* Monthly Revenue Chart */}
-        <Grid item xs={12} md={6}>
-          <Paper sx={{ p: 3, borderRadius: 2, boxShadow: '0 2px 10px rgba(0,0,0,0.03)' }}>
-            <Typography variant="subtitle1" fontWeight="bold" sx={{ mb: 3, fontFamily: 'Outfit' }}>
-              Monthly Revenue Performance
-            </Typography>
-            <Box height={280}>
+        <Box sx={span.half}>
+          <DashboardCard
+            title="Monthly Revenue Performance"
+          >
+            <Box height={280} sx={{ mt: 2 }}>
               <ResponsiveContainer width="100%" height="100%">
                 <BarChart data={charts.monthlyRevenue}>
                   <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#E5E7EB" />
@@ -300,22 +290,23 @@ const DashboardView = ({ hideHeader }) => {
                 </BarChart>
               </ResponsiveContainer>
             </Box>
-          </Paper>
-        </Grid>
+          </DashboardCard>
+        </Box>
 
         {/* Recent Activities */}
-        <Grid item xs={12} md={6}>
-          <Paper sx={{ p: 3, borderRadius: 2, boxShadow: '0 2px 10px rgba(0,0,0,0.03)', height: '100%' }}>
-            <Typography variant="subtitle1" fontWeight="bold" sx={{ mb: 3, fontFamily: 'Outfit' }}>
-              Recent Platform Activities
-            </Typography>
-            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+        <Box sx={span.half}>
+          <DashboardCard
+            title="Recent Platform Activities"
+            sx={{ height: '100%' }}
+          >
+            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2.5, mt: 2 }}>
               {activities && activities.map((act, idx) => (
                 <Box key={idx} sx={{ display: 'flex', gap: 2, alignItems: 'center' }}>
                   <Avatar sx={{
-                    bgcolor: act.type.includes('payment') ? 'rgba(52, 168, 83, 0.1)' : 'rgba(26, 115, 232, 0.1)',
+                    bgcolor: act.type.includes('payment') ? 'rgba(52, 168, 83, 0.08)' : 'rgba(26, 115, 232, 0.08)',
                     color: act.type.includes('payment') ? '#34A853' : '#1A73E8',
-                    width: 38, height: 38
+                    width: 40, height: 40,
+                    border: act.type.includes('payment') ? '1px solid rgba(52, 168, 83, 0.15)' : '1px solid rgba(26, 115, 232, 0.15)'
                   }}>
                     {act.type.includes('payment') ? <PaymentIcon sx={{ fontSize: 20 }} /> : <HandymanIcon sx={{ fontSize: 20 }} />}
                   </Avatar>
@@ -323,20 +314,21 @@ const DashboardView = ({ hideHeader }) => {
                     <Typography variant="body2" fontWeight="700" noWrap>{act.title}</Typography>
                     <Typography variant="caption" color="text.secondary" display="block" noWrap>{act.description}</Typography>
                   </Box>
-                  <Typography variant="caption" color="text.disabled">
+                  <Typography variant="caption" color="text.disabled" sx={{ fontWeight: 600 }}>
                     {new Date(act.time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                   </Typography>
                 </Box>
               ))}
               {(!activities || activities.length === 0) && (
-                <Typography variant="body2" color="text.secondary" align="center">
-                  No recent activities recorded.
-                </Typography>
+                <EmptyState
+                  title="No recent activities"
+                  description="No platform actions or events have occurred recently."
+                />
               )}
             </Box>
-          </Paper>
-        </Grid>
-      </Grid>
+          </DashboardCard>
+        </Box>
+      </DashboardGrid>
     </Box>
   );
 };
@@ -461,9 +453,9 @@ const BookingsView = ({ hideHeader }) => {
   };
 
   return (
-    <Box>
+    <Box display="flex" flexDirection="column" gap={3}>
       {!hideHeader && (
-        <Box sx={{ mb: 4 }}>
+        <Box sx={{ mb: 1 }}>
           <Typography variant="h4" fontWeight="900" fontFamily="Outfit" color="#0F0F14">
             Booking Management
           </Typography>
@@ -474,7 +466,7 @@ const BookingsView = ({ hideHeader }) => {
       )}
 
       {/* Filters & Search Header */}
-      <Paper sx={{ p: 2.5, mb: 3, borderRadius: 2, boxShadow: '0 2px 10px rgba(0,0,0,0.03)' }}>
+      <DashboardCard>
         <Grid container spacing={2} alignItems="center">
           <Grid item xs={12} md={4}>
             <TextField
@@ -530,88 +522,116 @@ const BookingsView = ({ hideHeader }) => {
               variant="contained"
               onClick={fetchBookings}
               startIcon={<FilterListIcon />}
-              sx={{ bgcolor: '#1A73E8', '&:hover': { bgcolor: '#155cb0' } }}
+              sx={{
+                bgcolor: tokens.colors.primary,
+                color: '#ffffff',
+                borderRadius: `${tokens.borderRadiusSm}px`,
+                textTransform: 'none',
+                fontWeight: 700,
+                '&:hover': { bgcolor: '#222222' }
+              }}
             >
               Filter
             </Button>
           </Grid>
         </Grid>
-      </Paper>
+      </DashboardCard>
 
       {/* Bookings Table */}
       {loading ? (
         <LinearProgress color="primary" />
       ) : (
-        <TableContainer component={Paper} sx={{ borderRadius: 2, boxShadow: '0 2px 10px rgba(0,0,0,0.03)' }}>
-          <Table>
-            <TableHead>
-              <TableRow sx={{ bgcolor: '#F8FAFC' }}>
-                <TableCell fontWeight="700">Booking ID</TableCell>
-                <TableCell fontWeight="700">Customer</TableCell>
-                <TableCell fontWeight="700">Captain</TableCell>
-                <TableCell fontWeight="700">Service Category</TableCell>
-                <TableCell fontWeight="700">Status</TableCell>
-                <TableCell fontWeight="700">Date</TableCell>
-                <TableCell fontWeight="700" align="right">Actions</TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {bookings.map((b) => (
-                <TableRow key={b.id} hover>
-                  <TableCell>
-                    <Typography variant="body2" fontWeight="bold">{b.tracking_id || `#${b.id}`}</Typography>
-                  </TableCell>
-                  <TableCell>{b.customer?.full_name}</TableCell>
-                  <TableCell>{b.worker?.full_name || <Typography variant="caption" color="error">Not Assigned</Typography>}</TableCell>
-                  <TableCell>{b.service_category_detail?.name}</TableCell>
-                  <TableCell>
-                    <Chip
-                      label={b.status.replace('_', ' ').toUpperCase()}
-                      color={getStatusChipColor(b.status)}
-                      size="small"
-                      sx={{ fontWeight: 'bold', fontSize: '0.7rem' }}
-                    />
-                  </TableCell>
-                  <TableCell>{new Date(b.created_at).toLocaleDateString()}</TableCell>
-                  <TableCell align="right">
-                    <Box display="flex" justifyContent="flex-end" gap={1}>
-                      <IconButton color="primary" onClick={() => handleOpenDetails(b.id)} size="small">
-                        <VisibilityIcon />
-                      </IconButton>
-                      {!['completed', 'cancelled'].includes(b.status) && (
-                        <Button variant="outlined" size="small" onClick={() => handleOpenAssign(b)}>
-                          Assign
-                        </Button>
-                      )}
-                    </Box>
-                  </TableCell>
+        <DashboardCard title="Bookings Registry" noPadding>
+          <TableContainer>
+            <Table>
+              <TableHead>
+                <TableRow sx={{ bgcolor: tokens.colors.bg }}>
+                  <TableCell sx={{ fontWeight: 800, fontFamily: 'Outfit', color: tokens.colors.primary }}>Booking ID</TableCell>
+                  <TableCell sx={{ fontWeight: 800, fontFamily: 'Outfit', color: tokens.colors.primary }}>Customer</TableCell>
+                  <TableCell sx={{ fontWeight: 800, fontFamily: 'Outfit', color: tokens.colors.primary }}>Captain</TableCell>
+                  <TableCell sx={{ fontWeight: 800, fontFamily: 'Outfit', color: tokens.colors.primary }}>Service Category</TableCell>
+                  <TableCell sx={{ fontWeight: 800, fontFamily: 'Outfit', color: tokens.colors.primary }}>Status</TableCell>
+                  <TableCell sx={{ fontWeight: 800, fontFamily: 'Outfit', color: tokens.colors.primary }}>Date</TableCell>
+                  <TableCell sx={{ fontWeight: 800, fontFamily: 'Outfit', color: tokens.colors.primary }} align="right">Actions</TableCell>
                 </TableRow>
-              ))}
-              {bookings.length === 0 && (
-                <TableRow>
-                  <TableCell colSpan={7} align="center" sx={{ py: 6 }}>
-                    No bookings found matching filters.
-                  </TableCell>
-                </TableRow>
-              )}
-            </TableBody>
-          </Table>
-        </TableContainer>
+              </TableHead>
+              <TableBody>
+                {bookings.map((b) => (
+                  <TableRow key={b.id} hover>
+                    <TableCell>
+                      <Typography variant="body2" fontWeight="800" sx={{ fontFamily: 'Outfit' }}>{b.tracking_id || `#${b.id}`}</Typography>
+                    </TableCell>
+                    <TableCell sx={{ fontWeight: 600 }}>{b.customer?.full_name}</TableCell>
+                    <TableCell sx={{ fontWeight: 600 }}>{b.worker?.full_name || <Typography variant="caption" color="error" sx={{ fontWeight: 700 }}>Not Assigned</Typography>}</TableCell>
+                    <TableCell sx={{ fontWeight: 500 }}>{b.service_category_detail?.name}</TableCell>
+                    <TableCell>
+                      <Chip
+                        label={b.status.replace('_', ' ').toUpperCase()}
+                        color={getStatusChipColor(b.status)}
+                        size="small"
+                        sx={{ fontWeight: 800, fontSize: '0.7rem' }}
+                      />
+                    </TableCell>
+                    <TableCell sx={{ color: tokens.colors.textSecondary, fontWeight: 500 }}>{new Date(b.created_at).toLocaleDateString()}</TableCell>
+                    <TableCell align="right">
+                      <Box display="flex" justifyContent="flex-end" gap={1}>
+                        <IconButton color="primary" onClick={() => handleOpenDetails(b.id)} size="small">
+                          <VisibilityIcon />
+                        </IconButton>
+                        {!['completed', 'cancelled'].includes(b.status) && (
+                          <Button 
+                            variant="outlined" 
+                            size="small" 
+                            onClick={() => handleOpenAssign(b)}
+                            sx={{
+                              borderColor: tokens.colors.primary,
+                              color: tokens.colors.primary,
+                              fontWeight: 700,
+                              borderRadius: `${tokens.borderRadiusSm}px`,
+                              textTransform: 'none',
+                              '&:hover': {
+                                borderColor: tokens.colors.primary,
+                                bgcolor: 'rgba(0, 0, 0, 0.04)'
+                              }
+                            }}
+                          >
+                            Assign
+                          </Button>
+                        )}
+                      </Box>
+                    </TableCell>
+                  </TableRow>
+                ))}
+                {bookings.length === 0 && (
+                  <TableRow>
+                    <TableCell colSpan={7} sx={{ p: 0 }}>
+                      <EmptyState
+                        icon={<ReceiptLongIcon />}
+                        title="No bookings found"
+                        description="There are no system bookings matching your search/filters."
+                      />
+                    </TableCell>
+                  </TableRow>
+                )}
+              </TableBody>
+            </Table>
+          </TableContainer>
+        </DashboardCard>
       )}
 
       {/* Detail Dialog */}
       {selectedBooking && (
         <Dialog open={openDetailDialog} onClose={() => setOpenDetailDialog(false)} maxWidth="md" fullWidth>
           <DialogTitle sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <Typography variant="h6" fontWeight="bold">Booking Details — {selectedBooking.tracking_id}</Typography>
+            <Typography variant="h6" fontWeight="bold">Detailed Log — {selectedBooking.tracking_id || `#${selectedBooking.id}`}</Typography>
             <IconButton onClick={() => setOpenDetailDialog(false)}>
               <CloseIcon />
             </IconButton>
           </DialogTitle>
-          <DialogContent dividers sx={{ borderColor: '#E5E7EB' }}>
+          <DialogContent dividers sx={{ borderColor: tokens.borderColor }}>
             <Grid container spacing={3}>
               <Grid item xs={12} sm={6}>
-                <Typography variant="subtitle2" color="text.secondary">Customer Information</Typography>
+                <Typography variant="subtitle2" color="text.secondary" fontWeight="700" uppercase>Customer Information</Typography>
                 <Typography variant="body1" fontWeight="bold" sx={{ mt: 0.5 }}>{selectedBooking.customer?.full_name}</Typography>
                 <Typography variant="body2" color="text.secondary">{selectedBooking.customer?.email}</Typography>
                 <Typography variant="body2" color="text.secondary">{selectedBooking.customer?.phone}</Typography>
@@ -619,20 +639,37 @@ const BookingsView = ({ hideHeader }) => {
               </Grid>
 
               <Grid item xs={12} sm={6}>
-                <Typography variant="subtitle2" color="text.secondary">Captain Details</Typography>
+                <Typography variant="subtitle2" color="text.secondary" fontWeight="700" uppercase>Captain Details</Typography>
                 {selectedBooking.worker ? (
                   <Box sx={{ mt: 0.5 }}>
                     <Typography variant="body1" fontWeight="bold">{selectedBooking.worker.full_name}</Typography>
                     <Typography variant="body2" color="text.secondary">{selectedBooking.worker.email}</Typography>
                     <Typography variant="body2" color="text.secondary">{selectedBooking.worker.phone}</Typography>
-                    <Button variant="text" size="small" onClick={() => handleOpenAssign(selectedBooking)} sx={{ mt: 1 }}>
+                    <Button
+                      variant="text"
+                      size="small"
+                      onClick={() => handleOpenAssign(selectedBooking)}
+                      sx={{ mt: 1, textTransform: 'none', fontWeight: 700 }}
+                    >
                       Reassign Professional
                     </Button>
                   </Box>
                 ) : (
                   <Box sx={{ mt: 1 }}>
                     <Alert severity="warning">No captain assigned yet.</Alert>
-                    <Button variant="contained" size="small" onClick={() => handleOpenAssign(selectedBooking)} sx={{ mt: 1.5, bgcolor: '#1A73E8' }}>
+                    <Button
+                      variant="contained"
+                      size="small"
+                      onClick={() => handleOpenAssign(selectedBooking)}
+                      sx={{
+                        mt: 1.5,
+                        bgcolor: tokens.colors.accent,
+                        color: '#ffffff',
+                        textTransform: 'none',
+                        fontWeight: 700,
+                        '&:hover': { bgcolor: '#155cb0' }
+                      }}
+                    >
                       Assign Professional
                     </Button>
                   </Box>
@@ -641,7 +678,7 @@ const BookingsView = ({ hideHeader }) => {
 
               <Grid item xs={12}>
                 <Divider sx={{ my: 1 }} />
-                <Typography variant="subtitle2" color="text.secondary" gutterBottom>Work Details</Typography>
+                <Typography variant="subtitle2" color="text.secondary" fontWeight="700" uppercase gutterBottom>Work Details</Typography>
                 <Typography variant="body2"><strong>Problem Category:</strong> {selectedBooking.service_category_detail?.name}</Typography>
                 <Typography variant="body2"><strong>Job Type:</strong> {selectedBooking.problem_type}</Typography>
                 <Typography variant="body2" sx={{ mt: 1 }}><strong>Description:</strong> {selectedBooking.problem_description}</Typography>
@@ -650,31 +687,31 @@ const BookingsView = ({ hideHeader }) => {
               {/* Photos Section */}
               <Grid item xs={12}>
                 <Divider sx={{ my: 1 }} />
-                <Typography variant="subtitle2" color="text.secondary" gutterBottom>Uploaded Visual Media</Typography>
+                <Typography variant="subtitle2" color="text.secondary" fontWeight="700" uppercase gutterBottom>Uploaded Visual Media</Typography>
                 <Grid container spacing={2}>
                   <Grid item xs={6} sm={3}>
-                    <Typography variant="caption" display="block">Before Photo</Typography>
+                    <Typography variant="caption" display="block" color="text.secondary" fontWeight="700">Before Photo</Typography>
                     {selectedBooking.before_photo ? (
-                      <Box component="img" src={`http://127.0.0.1:8001${selectedBooking.before_photo}`} sx={{ width: '100%', height: 120, objectFit: 'cover', borderRadius: 1, border: '1px solid #E5E7EB' }} />
-                    ) : 'None'}
+                      <Box component="img" src={`http://127.0.0.1:8001${selectedBooking.before_photo}`} sx={{ width: '100%', height: 120, objectFit: 'cover', borderRadius: `${tokens.borderRadiusSm}px`, border: `1px solid ${tokens.borderColor}` }} />
+                    ) : <Typography variant="caption" color="text.disabled">None</Typography>}
                   </Grid>
                   <Grid item xs={6} sm={3}>
-                    <Typography variant="caption" display="block">After Photo</Typography>
+                    <Typography variant="caption" display="block" color="text.secondary" fontWeight="700">After Photo</Typography>
                     {selectedBooking.after_photo ? (
-                      <Box component="img" src={`http://127.0.0.1:8001${selectedBooking.after_photo}`} sx={{ width: '100%', height: 120, objectFit: 'cover', borderRadius: 1, border: '1px solid #E5E7EB' }} />
-                    ) : 'None'}
+                      <Box component="img" src={`http://127.0.0.1:8001${selectedBooking.after_photo}`} sx={{ width: '100%', height: 120, objectFit: 'cover', borderRadius: `${tokens.borderRadiusSm}px`, border: `1px solid ${tokens.borderColor}` }} />
+                    ) : <Typography variant="caption" color="text.disabled">None</Typography>}
                   </Grid>
                   <Grid item xs={6} sm={3}>
-                    <Typography variant="caption" display="block">Spare Part Invoice Copy</Typography>
+                    <Typography variant="caption" display="block" color="text.secondary" fontWeight="700">Spare Part Invoice Copy</Typography>
                     {selectedBooking.spare_part_photo ? (
-                      <Box component="img" src={`http://127.0.0.1:8001${selectedBooking.spare_part_photo}`} sx={{ width: '100%', height: 120, objectFit: 'cover', borderRadius: 1, border: '1px solid #E5E7EB' }} />
-                    ) : 'None'}
+                      <Box component="img" src={`http://127.0.0.1:8001${selectedBooking.spare_part_photo}`} sx={{ width: '100%', height: 120, objectFit: 'cover', borderRadius: `${tokens.borderRadiusSm}px`, border: `1px solid ${tokens.borderColor}` }} />
+                    ) : <Typography variant="caption" color="text.disabled">None</Typography>}
                   </Grid>
                   <Grid item xs={6} sm={3}>
-                    <Typography variant="caption" display="block">Offsite Invoice Copy</Typography>
+                    <Typography variant="caption" display="block" color="text.secondary" fontWeight="700">Offsite Invoice Copy</Typography>
                     {selectedBooking.invoice_photo ? (
-                      <Box component="img" src={`http://127.0.0.1:8001${selectedBooking.invoice_photo}`} sx={{ width: '100%', height: 120, objectFit: 'cover', borderRadius: 1, border: '1px solid #E5E7EB' }} />
-                    ) : 'None'}
+                      <Box component="img" src={`http://127.0.0.1:8001${selectedBooking.invoice_photo}`} sx={{ width: '100%', height: 120, objectFit: 'cover', borderRadius: `${tokens.borderRadiusSm}px`, border: `1px solid ${tokens.borderColor}` }} />
+                    ) : <Typography variant="caption" color="text.disabled">None</Typography>}
                   </Grid>
                 </Grid>
               </Grid>
@@ -683,8 +720,8 @@ const BookingsView = ({ hideHeader }) => {
               {selectedBooking.bill && (
                 <Grid item xs={12}>
                   <Divider sx={{ my: 1 }} />
-                  <Typography variant="subtitle2" color="text.secondary" gutterBottom>Invoice Calculation</Typography>
-                  <Paper sx={{ p: 2, bgcolor: '#F8FAFC' }}>
+                  <Typography variant="subtitle2" color="text.secondary" fontWeight="700" uppercase gutterBottom>Invoice Calculation</Typography>
+                  <Box sx={{ p: 2, bgcolor: tokens.colors.bg, borderRadius: `${tokens.borderRadiusSm}px`, border: `1px solid ${tokens.borderColor}` }}>
                     <Box display="flex" justifyContent="space-between" mb={0.5}>
                       <Typography variant="body2">Base Labour Charge:</Typography>
                       <Typography variant="body2" fontWeight="bold">₹{selectedBooking.bill.labour_charges}</Typography>
@@ -697,23 +734,34 @@ const BookingsView = ({ hideHeader }) => {
                       <Typography variant="body2">GST (18%):</Typography>
                       <Typography variant="body2" fontWeight="bold">₹{selectedBooking.bill.gst}</Typography>
                     </Box>
-                    <Divider sx={{ my: 1 }} />
+                    <Divider sx={{ my: 1, borderColor: tokens.borderColor }} />
                     <Box display="flex" justifyContent="space-between">
-                      <Typography variant="subtitle2">Grand Total:</Typography>
+                      <Typography variant="subtitle2" fontWeight="700">Grand Total:</Typography>
                       <Typography variant="subtitle2" color="primary" fontWeight="bold">₹{selectedBooking.bill.grand_total}</Typography>
                     </Box>
-                  </Paper>
+                  </Box>
                 </Grid>
               )}
             </Grid>
           </DialogContent>
           <DialogActions sx={{ px: 3, py: 2 }}>
             {!['completed', 'cancelled'].includes(selectedBooking.status) && (
-              <Button color="error" variant="outlined" onClick={() => handleCancelBooking(selectedBooking.id)}>
+              <Button
+                color="error"
+                variant="outlined"
+                onClick={() => handleCancelBooking(selectedBooking.id)}
+                sx={{ borderRadius: `${tokens.borderRadiusSm}px`, textTransform: 'none', fontWeight: 700 }}
+              >
                 Cancel Booking
               </Button>
             )}
-            <Button onClick={() => setOpenDetailDialog(false)} color="primary">Close</Button>
+            <Button
+              onClick={() => setOpenDetailDialog(false)}
+              color="primary"
+              sx={{ fontWeight: 700 }}
+            >
+              Close
+            </Button>
           </DialogActions>
         </Dialog>
       )}
@@ -739,7 +787,18 @@ const BookingsView = ({ hideHeader }) => {
         </DialogContent>
         <DialogActions>
           <Button onClick={() => setOpenAssignDialog(false)}>Cancel</Button>
-          <Button onClick={handleConfirmAssign} variant="contained" disabled={!selectedCaptain} sx={{ bgcolor: '#1A73E8' }}>
+          <Button
+            onClick={handleConfirmAssign}
+            variant="contained"
+            disabled={!selectedCaptain}
+            sx={{
+              bgcolor: tokens.colors.accent,
+              color: '#ffffff',
+              textTransform: 'none',
+              fontWeight: 700,
+              '&:hover': { bgcolor: '#155cb0' }
+            }}
+          >
             Confirm Assignment
           </Button>
         </DialogActions>
@@ -804,9 +863,9 @@ const WorkersView = ({ hideHeader }) => {
   };
 
   return (
-    <Box>
+    <Box display="flex" flexDirection="column" gap={3}>
       {!hideHeader && (
-        <Box sx={{ mb: 4 }}>
+        <Box sx={{ mb: 1 }}>
           <Typography variant="h4" fontWeight="900" fontFamily="Outfit" color="#0F0F14">
             Worker (Captain) Management
           </Typography>
@@ -819,74 +878,107 @@ const WorkersView = ({ hideHeader }) => {
       {loading ? (
         <LinearProgress color="primary" />
       ) : (
-        <TableContainer component={Paper} sx={{ borderRadius: 2, boxShadow: '0 2px 10px rgba(0,0,0,0.03)' }}>
-          <Table>
-            <TableHead>
-              <TableRow sx={{ bgcolor: '#F8FAFC' }}>
-                <TableCell fontWeight="700">Captain</TableCell>
-                <TableCell fontWeight="700">Category</TableCell>
-                <TableCell fontWeight="700">Experience</TableCell>
-                <TableCell fontWeight="700">Online Status</TableCell>
-                <TableCell fontWeight="700">Registration Status</TableCell>
-                <TableCell fontWeight="700">Rating</TableCell>
-                <TableCell fontWeight="700" align="right">Actions</TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {workers.map((w) => (
-                <TableRow key={w.user.id} hover>
-                  <TableCell>
-                    <Box display="flex" alignItems="center" gap={2}>
-                      <Avatar src={w.profile?.profile_photo ? `http://127.0.0.1:8001${w.profile.profile_photo}` : ''} />
-                      <Box>
-                        <Typography variant="body2" fontWeight="bold">{w.user.full_name}</Typography>
-                        <Typography variant="caption" color="text.secondary">{w.user.email} | {w.user.phone}</Typography>
-                      </Box>
-                    </Box>
-                  </TableCell>
-                  <TableCell>{w.profile?.service_category?.name || 'N/A'}</TableCell>
-                  <TableCell>{w.profile?.experience} Years</TableCell>
-                  <TableCell>
-                    {w.profile?.online_status ? (
-                      <Chip label="ONLINE" color="success" size="small" variant="outlined" sx={{ fontWeight: 'bold' }} />
-                    ) : (
-                      <Chip label="OFFLINE" color="default" size="small" variant="outlined" />
-                    )}
-                  </TableCell>
-                  <TableCell>
-                    <Chip
-                      label={w.profile?.approval_status?.toUpperCase() || 'PENDING'}
-                      color={w.profile?.approval_status === 'approved' ? 'success' : w.profile?.approval_status === 'rejected' ? 'error' : 'warning'}
-                      size="small"
-                      sx={{ fontWeight: 'bold' }}
-                    />
-                  </TableCell>
-                  <TableCell>
-                    <Box display="flex" alignItems="center" gap={0.5}>
-                      <StarIcon sx={{ color: '#FBBC05', fontSize: 18 }} />
-                      <Typography variant="body2">{w.rating || 'N/A'}</Typography>
-                    </Box>
-                  </TableCell>
-                  <TableCell align="right">
-                    <Box display="flex" justifyContent="flex-end" gap={1}>
-                      <Button size="small" variant="outlined" onClick={() => handleViewKYC(w.user.id)}>
-                        KYC & Wallet
-                      </Button>
-                      <Button
-                        size="small"
-                        variant="contained"
-                        color={w.user.is_active ? 'warning' : 'success'}
-                        onClick={() => handleToggleState(w.user.id)}
-                      >
-                        {w.user.is_active ? 'Suspend' : 'Activate'}
-                      </Button>
-                    </Box>
-                  </TableCell>
+        <DashboardCard title="Captain Directory" noPadding>
+          <TableContainer>
+            <Table>
+              <TableHead>
+                <TableRow sx={{ bgcolor: tokens.colors.bg }}>
+                  <TableCell sx={{ fontWeight: 800, fontFamily: 'Outfit', color: tokens.colors.primary }}>Captain</TableCell>
+                  <TableCell sx={{ fontWeight: 800, fontFamily: 'Outfit', color: tokens.colors.primary }}>Category</TableCell>
+                  <TableCell sx={{ fontWeight: 800, fontFamily: 'Outfit', color: tokens.colors.primary }}>Experience</TableCell>
+                  <TableCell sx={{ fontWeight: 800, fontFamily: 'Outfit', color: tokens.colors.primary }}>Online Status</TableCell>
+                  <TableCell sx={{ fontWeight: 800, fontFamily: 'Outfit', color: tokens.colors.primary }}>Registration Status</TableCell>
+                  <TableCell sx={{ fontWeight: 800, fontFamily: 'Outfit', color: tokens.colors.primary }}>Rating</TableCell>
+                  <TableCell sx={{ fontWeight: 800, fontFamily: 'Outfit', color: tokens.colors.primary }} align="right">Actions</TableCell>
                 </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </TableContainer>
+              </TableHead>
+              <TableBody>
+                {workers.map((w) => (
+                  <TableRow key={w.user.id} hover>
+                    <TableCell>
+                      <Box display="flex" alignItems="center" gap={2}>
+                        <Avatar src={w.profile?.profile_photo ? `http://127.0.0.1:8001${w.profile.profile_photo}` : ''} />
+                        <Box>
+                          <Typography variant="body2" fontWeight="800" sx={{ fontFamily: 'Outfit' }}>{w.user.full_name}</Typography>
+                          <Typography variant="caption" color="text.secondary" sx={{ fontWeight: 600 }}>{w.user.email} | {w.user.phone}</Typography>
+                        </Box>
+                      </Box>
+                    </TableCell>
+                    <TableCell sx={{ fontWeight: 600 }}>{w.profile?.service_category?.name || 'N/A'}</TableCell>
+                    <TableCell sx={{ fontWeight: 500 }}>{w.profile?.experience} Years</TableCell>
+                    <TableCell>
+                      {w.profile?.online_status ? (
+                        <Chip label="ONLINE" color="success" size="small" variant="outlined" sx={{ fontWeight: 800 }} />
+                      ) : (
+                        <Chip label="OFFLINE" color="default" size="small" variant="outlined" sx={{ fontWeight: 600 }} />
+                      )}
+                    </TableCell>
+                    <TableCell>
+                      <Chip
+                        label={w.profile?.approval_status?.toUpperCase() || 'PENDING'}
+                        color={w.profile?.approval_status === 'approved' ? 'success' : w.profile?.approval_status === 'rejected' ? 'error' : 'warning'}
+                        size="small"
+                        sx={{ fontWeight: 800 }}
+                      />
+                    </TableCell>
+                    <TableCell>
+                      <Box display="flex" alignItems="center" gap={0.5}>
+                        <StarIcon sx={{ color: '#FBBC05', fontSize: 18 }} />
+                        <Typography variant="body2" fontWeight="700">{w.rating || 'N/A'}</Typography>
+                      </Box>
+                    </TableCell>
+                    <TableCell align="right">
+                      <Box display="flex" justifyContent="flex-end" gap={1}>
+                        <Button
+                          size="small"
+                          variant="outlined"
+                          onClick={() => handleViewKYC(w.user.id)}
+                          sx={{
+                            borderColor: tokens.borderColor,
+                            color: tokens.colors.primary,
+                            fontWeight: 700,
+                            borderRadius: `${tokens.borderRadiusSm}px`,
+                            textTransform: 'none',
+                            '&:hover': {
+                              borderColor: tokens.colors.primary,
+                              bgcolor: 'rgba(0, 0, 0, 0.04)'
+                            }
+                          }}
+                        >
+                          KYC & Wallet
+                        </Button>
+                        <Button
+                          size="small"
+                          variant="contained"
+                          color={w.user.is_active ? 'warning' : 'success'}
+                          onClick={() => handleToggleState(w.user.id)}
+                          sx={{
+                            borderRadius: `${tokens.borderRadiusSm}px`,
+                            textTransform: 'none',
+                            fontWeight: 700
+                          }}
+                        >
+                          {w.user.is_active ? 'Suspend' : 'Activate'}
+                        </Button>
+                      </Box>
+                    </TableCell>
+                  </TableRow>
+                ))}
+                {workers.length === 0 && (
+                  <TableRow>
+                    <TableCell colSpan={7} sx={{ p: 0 }}>
+                      <EmptyState
+                        icon={<SupervisorAccountIcon />}
+                        title="No Captains Registered"
+                        description="There are no registered worker or captain accounts on file."
+                      />
+                    </TableCell>
+                  </TableRow>
+                )}
+              </TableBody>
+            </Table>
+          </TableContainer>
+        </DashboardCard>
       )}
 
       {/* KYC & Wallet Dialog */}
@@ -898,18 +990,18 @@ const WorkersView = ({ hideHeader }) => {
               <CloseIcon />
             </IconButton>
           </DialogTitle>
-          <DialogContent dividers sx={{ borderColor: '#E5E7EB' }}>
+          <DialogContent dividers sx={{ borderColor: tokens.borderColor }}>
             <Grid container spacing={3}>
               {/* Personal */}
               <Grid item xs={12} sm={6}>
-                <Typography variant="subtitle2" color="text.secondary">Contact Info</Typography>
+                <Typography variant="subtitle2" color="text.secondary" fontWeight="700" uppercase gutterBottom>Contact Info</Typography>
                 <Typography variant="body2"><strong>Email:</strong> {selectedWorker.user?.email}</Typography>
                 <Typography variant="body2"><strong>Phone:</strong> {selectedWorker.user?.phone}</Typography>
                 <Typography variant="body2"><strong>Address:</strong> {selectedWorker.profile?.address}, {selectedWorker.profile?.city}, {selectedWorker.profile?.state}</Typography>
               </Grid>
               {/* Finance */}
               <Grid item xs={12} sm={6}>
-                <Typography variant="subtitle2" color="text.secondary">Bank Details</Typography>
+                <Typography variant="subtitle2" color="text.secondary" fontWeight="700" uppercase gutterBottom>Bank Details</Typography>
                 <Typography variant="body2"><strong>Bank Account:</strong> {selectedWorker.profile?.bank_account || 'N/A'}</Typography>
                 <Typography variant="body2"><strong>IFSC Code:</strong> {selectedWorker.profile?.ifsc_code || 'N/A'}</Typography>
                 <Typography variant="body2"><strong>PAN Number:</strong> {selectedWorker.profile?.pan_number || 'N/A'}</Typography>
@@ -919,18 +1011,18 @@ const WorkersView = ({ hideHeader }) => {
               {/* KYC images */}
               <Grid item xs={12}>
                 <Divider sx={{ my: 1 }} />
-                <Typography variant="subtitle2" color="text.secondary" gutterBottom>KYC Identity Cards</Typography>
+                <Typography variant="subtitle2" color="text.secondary" fontWeight="700" uppercase gutterBottom sx={{ mt: 1 }}>KYC Identity Cards</Typography>
                 <Grid container spacing={3}>
                   <Grid item xs={6}>
-                    <Typography variant="caption" display="block">Aadhaar Photo</Typography>
+                    <Typography variant="caption" display="block" color="text.secondary" fontWeight="700" gutterBottom>Aadhaar Photo</Typography>
                     {selectedWorker.profile?.aadhaar_photo ? (
-                      <Box component="img" src={`http://127.0.0.1:8001${selectedWorker.profile.aadhaar_photo}`} sx={{ width: '100%', height: 200, objectFit: 'contain', border: '1px solid #E5E7EB', borderRadius: 1 }} />
+                      <Box component="img" src={`http://127.0.0.1:8001${selectedWorker.profile.aadhaar_photo}`} sx={{ width: '100%', height: 200, objectFit: 'contain', border: `1px solid ${tokens.borderColor}`, borderRadius: `${tokens.borderRadiusSm}px` }} />
                     ) : <Alert severity="warning">No Aadhaar copy uploaded</Alert>}
                   </Grid>
                   <Grid item xs={6}>
-                    <Typography variant="caption" display="block">PAN Photo</Typography>
+                    <Typography variant="caption" display="block" color="text.secondary" fontWeight="700" gutterBottom>PAN Photo</Typography>
                     {selectedWorker.profile?.pan_photo ? (
-                      <Box component="img" src={`http://127.0.0.1:8001${selectedWorker.profile.pan_photo}`} sx={{ width: '100%', height: 200, objectFit: 'contain', border: '1px solid #E5E7EB', borderRadius: 1 }} />
+                      <Box component="img" src={`http://127.0.0.1:8001${selectedWorker.profile.pan_photo}`} sx={{ width: '100%', height: 200, objectFit: 'contain', border: `1px solid ${tokens.borderColor}`, borderRadius: `${tokens.borderRadiusSm}px` }} />
                     ) : <Alert severity="warning">No PAN copy uploaded</Alert>}
                   </Grid>
                 </Grid>
@@ -939,28 +1031,28 @@ const WorkersView = ({ hideHeader }) => {
               {/* Wallet Ledger */}
               <Grid item xs={12}>
                 <Divider sx={{ my: 1 }} />
-                <Typography variant="subtitle2" color="text.secondary" gutterBottom>Wallet Balance Details</Typography>
+                <Typography variant="subtitle2" color="text.secondary" fontWeight="700" uppercase gutterBottom sx={{ mt: 1 }}>Wallet Balance Details</Typography>
                 {selectedWorker.wallet ? (
                   <Box>
-                    <Box display="flex" gap={4} mb={2}>
-                      <Paper sx={{ p: 2, flex: 1, bgcolor: '#F8FAFC' }}>
-                        <Typography variant="caption" color="text.secondary">Current Balance</Typography>
-                        <Typography variant="h6" fontWeight="bold">₹{selectedWorker.wallet.current_balance}</Typography>
-                      </Paper>
-                      <Paper sx={{ p: 2, flex: 1, bgcolor: '#F8FAFC' }}>
-                        <Typography variant="caption" color="text.secondary">Pending Balance</Typography>
-                        <Typography variant="h6" fontWeight="bold">₹{selectedWorker.wallet.pending_balance}</Typography>
-                      </Paper>
+                    <Box display="flex" gap={3} mb={3}>
+                      <Box sx={{ p: 2, flex: 1, bgcolor: tokens.colors.bg, borderRadius: `${tokens.borderRadiusSm}px`, border: `1px solid ${tokens.borderColor}` }}>
+                        <Typography variant="caption" color="text.secondary" fontWeight="700" uppercase>Current Balance</Typography>
+                        <Typography variant="h6" fontWeight="bold" sx={{ mt: 0.5 }}>₹{selectedWorker.wallet.current_balance}</Typography>
+                      </Box>
+                      <Box sx={{ p: 2, flex: 1, bgcolor: tokens.colors.bg, borderRadius: `${tokens.borderRadiusSm}px`, border: `1px solid ${tokens.borderColor}` }}>
+                        <Typography variant="caption" color="text.secondary" fontWeight="700" uppercase>Pending Balance</Typography>
+                        <Typography variant="h6" fontWeight="bold" sx={{ mt: 0.5 }}>₹{selectedWorker.wallet.pending_balance}</Typography>
+                      </Box>
                     </Box>
-                    <Typography variant="caption" display="block" gutterBottom>Transactions Log</Typography>
-                    <TableContainer component={Paper} variant="outlined">
+                    <Typography variant="caption" display="block" color="text.secondary" fontWeight="700" uppercase gutterBottom>Transactions Log</Typography>
+                    <TableContainer component={Paper} variant="outlined" sx={{ borderRadius: `${tokens.borderRadiusSm}px`, borderColor: tokens.borderColor }}>
                       <Table size="small">
                         <TableHead>
-                          <TableRow sx={{ bgcolor: '#F8FAFC' }}>
-                            <TableCell>Description</TableCell>
-                            <TableCell>Type</TableCell>
-                            <TableCell align="right">Amount</TableCell>
-                            <TableCell>Date</TableCell>
+                          <TableRow sx={{ bgcolor: tokens.colors.bg }}>
+                            <TableCell sx={{ fontWeight: 800 }}>Description</TableCell>
+                            <TableCell sx={{ fontWeight: 800 }}>Type</TableCell>
+                            <TableCell align="right" sx={{ fontWeight: 800 }}>Amount</TableCell>
+                            <TableCell sx={{ fontWeight: 800 }}>Date</TableCell>
                           </TableRow>
                         </TableHead>
                         <TableBody>
@@ -968,15 +1060,15 @@ const WorkersView = ({ hideHeader }) => {
                             <TableRow key={t.id}>
                               <TableCell>{t.description}</TableCell>
                               <TableCell>
-                                <Chip label={t.transaction_type.toUpperCase()} size="small" color={t.transaction_type === 'credit' ? 'success' : 'error'} />
+                                <Chip label={t.transaction_type.toUpperCase()} size="small" color={t.transaction_type === 'credit' ? 'success' : 'error'} sx={{ fontWeight: 700 }} />
                               </TableCell>
-                              <TableCell align="right" fontWeight="bold">₹{t.amount}</TableCell>
-                              <TableCell>{new Date(t.created_at).toLocaleDateString()}</TableCell>
+                              <TableCell align="right" sx={{ fontWeight: 'bold' }}>₹{t.amount}</TableCell>
+                              <TableCell sx={{ color: tokens.colors.textSecondary }}>{new Date(t.created_at).toLocaleDateString()}</TableCell>
                             </TableRow>
                           ))}
                           {(!selectedWorker.wallet.transactions || selectedWorker.wallet.transactions.length === 0) && (
                             <TableRow>
-                              <TableCell colSpan={4} align="center">No wallet transactions logged.</TableCell>
+                              <TableCell colSpan={4} align="center" sx={{ py: 3, color: tokens.colors.textSecondary }}>No wallet transactions logged.</TableCell>
                             </TableRow>
                           )}
                         </TableBody>
@@ -991,16 +1083,31 @@ const WorkersView = ({ hideHeader }) => {
           </DialogContent>
           <DialogActions sx={{ px: 3, py: 2 }}>
             {selectedWorker.profile?.approval_status !== 'approved' && (
-              <Button variant="contained" color="success" onClick={() => handleVerify(selectedWorker.user.id, 'approved')}>
+              <Button
+                variant="contained"
+                color="success"
+                onClick={() => handleVerify(selectedWorker.user.id, 'approved')}
+                sx={{ borderRadius: `${tokens.borderRadiusSm}px`, textTransform: 'none', fontWeight: 700 }}
+              >
                 Approve Registration
               </Button>
             )}
             {selectedWorker.profile?.approval_status !== 'rejected' && (
-              <Button variant="contained" color="error" onClick={() => handleVerify(selectedWorker.user.id, 'rejected')}>
+              <Button
+                variant="contained"
+                color="error"
+                onClick={() => handleVerify(selectedWorker.user.id, 'rejected')}
+                sx={{ borderRadius: `${tokens.borderRadiusSm}px`, textTransform: 'none', fontWeight: 700 }}
+              >
                 Reject Registration
               </Button>
             )}
-            <Button onClick={() => setOpenKYCDialog(false)}>Close</Button>
+            <Button
+              onClick={() => setOpenKYCDialog(false)}
+              sx={{ fontWeight: 700 }}
+            >
+              Close
+            </Button>
           </DialogActions>
         </Dialog>
       )}
@@ -1053,9 +1160,9 @@ const CustomersView = ({ hideHeader }) => {
   };
 
   return (
-    <Box>
+    <Box display="flex" flexDirection="column" gap={3}>
       {!hideHeader && (
-        <Box sx={{ mb: 4 }}>
+        <Box sx={{ mb: 1 }}>
           <Typography variant="h4" fontWeight="900" fontFamily="Outfit" color="#0F0F14">
             Customer Directory
           </Typography>
@@ -1068,54 +1175,87 @@ const CustomersView = ({ hideHeader }) => {
       {loading ? (
         <LinearProgress color="primary" />
       ) : (
-        <TableContainer component={Paper} sx={{ borderRadius: 2, boxShadow: '0 2px 10px rgba(0,0,0,0.03)' }}>
-          <Table>
-            <TableHead>
-              <TableRow sx={{ bgcolor: '#F8FAFC' }}>
-                <TableCell fontWeight="700">Customer Name</TableCell>
-                <TableCell fontWeight="700">Email Address</TableCell>
-                <TableCell fontWeight="700">Mobile Phone</TableCell>
-                <TableCell fontWeight="700">Location (City)</TableCell>
-                <TableCell fontWeight="700">Bookings Placed</TableCell>
-                <TableCell fontWeight="700">Status</TableCell>
-                <TableCell fontWeight="700" align="right">Actions</TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {customers.map((c) => (
-                <TableRow key={c.user.id} hover>
-                  <TableCell fontWeight="bold">{c.user.full_name}</TableCell>
-                  <TableCell>{c.user.email}</TableCell>
-                  <TableCell>{c.user.phone}</TableCell>
-                  <TableCell>{c.profile?.city || 'Not specified'}</TableCell>
-                  <TableCell fontWeight="bold" align="center">{c.total_bookings}</TableCell>
-                  <TableCell>
-                    {c.user.is_active ? (
-                      <Chip label="ACTIVE" color="success" size="small" sx={{ fontWeight: 'bold' }} />
-                    ) : (
-                      <Chip label="BLOCKED" color="error" size="small" sx={{ fontWeight: 'bold' }} />
-                    )}
-                  </TableCell>
-                  <TableCell align="right">
-                    <Box display="flex" justifyContent="flex-end" gap={1}>
-                      <Button size="small" variant="outlined" onClick={() => handleViewHistory(c.user.id)}>
-                        Audit logs
-                      </Button>
-                      <Button
-                        size="small"
-                        variant="contained"
-                        color={c.user.is_active ? 'error' : 'success'}
-                        onClick={() => handleToggleState(c.user.id)}
-                      >
-                        {c.user.is_active ? 'Block' : 'Activate'}
-                      </Button>
-                    </Box>
-                  </TableCell>
+        <DashboardCard title="Customer Directory" noPadding>
+          <TableContainer>
+            <Table>
+              <TableHead>
+                <TableRow sx={{ bgcolor: tokens.colors.bg }}>
+                  <TableCell sx={{ fontWeight: 800, fontFamily: 'Outfit', color: tokens.colors.primary }}>Customer Name</TableCell>
+                  <TableCell sx={{ fontWeight: 800, fontFamily: 'Outfit', color: tokens.colors.primary }}>Email Address</TableCell>
+                  <TableCell sx={{ fontWeight: 800, fontFamily: 'Outfit', color: tokens.colors.primary }}>Mobile Phone</TableCell>
+                  <TableCell sx={{ fontWeight: 800, fontFamily: 'Outfit', color: tokens.colors.primary }}>Location (City)</TableCell>
+                  <TableCell sx={{ fontWeight: 800, fontFamily: 'Outfit', color: tokens.colors.primary }}>Bookings Placed</TableCell>
+                  <TableCell sx={{ fontWeight: 800, fontFamily: 'Outfit', color: tokens.colors.primary }}>Status</TableCell>
+                  <TableCell sx={{ fontWeight: 800, fontFamily: 'Outfit', color: tokens.colors.primary }} align="right">Actions</TableCell>
                 </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </TableContainer>
+              </TableHead>
+              <TableBody>
+                {customers.map((c) => (
+                  <TableRow key={c.user.id} hover>
+                    <TableCell fontWeight="bold" sx={{ fontFamily: 'Outfit', fontWeight: 700 }}>{c.user.full_name}</TableCell>
+                    <TableCell sx={{ fontWeight: 500 }}>{c.user.email}</TableCell>
+                    <TableCell sx={{ fontWeight: 500 }}>{c.user.phone}</TableCell>
+                    <TableCell sx={{ color: tokens.colors.textSecondary }}>{c.profile?.city || 'Not specified'}</TableCell>
+                    <TableCell sx={{ fontWeight: 800 }} align="center">{c.total_bookings}</TableCell>
+                    <TableCell>
+                      {c.user.is_active ? (
+                        <Chip label="ACTIVE" color="success" size="small" sx={{ fontWeight: 800 }} />
+                      ) : (
+                        <Chip label="BLOCKED" color="error" size="small" sx={{ fontWeight: 800 }} />
+                      )}
+                    </TableCell>
+                    <TableCell align="right">
+                      <Box display="flex" justifyContent="flex-end" gap={1}>
+                        <Button
+                          size="small"
+                          variant="outlined"
+                          onClick={() => handleViewHistory(c.user.id)}
+                          sx={{
+                            borderColor: tokens.borderColor,
+                            color: tokens.colors.primary,
+                            fontWeight: 700,
+                            borderRadius: `${tokens.borderRadiusSm}px`,
+                            textTransform: 'none',
+                            '&:hover': {
+                              borderColor: tokens.colors.primary,
+                              bgcolor: 'rgba(0, 0, 0, 0.04)'
+                            }
+                          }}
+                        >
+                          Audit logs
+                        </Button>
+                        <Button
+                          size="small"
+                          variant="contained"
+                          color={c.user.is_active ? 'error' : 'success'}
+                          onClick={() => handleToggleState(c.user.id)}
+                          sx={{
+                            borderRadius: `${tokens.borderRadiusSm}px`,
+                            textTransform: 'none',
+                            fontWeight: 700
+                          }}
+                        >
+                          {c.user.is_active ? 'Block' : 'Activate'}
+                        </Button>
+                      </Box>
+                    </TableCell>
+                  </TableRow>
+                ))}
+                {customers.length === 0 && (
+                  <TableRow>
+                    <TableCell colSpan={7} sx={{ p: 0 }}>
+                      <EmptyState
+                        icon={<PeopleIcon />}
+                        title="No Customers Found"
+                        description="There are no registered customer accounts on file."
+                      />
+                    </TableCell>
+                  </TableRow>
+                )}
+              </TableBody>
+            </Table>
+          </TableContainer>
+        </DashboardCard>
       )}
 
       {/* Customer Audit Dialog */}
@@ -1127,23 +1267,23 @@ const CustomersView = ({ hideHeader }) => {
               <CloseIcon />
             </IconButton>
           </DialogTitle>
-          <DialogContent dividers sx={{ borderColor: '#E5E7EB' }}>
-            <Typography variant="subtitle2" color="text.secondary" gutterBottom>Personal Information</Typography>
+          <DialogContent dividers sx={{ borderColor: tokens.borderColor }}>
+            <Typography variant="subtitle2" color="text.secondary" fontWeight="700" uppercase gutterBottom>Personal Information</Typography>
             <Typography variant="body2"><strong>Email:</strong> {selectedCustomer.user?.email}</Typography>
             <Typography variant="body2"><strong>Phone:</strong> {selectedCustomer.user?.phone}</Typography>
             <Typography variant="body2"><strong>Home Address:</strong> {selectedCustomer.profile?.address || 'N/A'}</Typography>
             <Typography variant="body2"><strong>City/State:</strong> {selectedCustomer.profile?.city}, {selectedCustomer.profile?.state}</Typography>
 
             <Divider sx={{ my: 3 }} />
-            <Typography variant="subtitle2" color="text.secondary" gutterBottom>Bookings History</Typography>
-            <TableContainer component={Paper} variant="outlined">
+            <Typography variant="subtitle2" color="text.secondary" fontWeight="700" uppercase gutterBottom>Bookings History</Typography>
+            <TableContainer component={Paper} variant="outlined" sx={{ borderRadius: `${tokens.borderRadiusSm}px`, borderColor: tokens.borderColor }}>
               <Table size="small">
                 <TableHead>
-                  <TableRow sx={{ bgcolor: '#F8FAFC' }}>
-                    <TableCell>Booking ID</TableCell>
-                    <TableCell>Service</TableCell>
-                    <TableCell>Status</TableCell>
-                    <TableCell>Date</TableCell>
+                  <TableRow sx={{ bgcolor: tokens.colors.bg }}>
+                    <TableCell sx={{ fontWeight: 800 }}>Booking ID</TableCell>
+                    <TableCell sx={{ fontWeight: 800 }}>Service</TableCell>
+                    <TableCell sx={{ fontWeight: 800 }}>Status</TableCell>
+                    <TableCell sx={{ fontWeight: 800 }}>Date</TableCell>
                   </TableRow>
                 </TableHead>
                 <TableBody>
@@ -1152,14 +1292,14 @@ const CustomersView = ({ hideHeader }) => {
                       <TableCell fontWeight="bold">{b.tracking_id}</TableCell>
                       <TableCell>{b.service_category_detail?.name}</TableCell>
                       <TableCell>
-                        <Chip label={b.status.toUpperCase()} size="small" />
+                        <Chip label={b.status.toUpperCase()} size="small" sx={{ fontWeight: 700 }} />
                       </TableCell>
-                      <TableCell>{new Date(b.created_at).toLocaleDateString()}</TableCell>
+                      <TableCell sx={{ color: tokens.colors.textSecondary }}>{new Date(b.created_at).toLocaleDateString()}</TableCell>
                     </TableRow>
                   ))}
                   {(!selectedCustomer.bookings || selectedCustomer.bookings.length === 0) && (
                     <TableRow>
-                      <TableCell colSpan={4} align="center">No bookings on file.</TableCell>
+                      <TableCell colSpan={4} align="center" sx={{ py: 3, color: tokens.colors.textSecondary }}>No bookings on file.</TableCell>
                     </TableRow>
                   )}
                 </TableBody>
@@ -1167,15 +1307,15 @@ const CustomersView = ({ hideHeader }) => {
             </TableContainer>
 
             <Divider sx={{ my: 3 }} />
-            <Typography variant="subtitle2" color="text.secondary" gutterBottom>Payments log</Typography>
-            <TableContainer component={Paper} variant="outlined">
+            <Typography variant="subtitle2" color="text.secondary" fontWeight="700" uppercase gutterBottom>Payments log</Typography>
+            <TableContainer component={Paper} variant="outlined" sx={{ borderRadius: `${tokens.borderRadiusSm}px`, borderColor: tokens.borderColor }}>
               <Table size="small">
                 <TableHead>
-                  <TableRow sx={{ bgcolor: '#F8FAFC' }}>
-                    <TableCell>Transaction ID</TableCell>
-                    <TableCell>Amount</TableCell>
-                    <TableCell>Method</TableCell>
-                    <TableCell>Status</TableCell>
+                  <TableRow sx={{ bgcolor: tokens.colors.bg }}>
+                    <TableCell sx={{ fontWeight: 800 }}>Transaction ID</TableCell>
+                    <TableCell sx={{ fontWeight: 800 }}>Amount</TableCell>
+                    <TableCell sx={{ fontWeight: 800 }}>Method</TableCell>
+                    <TableCell sx={{ fontWeight: 800 }}>Status</TableCell>
                   </TableRow>
                 </TableHead>
                 <TableBody>
@@ -1185,21 +1325,21 @@ const CustomersView = ({ hideHeader }) => {
                       <TableCell fontWeight="bold">₹{p.amount}</TableCell>
                       <TableCell>{p.method.toUpperCase()}</TableCell>
                       <TableCell>
-                        <Chip label={p.status.toUpperCase()} size="small" color={p.status === 'success' ? 'success' : 'error'} />
+                        <Chip label={p.status.toUpperCase()} size="small" color={p.status === 'success' ? 'success' : 'error'} sx={{ fontWeight: 700 }} />
                       </TableCell>
                     </TableRow>
                   ))}
                   {(!selectedCustomer.payments || selectedCustomer.payments.length === 0) && (
                     <TableRow>
-                      <TableCell colSpan={4} align="center">No payment transactions on file.</TableCell>
+                      <TableCell colSpan={4} align="center" sx={{ py: 3, color: tokens.colors.textSecondary }}>No payment transactions on file.</TableCell>
                     </TableRow>
                   )}
                 </TableBody>
               </Table>
             </TableContainer>
           </DialogContent>
-          <DialogActions>
-            <Button onClick={() => setOpenHistoryDialog(false)}>Close</Button>
+          <DialogActions sx={{ px: 3, py: 2 }}>
+            <Button onClick={() => setOpenHistoryDialog(false)} sx={{ fontWeight: 700 }}>Close</Button>
           </DialogActions>
         </Dialog>
       )}
@@ -1263,9 +1403,9 @@ const CategoriesView = ({ hideHeader }) => {
   };
 
   return (
-    <Box>
+    <Box display="flex" flexDirection="column" gap={3}>
       {!hideHeader && (
-        <Box sx={{ mb: 4 }}>
+        <Box sx={{ mb: 1 }}>
           <Typography variant="h4" fontWeight="900" fontFamily="Outfit" color="#0F0F14">
             Service Categories Management
           </Typography>
@@ -1278,44 +1418,61 @@ const CategoriesView = ({ hideHeader }) => {
       {loading ? (
         <LinearProgress color="primary" />
       ) : (
-        <TableContainer component={Paper} sx={{ borderRadius: 2, boxShadow: '0 2px 10px rgba(0,0,0,0.03)' }}>
-          <Table>
-            <TableHead>
-              <TableRow sx={{ bgcolor: '#F8FAFC' }}>
-                <TableCell fontWeight="700">Category Name</TableCell>
-                <TableCell fontWeight="700">Display Icon</TableCell>
-                <TableCell fontWeight="700">Description</TableCell>
-                <TableCell fontWeight="700">Base Labour Fee</TableCell>
-                <TableCell fontWeight="700">Status</TableCell>
-                <TableCell fontWeight="700" align="right">Actions</TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {categories.map((c) => (
-                <TableRow key={c.id} hover>
-                  <TableCell fontWeight="bold">{c.name}</TableCell>
-                  <TableCell>{c.icon || 'Not configured'}</TableCell>
-                  <TableCell sx={{ maxWidth: '300px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                    {c.description || 'No description provided.'}
-                  </TableCell>
-                  <TableCell fontWeight="bold">₹{c.base_labour_charge}</TableCell>
-                  <TableCell>
-                    {c.is_active ? (
-                      <Chip label="ENABLED" color="success" size="small" sx={{ fontWeight: 'bold' }} />
-                    ) : (
-                      <Chip label="DISABLED" color="default" size="small" />
-                    )}
-                  </TableCell>
-                  <TableCell align="right">
-                    <Button variant="outlined" size="small" onClick={() => handleOpenEdit(c)}>
-                      Configure
-                    </Button>
-                  </TableCell>
+        <DashboardCard title="Categories Listing" noPadding>
+          <TableContainer>
+            <Table>
+              <TableHead>
+                <TableRow sx={{ bgcolor: tokens.colors.bg }}>
+                  <TableCell sx={{ fontWeight: 800, fontFamily: 'Outfit', color: tokens.colors.primary }}>Category Name</TableCell>
+                  <TableCell sx={{ fontWeight: 800, fontFamily: 'Outfit', color: tokens.colors.primary }}>Display Icon</TableCell>
+                  <TableCell sx={{ fontWeight: 800, fontFamily: 'Outfit', color: tokens.colors.primary }}>Description</TableCell>
+                  <TableCell sx={{ fontWeight: 800, fontFamily: 'Outfit', color: tokens.colors.primary }}>Base Labour Fee</TableCell>
+                  <TableCell sx={{ fontWeight: 800, fontFamily: 'Outfit', color: tokens.colors.primary }}>Status</TableCell>
+                  <TableCell sx={{ fontWeight: 800, fontFamily: 'Outfit', color: tokens.colors.primary }} align="right">Actions</TableCell>
                 </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </TableContainer>
+              </TableHead>
+              <TableBody>
+                {categories.map((c) => (
+                  <TableRow key={c.id} hover>
+                    <TableCell fontWeight="bold" sx={{ fontFamily: 'Outfit', fontWeight: 700 }}>{c.name}</TableCell>
+                    <TableCell sx={{ fontWeight: 600 }}>{c.icon || 'Not configured'}</TableCell>
+                    <TableCell sx={{ maxWidth: '300px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', color: tokens.colors.textSecondary }}>
+                      {c.description || 'No description provided.'}
+                    </TableCell>
+                    <TableCell sx={{ fontWeight: 700 }}>₹{c.base_labour_charge}</TableCell>
+                    <TableCell>
+                      {c.is_active ? (
+                        <Chip label="ENABLED" color="success" size="small" sx={{ fontWeight: 800 }} />
+                      ) : (
+                        <Chip label="DISABLED" color="default" size="small" sx={{ fontWeight: 600 }} />
+                      )}
+                    </TableCell>
+                    <TableCell align="right">
+                      <Button
+                        variant="outlined"
+                        size="small"
+                        onClick={() => handleOpenEdit(c)}
+                        sx={{
+                          borderColor: tokens.borderColor,
+                          color: tokens.colors.primary,
+                          fontWeight: 700,
+                          borderRadius: `${tokens.borderRadiusSm}px`,
+                          textTransform: 'none',
+                          '&:hover': {
+                            borderColor: tokens.colors.primary,
+                            bgcolor: 'rgba(0, 0, 0, 0.04)'
+                          }
+                        }}
+                      >
+                        Configure
+                      </Button>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </TableContainer>
+        </DashboardCard>
       )}
 
       {/* Edit Category Dialog */}
@@ -1357,9 +1514,19 @@ const CategoriesView = ({ hideHeader }) => {
               />
             </Box>
           </DialogContent>
-          <DialogActions>
+          <DialogActions sx={{ px: 3, py: 2 }}>
             <Button onClick={() => setOpenEditDialog(false)}>Cancel</Button>
-            <Button onClick={handleConfirmEdit} variant="contained" sx={{ bgcolor: '#1A73E8' }}>
+            <Button
+              onClick={handleConfirmEdit}
+              variant="contained"
+              sx={{
+                bgcolor: tokens.colors.accent,
+                color: '#ffffff',
+                textTransform: 'none',
+                fontWeight: 700,
+                '&:hover': { bgcolor: '#155cb0' }
+              }}
+            >
               Save Configuration
             </Button>
           </DialogActions>
@@ -1402,9 +1569,9 @@ const PaymentsView = ({ hideHeader }) => {
   };
 
   return (
-    <Box>
+    <Box display="flex" flexDirection="column" gap={3}>
       {!hideHeader && (
-        <Box sx={{ mb: 4 }}>
+        <Box sx={{ mb: 1 }}>
           <Typography variant="h4" fontWeight="900" fontFamily="Outfit" color="#0F0F14">
             Payment Management
           </Typography>
@@ -1415,7 +1582,7 @@ const PaymentsView = ({ hideHeader }) => {
       )}
 
       {/* Search Header */}
-      <Paper sx={{ p: 2, mb: 3, borderRadius: 2, boxShadow: '0 2px 10px rgba(0,0,0,0.03)' }}>
+      <DashboardCard>
         <Box display="flex" gap={2}>
           <TextField
             fullWidth
@@ -1432,52 +1599,77 @@ const PaymentsView = ({ hideHeader }) => {
               ),
             }}
           />
-          <Button variant="contained" onClick={fetchPayments} sx={{ bgcolor: '#1A73E8' }}>
+          <Button
+            variant="contained"
+            onClick={fetchPayments}
+            sx={{
+              bgcolor: tokens.colors.primary,
+              color: '#ffffff',
+              borderRadius: `${tokens.borderRadiusSm}px`,
+              textTransform: 'none',
+              fontWeight: 700,
+              px: 3,
+              '&:hover': { bgcolor: '#222222' }
+            }}
+          >
             Search
           </Button>
         </Box>
-      </Paper>
+      </DashboardCard>
 
       {loading ? (
         <LinearProgress color="primary" />
       ) : (
-        <TableContainer component={Paper} sx={{ borderRadius: 2, boxShadow: '0 2px 10px rgba(0,0,0,0.03)' }}>
-          <Table>
-            <TableHead>
-              <TableRow sx={{ bgcolor: '#F8FAFC' }}>
-                <TableCell fontWeight="700">Payment ID</TableCell>
-                <TableCell fontWeight="700">Booking ID</TableCell>
-                <TableCell fontWeight="700">Customer</TableCell>
-                <TableCell fontWeight="700">Captain</TableCell>
-                <TableCell fontWeight="700">Payment Method</TableCell>
-                <TableCell fontWeight="700">Amount</TableCell>
-                <TableCell fontWeight="700">Status</TableCell>
-                <TableCell fontWeight="700">Payment Date</TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {payments.map((p) => (
-                <TableRow key={p.id} hover>
-                  <TableCell>{p.transaction_id || <Typography variant="caption" color="text.disabled">PENDING</Typography>}</TableCell>
-                  <TableCell fontWeight="bold">{p.tracking_id}</TableCell>
-                  <TableCell>{p.customer_name}</TableCell>
-                  <TableCell>{p.worker_name}</TableCell>
-                  <TableCell>{p.method.toUpperCase()}</TableCell>
-                  <TableCell fontWeight="bold">₹{p.amount}</TableCell>
-                  <TableCell>
-                    <Chip
-                      label={p.status.toUpperCase()}
-                      color={p.status === 'success' ? 'success' : p.status === 'failed' ? 'error' : 'warning'}
-                      size="small"
-                      sx={{ fontWeight: 'bold' }}
-                    />
-                  </TableCell>
-                  <TableCell>{new Date(p.created_at).toLocaleDateString()}</TableCell>
+        <DashboardCard title="Transaction Payout Ledger" noPadding>
+          <TableContainer>
+            <Table>
+              <TableHead>
+                <TableRow sx={{ bgcolor: tokens.colors.bg }}>
+                  <TableCell sx={{ fontWeight: 800, fontFamily: 'Outfit', color: tokens.colors.primary }}>Payment ID</TableCell>
+                  <TableCell sx={{ fontWeight: 800, fontFamily: 'Outfit', color: tokens.colors.primary }}>Booking ID</TableCell>
+                  <TableCell sx={{ fontWeight: 800, fontFamily: 'Outfit', color: tokens.colors.primary }}>Customer</TableCell>
+                  <TableCell sx={{ fontWeight: 800, fontFamily: 'Outfit', color: tokens.colors.primary }}>Captain</TableCell>
+                  <TableCell sx={{ fontWeight: 800, fontFamily: 'Outfit', color: tokens.colors.primary }}>Payment Method</TableCell>
+                  <TableCell sx={{ fontWeight: 800, fontFamily: 'Outfit', color: tokens.colors.primary }}>Amount</TableCell>
+                  <TableCell sx={{ fontWeight: 800, fontFamily: 'Outfit', color: tokens.colors.primary }}>Status</TableCell>
+                  <TableCell sx={{ fontWeight: 800, fontFamily: 'Outfit', color: tokens.colors.primary }}>Payment Date</TableCell>
                 </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </TableContainer>
+              </TableHead>
+              <TableBody>
+                {payments.map((p) => (
+                  <TableRow key={p.id} hover>
+                    <TableCell>{p.transaction_id || <Typography variant="caption" color="text.disabled" sx={{ fontWeight: 600 }}>PENDING</Typography>}</TableCell>
+                    <TableCell sx={{ fontWeight: 'bold' }}>{p.tracking_id}</TableCell>
+                    <TableCell sx={{ fontWeight: 600 }}>{p.customer_name}</TableCell>
+                    <TableCell sx={{ fontWeight: 600 }}>{p.worker_name}</TableCell>
+                    <TableCell sx={{ fontWeight: 500 }}>{p.method.toUpperCase()}</TableCell>
+                    <TableCell sx={{ fontWeight: 'bold' }}>₹{p.amount}</TableCell>
+                    <TableCell>
+                      <Chip
+                        label={p.status.toUpperCase()}
+                        color={p.status === 'success' ? 'success' : p.status === 'failed' ? 'error' : 'warning'}
+                        size="small"
+                        sx={{ fontWeight: 800 }}
+                      />
+                    </TableCell>
+                    <TableCell sx={{ color: tokens.colors.textSecondary }}>{new Date(p.created_at).toLocaleDateString()}</TableCell>
+                  </TableRow>
+                ))}
+                {payments.length === 0 && (
+                  <TableRow>
+                    <TableCell colSpan={8} sx={{ p: 0 }}>
+                      <EmptyState
+                        icon={<PaymentIcon />}
+                        title="No Payouts Logged"
+                        description="There are no payment history entries registered on the system ledger."
+                      />
+                    </TableCell>
+                  </TableRow>
+                )}
+              </TableBody>
+            </Table>
+          </TableContainer>
+        </DashboardCard>
       )}
     </Box>
   );
@@ -1523,9 +1715,9 @@ const BillsView = ({ hideHeader }) => {
   };
 
   return (
-    <Box>
+    <Box display="flex" flexDirection="column" gap={3}>
       {!hideHeader && (
-        <Box sx={{ mb: 4 }}>
+        <Box sx={{ mb: 1 }}>
           <Typography variant="h4" fontWeight="900" fontFamily="Outfit" color="#0F0F14">
             Invoice & Bill Registry
           </Typography>
@@ -1536,7 +1728,7 @@ const BillsView = ({ hideHeader }) => {
       )}
 
       {/* Search Header */}
-      <Paper sx={{ p: 2, mb: 3, borderRadius: 2, boxShadow: '0 2px 10px rgba(0,0,0,0.03)' }}>
+      <DashboardCard>
         <Box display="flex" gap={2}>
           <TextField
             fullWidth
@@ -1553,49 +1745,89 @@ const BillsView = ({ hideHeader }) => {
               ),
             }}
           />
-          <Button variant="contained" onClick={fetchBills} sx={{ bgcolor: '#1A73E8' }}>
+          <Button
+            variant="contained"
+            onClick={fetchBills}
+            sx={{
+              bgcolor: tokens.colors.primary,
+              color: '#ffffff',
+              borderRadius: `${tokens.borderRadiusSm}px`,
+              textTransform: 'none',
+              fontWeight: 700,
+              px: 3,
+              '&:hover': { bgcolor: '#222222' }
+            }}
+          >
             Filter
           </Button>
         </Box>
-      </Paper>
+      </DashboardCard>
 
       {loading ? (
         <LinearProgress color="primary" />
       ) : (
-        <TableContainer component={Paper} sx={{ borderRadius: 2, boxShadow: '0 2px 10px rgba(0,0,0,0.03)' }}>
-          <Table>
-            <TableHead>
-              <TableRow sx={{ bgcolor: '#F8FAFC' }}>
-                <TableCell fontWeight="700">Bill Number</TableCell>
-                <TableCell fontWeight="700">Booking ID</TableCell>
-                <TableCell fontWeight="700">Customer</TableCell>
-                <TableCell fontWeight="700">Captain</TableCell>
-                <TableCell fontWeight="700">Labour Fee</TableCell>
-                <TableCell fontWeight="700">GST (18%)</TableCell>
-                <TableCell fontWeight="700">Total Amount</TableCell>
-                <TableCell fontWeight="700" align="right">Actions</TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {bills.map((b) => (
-                <TableRow key={b.id} hover>
-                  <TableCell fontWeight="bold">#INV-{b.id + 5000}</TableCell>
-                  <TableCell>{b.booking_detail?.tracking_id}</TableCell>
-                  <TableCell>{b.booking_detail?.customer?.full_name}</TableCell>
-                  <TableCell>{b.booking_detail?.worker?.full_name || 'N/A'}</TableCell>
-                  <TableCell>₹{b.labour_charges}</TableCell>
-                  <TableCell>₹{b.gst}</TableCell>
-                  <TableCell fontWeight="bold" color="primary">₹{b.grand_total}</TableCell>
-                  <TableCell align="right">
-                    <Button variant="outlined" size="small" onClick={() => handleViewBillDetails(b)}>
-                      Inspect Details
-                    </Button>
-                  </TableCell>
+        <DashboardCard title="Invoices Registry" noPadding>
+          <TableContainer>
+            <Table>
+              <TableHead>
+                <TableRow sx={{ bgcolor: tokens.colors.bg }}>
+                  <TableCell sx={{ fontWeight: 800, fontFamily: 'Outfit', color: tokens.colors.primary }}>Bill Number</TableCell>
+                  <TableCell sx={{ fontWeight: 800, fontFamily: 'Outfit', color: tokens.colors.primary }}>Booking ID</TableCell>
+                  <TableCell sx={{ fontWeight: 800, fontFamily: 'Outfit', color: tokens.colors.primary }}>Customer</TableCell>
+                  <TableCell sx={{ fontWeight: 800, fontFamily: 'Outfit', color: tokens.colors.primary }}>Captain</TableCell>
+                  <TableCell sx={{ fontWeight: 800, fontFamily: 'Outfit', color: tokens.colors.primary }}>Labour Fee</TableCell>
+                  <TableCell sx={{ fontWeight: 800, fontFamily: 'Outfit', color: tokens.colors.primary }}>GST (18%)</TableCell>
+                  <TableCell sx={{ fontWeight: 800, fontFamily: 'Outfit', color: tokens.colors.primary }}>Total Amount</TableCell>
+                  <TableCell sx={{ fontWeight: 800, fontFamily: 'Outfit', color: tokens.colors.primary }} align="right">Actions</TableCell>
                 </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </TableContainer>
+              </TableHead>
+              <TableBody>
+                {bills.map((b) => (
+                  <TableRow key={b.id} hover>
+                    <TableCell fontWeight="bold" sx={{ fontFamily: 'Outfit' }}>#INV-{b.id + 5000}</TableCell>
+                    <TableCell sx={{ fontWeight: 600 }}>{b.booking_detail?.tracking_id}</TableCell>
+                    <TableCell sx={{ fontWeight: 500 }}>{b.booking_detail?.customer?.full_name}</TableCell>
+                    <TableCell sx={{ fontWeight: 500 }}>{b.booking_detail?.worker?.full_name || 'N/A'}</TableCell>
+                    <TableCell>₹{b.labour_charges}</TableCell>
+                    <TableCell>₹{b.gst}</TableCell>
+                    <TableCell sx={{ fontWeight: 800, color: tokens.colors.primary }}>₹{b.grand_total}</TableCell>
+                    <TableCell align="right">
+                      <Button
+                        variant="outlined"
+                        size="small"
+                        onClick={() => handleViewBillDetails(b)}
+                        sx={{
+                          borderColor: tokens.borderColor,
+                          color: tokens.colors.primary,
+                          fontWeight: 700,
+                          borderRadius: `${tokens.borderRadiusSm}px`,
+                          textTransform: 'none',
+                          '&:hover': {
+                            borderColor: tokens.colors.primary,
+                            bgcolor: 'rgba(0, 0, 0, 0.04)'
+                          }
+                        }}
+                      >
+                        Inspect Details
+                      </Button>
+                    </TableCell>
+                  </TableRow>
+                ))}
+                {bills.length === 0 && (
+                  <TableRow>
+                    <TableCell colSpan={8} sx={{ p: 0 }}>
+                      <EmptyState
+                        icon={<ReceiptIcon />}
+                        title="No Bills on File"
+                        description="There are no billing invoices matching your search parameters on the registry."
+                      />
+                    </TableCell>
+                  </TableRow>
+                )}
+              </TableBody>
+            </Table>
+          </TableContainer>
+        </DashboardCard>
       )}
 
       {/* Bill Detailed View Dialog */}
@@ -1607,32 +1839,32 @@ const BillsView = ({ hideHeader }) => {
               <CloseIcon />
             </IconButton>
           </DialogTitle>
-          <DialogContent dividers sx={{ borderColor: '#E5E7EB' }}>
+          <DialogContent dividers sx={{ borderColor: tokens.borderColor }}>
             <Grid container spacing={2}>
               <Grid item xs={12}>
-                <Typography variant="caption" color="text.secondary">Booking Reference</Typography>
+                <Typography variant="caption" color="text.secondary" fontWeight="700" uppercase>Booking Reference</Typography>
                 <Typography variant="body2" fontWeight="bold">{selectedBill.booking_detail?.tracking_id} ({selectedBill.booking_detail?.service_category_detail?.name})</Typography>
               </Grid>
               <Grid item xs={6}>
-                <Typography variant="caption" color="text.secondary">Customer</Typography>
+                <Typography variant="caption" color="text.secondary" fontWeight="700" uppercase>Customer</Typography>
                 <Typography variant="body2">{selectedBill.booking_detail?.customer?.full_name}</Typography>
               </Grid>
               <Grid item xs={6}>
-                <Typography variant="caption" color="text.secondary">Captain Professional</Typography>
+                <Typography variant="caption" color="text.secondary" fontWeight="700" uppercase>Captain Professional</Typography>
                 <Typography variant="body2">{selectedBill.booking_detail?.worker?.full_name || 'Unassigned'}</Typography>
               </Grid>
 
               <Grid item xs={12}>
                 <Divider sx={{ my: 1 }} />
-                <Typography variant="caption" color="text.secondary" display="block" gutterBottom>Purchased Spare Parts / Spare Items List</Typography>
+                <Typography variant="caption" color="text.secondary" display="block" fontWeight="700" uppercase gutterBottom sx={{ mt: 1 }}>Purchased Spare Parts / Spare Items List</Typography>
                 {selectedBill.items && selectedBill.items.length > 0 ? (
-                  <TableContainer component={Paper} variant="outlined">
+                  <TableContainer component={Paper} variant="outlined" sx={{ borderRadius: `${tokens.borderRadiusSm}px`, borderColor: tokens.borderColor }}>
                     <Table size="small">
                       <TableHead>
-                        <TableRow sx={{ bgcolor: '#F8FAFC' }}>
-                          <TableCell>Part Name</TableCell>
-                          <TableCell align="center">Qty</TableCell>
-                          <TableCell align="right">Price</TableCell>
+                        <TableRow sx={{ bgcolor: tokens.colors.bg }}>
+                          <TableCell sx={{ fontWeight: 800 }}>Part Name</TableCell>
+                          <TableCell align="center" sx={{ fontWeight: 800 }}>Qty</TableCell>
+                          <TableCell align="right" sx={{ fontWeight: 800 }}>Price</TableCell>
                         </TableRow>
                       </TableHead>
                       <TableBody>
@@ -1640,7 +1872,7 @@ const BillsView = ({ hideHeader }) => {
                           <TableRow key={i.id}>
                             <TableCell>{i.part_name}</TableCell>
                             <TableCell align="center">{i.quantity}</TableCell>
-                            <TableCell align="right">₹{i.price}</TableCell>
+                            <TableCell align="right" sx={{ fontWeight: 'bold' }}>₹{i.price}</TableCell>
                           </TableRow>
                         ))}
                       </TableBody>
@@ -1654,9 +1886,9 @@ const BillsView = ({ hideHeader }) => {
               {/* Uploaded Supplier Copy */}
               <Grid item xs={12}>
                 <Divider sx={{ my: 1 }} />
-                <Typography variant="caption" color="text.secondary" display="block" gutterBottom>Spare Parts Store Receipt Photo</Typography>
+                <Typography variant="caption" color="text.secondary" display="block" fontWeight="700" uppercase gutterBottom sx={{ mt: 1 }}>Spare Parts Store Receipt Photo</Typography>
                 {selectedBill.booking_detail?.spare_part_photo ? (
-                  <Box component="img" src={`http://127.0.0.1:8001${selectedBill.booking_detail.spare_part_photo}`} sx={{ width: '100%', height: 180, objectFit: 'contain', border: '1px solid #E5E7EB', borderRadius: 1 }} />
+                  <Box component="img" src={`http://127.0.0.1:8001${selectedBill.booking_detail.spare_part_photo}`} sx={{ width: '100%', height: 180, objectFit: 'contain', border: `1px solid ${tokens.borderColor}`, borderRadius: `${tokens.borderRadiusSm}px` }} />
                 ) : (
                   <Typography variant="caption" color="text.disabled">No receipt photo uploaded</Typography>
                 )}
@@ -1664,17 +1896,17 @@ const BillsView = ({ hideHeader }) => {
 
               <Grid item xs={12}>
                 <Divider sx={{ my: 1 }} />
-                <Typography variant="caption" color="text.secondary" display="block" gutterBottom>Offsite Workshop Store Invoice Photo</Typography>
+                <Typography variant="caption" color="text.secondary" display="block" fontWeight="700" uppercase gutterBottom sx={{ mt: 1 }}>Offsite Workshop Store Invoice Photo</Typography>
                 {selectedBill.booking_detail?.invoice_photo ? (
-                  <Box component="img" src={`http://127.0.0.1:8001${selectedBill.booking_detail.invoice_photo}`} sx={{ width: '100%', height: 180, objectFit: 'contain', border: '1px solid #E5E7EB', borderRadius: 1 }} />
+                  <Box component="img" src={`http://127.0.0.1:8001${selectedBill.booking_detail.invoice_photo}`} sx={{ width: '100%', height: 180, objectFit: 'contain', border: `1px solid ${tokens.borderColor}`, borderRadius: `${tokens.borderRadiusSm}px` }} />
                 ) : (
                   <Typography variant="caption" color="text.disabled">No workshop invoice photo uploaded</Typography>
                 )}
               </Grid>
             </Grid>
           </DialogContent>
-          <DialogActions>
-            <Button onClick={() => setOpenBillDialog(false)}>Close</Button>
+          <DialogActions sx={{ px: 3, py: 2 }}>
+            <Button onClick={() => setOpenBillDialog(false)} sx={{ fontWeight: 700 }}>Close</Button>
           </DialogActions>
         </Dialog>
       )}
@@ -1718,9 +1950,9 @@ const ReviewsView = ({ hideHeader }) => {
   };
 
   return (
-    <Box>
+    <Box display="flex" flexDirection="column" gap={3}>
       {!hideHeader && (
-        <Box sx={{ mb: 4 }}>
+        <Box sx={{ mb: 1 }}>
           <Typography variant="h4" fontWeight="900" fontFamily="Outfit" color="#0F0F14">
             Ratings & Reviews
           </Typography>
@@ -1731,7 +1963,7 @@ const ReviewsView = ({ hideHeader }) => {
       )}
 
       {/* Filter Header */}
-      <Paper sx={{ p: 2, mb: 3, borderRadius: 2, boxShadow: '0 2px 10px rgba(0,0,0,0.03)' }}>
+      <DashboardCard>
         <FormControl size="small" sx={{ minWidth: 200 }}>
           <InputLabel>Filter by Rating</InputLabel>
           <Select
@@ -1747,54 +1979,79 @@ const ReviewsView = ({ hideHeader }) => {
             <MenuItem value="1">1 Star</MenuItem>
           </Select>
         </FormControl>
-      </Paper>
+      </DashboardCard>
 
       {loading ? (
         <LinearProgress color="primary" />
       ) : (
-        <TableContainer component={Paper} sx={{ borderRadius: 2, boxShadow: '0 2px 10px rgba(0,0,0,0.03)' }}>
-          <Table>
-            <TableHead>
-              <TableRow sx={{ bgcolor: '#F8FAFC' }}>
-                <TableCell fontWeight="700">Booking</TableCell>
-                <TableCell fontWeight="700">Customer</TableCell>
-                <TableCell fontWeight="700">Captain</TableCell>
-                <TableCell fontWeight="700">Rating</TableCell>
-                <TableCell fontWeight="700">Review</TableCell>
-                <TableCell fontWeight="700">Visibility</TableCell>
-                <TableCell fontWeight="700" align="right">Actions</TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {reviews.map((r) => (
-                <TableRow key={r.id} hover>
-                  <TableCell fontWeight="bold">{r.tracking_id}</TableCell>
-                  <TableCell>{r.customer_name}</TableCell>
-                  <TableCell>{r.worker_name}</TableCell>
-                  <TableCell>
-                    <Box display="flex" alignItems="center" gap={0.5}>
-                      <StarIcon sx={{ color: '#FBBC05', fontSize: 18 }} />
-                      <Typography variant="body2" fontWeight="bold">{r.rating}</Typography>
-                    </Box>
-                  </TableCell>
-                  <TableCell sx={{ maxWidth: '300px' }}>{r.review || <Typography variant="caption" color="text.disabled">No text review</Typography>}</TableCell>
-                  <TableCell>
-                    {r.is_hidden ? (
-                      <Chip label="HIDDEN" color="error" size="small" variant="outlined" />
-                    ) : (
-                      <Chip label="VISIBLE" color="success" size="small" variant="outlined" />
-                    )}
-                  </TableCell>
-                  <TableCell align="right">
-                    <Button variant="outlined" size="small" color={r.is_hidden ? 'success' : 'error'} onClick={() => handleToggleHide(r.id)}>
-                      {r.is_hidden ? 'Show' : 'Hide Review'}
-                    </Button>
-                  </TableCell>
+        <DashboardCard title="Ratings & Reviews History" noPadding>
+          <TableContainer>
+            <Table>
+              <TableHead>
+                <TableRow sx={{ bgcolor: tokens.colors.bg }}>
+                  <TableCell sx={{ fontWeight: 800, fontFamily: 'Outfit', color: tokens.colors.primary }}>Booking</TableCell>
+                  <TableCell sx={{ fontWeight: 800, fontFamily: 'Outfit', color: tokens.colors.primary }}>Customer</TableCell>
+                  <TableCell sx={{ fontWeight: 800, fontFamily: 'Outfit', color: tokens.colors.primary }}>Captain</TableCell>
+                  <TableCell sx={{ fontWeight: 800, fontFamily: 'Outfit', color: tokens.colors.primary }}>Rating</TableCell>
+                  <TableCell sx={{ fontWeight: 800, fontFamily: 'Outfit', color: tokens.colors.primary }}>Review</TableCell>
+                  <TableCell sx={{ fontWeight: 800, fontFamily: 'Outfit', color: tokens.colors.primary }}>Visibility</TableCell>
+                  <TableCell sx={{ fontWeight: 800, fontFamily: 'Outfit', color: tokens.colors.primary }} align="right">Actions</TableCell>
                 </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </TableContainer>
+              </TableHead>
+              <TableBody>
+                {reviews.map((r) => (
+                  <TableRow key={r.id} hover>
+                    <TableCell fontWeight="bold" sx={{ fontFamily: 'Outfit' }}>{r.tracking_id}</TableCell>
+                    <TableCell sx={{ fontWeight: 600 }}>{r.customer_name}</TableCell>
+                    <TableCell sx={{ fontWeight: 600 }}>{r.worker_name}</TableCell>
+                    <TableCell>
+                      <Box display="flex" alignItems="center" gap={0.5}>
+                        <StarIcon sx={{ color: '#FBBC05', fontSize: 18 }} />
+                        <Typography variant="body2" fontWeight="bold">{r.rating}</Typography>
+                      </Box>
+                    </TableCell>
+                    <TableCell sx={{ maxWidth: '300px', color: tokens.colors.textSecondary, fontWeight: 500 }}>
+                      {r.review || <Typography variant="caption" color="text.disabled" sx={{ fontWeight: 600 }}>No text review</Typography>}
+                    </TableCell>
+                    <TableCell>
+                      {r.is_hidden ? (
+                        <Chip label="HIDDEN" color="error" size="small" variant="outlined" sx={{ fontWeight: 800 }} />
+                      ) : (
+                        <Chip label="VISIBLE" color="success" size="small" variant="outlined" sx={{ fontWeight: 800 }} />
+                      )}
+                    </TableCell>
+                    <TableCell align="right">
+                      <Button
+                        variant="outlined"
+                        size="small"
+                        color={r.is_hidden ? 'success' : 'error'}
+                        onClick={() => handleToggleHide(r.id)}
+                        sx={{
+                          borderRadius: `${tokens.borderRadiusSm}px`,
+                          textTransform: 'none',
+                          fontWeight: 700
+                        }}
+                      >
+                        {r.is_hidden ? 'Show' : 'Hide Review'}
+                      </Button>
+                    </TableCell>
+                  </TableRow>
+                ))}
+                {reviews.length === 0 && (
+                  <TableRow>
+                    <TableCell colSpan={7} sx={{ p: 0 }}>
+                      <EmptyState
+                        icon={<StarIcon />}
+                        title="No Reviews Found"
+                        description="There are no ratings or reviews logged by customers matching the filter."
+                      />
+                    </TableCell>
+                  </TableRow>
+                )}
+              </TableBody>
+            </Table>
+          </TableContainer>
+        </DashboardCard>
       )}
     </Box>
   );
@@ -1842,9 +2099,9 @@ const ReportsView = ({ hideHeader }) => {
   }
 
   return (
-    <Box>
+    <Box display="flex" flexDirection="column" gap={3}>
       {!hideHeader && (
-        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 4 }}>
+        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1 }}>
           <Box>
             <Typography variant="h4" fontWeight="900" fontFamily="Outfit" color="#0F0F14">
               Reports & Analytics
@@ -1857,58 +2114,66 @@ const ReportsView = ({ hideHeader }) => {
             variant="contained"
             onClick={handleExport}
             startIcon={<FileDownloadIcon />}
-            sx={{ bgcolor: '#1A73E8', '&:hover': { bgcolor: '#155cb0' } }}
+            sx={{
+              bgcolor: tokens.colors.primary,
+              color: '#ffffff',
+              borderRadius: `${tokens.borderRadiusSm}px`,
+              textTransform: 'none',
+              fontWeight: 700,
+              '&:hover': { bgcolor: '#222222' }
+            }}
           >
             Export CSV Report
           </Button>
         </Box>
       )}
 
-      <Grid container spacing={4} sx={{ mb: 4 }}>
-        <Grid item xs={12} sm={6}>
-          <Paper sx={{ p: 4, borderRadius: 2, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: 180 }}>
-            <Typography variant="subtitle2" color="text.secondary" uppercase>Success booking Completion Rate</Typography>
-            <Typography variant="h3" fontWeight="bold" sx={{ mt: 1, color: '#34A853', fontFamily: 'Outfit' }}>
-              {reportData.successRate}%
-            </Typography>
-          </Paper>
-        </Grid>
-        <Grid item xs={12} sm={6}>
-          <Paper sx={{ p: 4, borderRadius: 2, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: 180 }}>
-            <Typography variant="subtitle2" color="text.secondary" uppercase>Booking Cancellation Rate</Typography>
-            <Typography variant="h3" fontWeight="bold" sx={{ mt: 1, color: '#EA4335', fontFamily: 'Outfit' }}>
-              {reportData.cancelRate}%
-            </Typography>
-          </Paper>
-        </Grid>
-      </Grid>
+      <DashboardGrid>
+        <Box sx={span.half}>
+          <DashboardCard>
+            <Box sx={{ py: 2, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: 140 }}>
+              <Typography variant="caption" color="text.secondary" sx={{ fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em' }}>Success Completion Rate</Typography>
+              <Typography variant="h3" fontWeight="900" sx={{ mt: 1.5, color: '#34A853', fontFamily: 'Outfit' }}>
+                {reportData.successRate}%
+              </Typography>
+            </Box>
+          </DashboardCard>
+        </Box>
+        <Box sx={span.half}>
+          <DashboardCard>
+            <Box sx={{ py: 2, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: 140 }}>
+              <Typography variant="caption" color="text.secondary" sx={{ fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em' }}>Booking Cancellation Rate</Typography>
+              <Typography variant="h3" fontWeight="900" sx={{ mt: 1.5, color: '#EA4335', fontFamily: 'Outfit' }}>
+                {reportData.cancelRate}%
+              </Typography>
+            </Box>
+          </DashboardCard>
+        </Box>
+      </DashboardGrid>
 
       {/* Revenue per Service Category Table */}
-      <Paper sx={{ p: 3, borderRadius: 2 }}>
-        <Typography variant="subtitle1" fontWeight="bold" sx={{ mb: 2, fontFamily: 'Outfit' }}>
-          Revenue Metrics per Service Category
-        </Typography>
+      <DashboardCard title="Revenue Metrics per Service Category" noPadding>
         <TableContainer>
           <Table>
             <TableHead>
-              <TableRow sx={{ bgcolor: '#F8FAFC' }}>
-                <TableCell fontWeight="700">Category</TableCell>
-                <TableCell fontWeight="700" align="center">Total Bookings Count</TableCell>
-                <TableCell fontWeight="700" align="right">Aggregated Grand Total</TableCell>
+              <TableRow sx={{ bgcolor: tokens.colors.bg }}>
+                <TableCell sx={{ fontWeight: 800, fontFamily: 'Outfit', color: tokens.colors.primary }}>Category</TableCell>
+                <TableCell sx={{ fontWeight: 800, fontFamily: 'Outfit', color: tokens.colors.primary }} align="center">Total Bookings Count</TableCell>
+                <TableCell sx={{ fontWeight: 800, fontFamily: 'Outfit', color: tokens.colors.primary }} align="right">Aggregated Grand Total</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
               {reportData.categories && reportData.categories.map((c, idx) => (
-                <TableRow key={idx}>
-                  <TableCell fontWeight="bold">{c.service_category__name || 'Unspecified'}</TableCell>
-                  <TableCell align="center">{c.count}</TableCell>
-                  <TableCell align="right" fontWeight="bold">₹{c.total_rev ? parseFloat(c.total_rev).toFixed(2) : '0.00'}</TableCell>
+                <TableRow key={idx} hover>
+                  <TableCell fontWeight="bold" sx={{ fontFamily: 'Outfit', fontWeight: 700 }}>{c.service_category__name || 'Unspecified'}</TableCell>
+                  <TableCell align="center" sx={{ fontWeight: 600 }}>{c.count}</TableCell>
+                  <TableCell align="right" sx={{ fontWeight: 800 }}>₹{c.total_rev ? parseFloat(c.total_rev).toFixed(2) : '0.00'}</TableCell>
                 </TableRow>
               ))}
             </TableBody>
           </Table>
         </TableContainer>
-      </Paper>
+      </DashboardCard>
     </Box>
   );
 };
@@ -1962,9 +2227,9 @@ const NotificationsView = ({ hideHeader }) => {
   };
 
   return (
-    <Box>
+    <Box display="flex" flexDirection="column" gap={3}>
       {!hideHeader && (
-        <Box sx={{ mb: 4 }}>
+        <Box sx={{ mb: 1 }}>
           <Typography variant="h4" fontWeight="900" fontFamily="Outfit" color="#0F0F14">
             Broadcast Announcements
           </Typography>
@@ -1974,13 +2239,10 @@ const NotificationsView = ({ hideHeader }) => {
         </Box>
       )}
 
-      <Grid container spacing={4}>
+      <DashboardGrid>
         {/* Creator Form */}
-        <Grid item xs={12} md={5}>
-          <Paper sx={{ p: 3, borderRadius: 2, boxShadow: '0 2px 10px rgba(0,0,0,0.03)' }}>
-            <Typography variant="subtitle1" fontWeight="bold" sx={{ mb: 3, fontFamily: 'Outfit' }}>
-              Create Announcement
-            </Typography>
+        <Box sx={span.third}>
+          <DashboardCard title="Create Announcement">
             <form onSubmit={handleBroadcast}>
               <Box display="flex" flexDirection="column" gap={2.5}>
                 <FormControl size="small" fullWidth>
@@ -2010,46 +2272,59 @@ const NotificationsView = ({ hideHeader }) => {
                   value={message}
                   onChange={(e) => setMessage(e.target.value)}
                 />
-                <Button type="submit" variant="contained" sx={{ bgcolor: '#1A73E8', '&:hover': { bgcolor: '#155cb0' }, py: 1 }}>
+                <Button
+                  type="submit"
+                  variant="contained"
+                  sx={{
+                    bgcolor: tokens.colors.primary,
+                    color: '#ffffff',
+                    borderRadius: `${tokens.borderRadiusSm}px`,
+                    textTransform: 'none',
+                    fontWeight: 700,
+                    py: 1,
+                    '&:hover': { bgcolor: '#222222' }
+                  }}
+                >
                   Broadcast Announcement
                 </Button>
               </Box>
             </form>
-          </Paper>
-        </Grid>
+          </DashboardCard>
+        </Box>
 
         {/* History Log */}
-        <Grid item xs={12} md={7}>
-          <Paper sx={{ p: 3, borderRadius: 2, boxShadow: '0 2px 10px rgba(0,0,0,0.03)', minHeight: 350 }}>
-            <Typography variant="subtitle1" fontWeight="bold" sx={{ mb: 2, fontFamily: 'Outfit' }}>
-              Sent Announcements History Log
-            </Typography>
+        <Box sx={span.twoThirds}>
+          <DashboardCard title="Sent Announcements History Log">
             {loading ? (
-              <CircularProgress />
+              <Box display="flex" justifyContent="center" py={4}>
+                <CircularProgress />
+              </Box>
             ) : (
               <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2.5 }}>
                 {announcements.map((a) => (
-                  <Box key={a.id} sx={{ p: 2, border: '1px solid #E5E7EB', borderRadius: 1.5 }}>
-                    <Box display="flex" justifyContent="space-between" mb={1}>
-                      <Typography variant="body2" fontWeight="bold">{a.title}</Typography>
-                      <Chip label={a.recipient_type.replace('_', ' ').toUpperCase()} size="small" />
+                  <Box key={a.id} sx={{ p: 2.5, border: `1px solid ${tokens.borderColor}`, borderRadius: `${tokens.borderRadiusSm}px`, bgcolor: tokens.colors.bg }}>
+                    <Box display="flex" justifyContent="space-between" alignItems="flex-start" mb={1} gap={2}>
+                      <Typography variant="body2" fontWeight="800" sx={{ fontFamily: 'Outfit' }}>{a.title}</Typography>
+                      <Chip label={a.recipient_type.replace('_', ' ').toUpperCase()} size="small" sx={{ fontWeight: 800 }} />
                     </Box>
-                    <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>{a.message}</Typography>
-                    <Typography variant="caption" color="text.disabled">
+                    <Typography variant="body2" color="text.secondary" sx={{ mb: 2, fontWeight: 500 }}>{a.message}</Typography>
+                    <Typography variant="caption" color="text.disabled" sx={{ fontWeight: 700 }}>
                       Sent on: {new Date(a.created_at).toLocaleString()}
                     </Typography>
                   </Box>
                 ))}
                 {announcements.length === 0 && (
-                  <Typography variant="body2" color="text.secondary" align="center" sx={{ py: 6 }}>
-                    No announcements sent yet.
-                  </Typography>
+                  <EmptyState
+                    icon={<CampaignIcon />}
+                    title="No Announcements Sent"
+                    description="You haven't broadcasted any updates or notices yet."
+                  />
                 )}
               </Box>
             )}
-          </Paper>
-        </Grid>
-      </Grid>
+          </DashboardCard>
+        </Box>
+      </DashboardGrid>
     </Box>
   );
 };
@@ -2117,9 +2392,9 @@ const SettingsView = ({ hideHeader }) => {
   }
 
   return (
-    <Box>
+    <Box display="flex" flexDirection="column" gap={3}>
       {!hideHeader && (
-        <Box sx={{ mb: 4 }}>
+        <Box sx={{ mb: 1 }}>
           <Typography variant="h4" fontWeight="900" fontFamily="Outfit" color="#0F0F14">
             System Settings
           </Typography>
@@ -2129,7 +2404,7 @@ const SettingsView = ({ hideHeader }) => {
         </Box>
       )}
 
-      <Paper sx={{ p: 4, borderRadius: 2, boxShadow: '0 2px 10px rgba(0,0,0,0.03)', maxWidth: 800 }}>
+      <DashboardCard title="System Parameters Form">
         <form onSubmit={handleSave}>
           <Grid container spacing={3}>
             <Grid item xs={12} sm={6}>
@@ -2204,13 +2479,27 @@ const SettingsView = ({ hideHeader }) => {
               />
             </Grid>
             <Grid item xs={12}>
-              <Button type="submit" variant="contained" disabled={saving} sx={{ bgcolor: '#1A73E8', '&:hover': { bgcolor: '#155cb0' }, py: 1, px: 4 }}>
+              <Button
+                type="submit"
+                variant="contained"
+                disabled={saving}
+                sx={{
+                  bgcolor: tokens.colors.primary,
+                  color: '#ffffff',
+                  borderRadius: `${tokens.borderRadiusSm}px`,
+                  textTransform: 'none',
+                  fontWeight: 700,
+                  py: 1,
+                  px: 4,
+                  '&:hover': { bgcolor: '#222222' }
+                }}
+              >
                 {saving ? 'Saving...' : 'Save Configuration'}
               </Button>
             </Grid>
           </Grid>
         </form>
-      </Paper>
+      </DashboardCard>
     </Box>
   );
 };
@@ -2293,9 +2582,9 @@ const ProfileView = ({ hideHeader }) => {
   }
 
   return (
-    <Box>
+    <Box display="flex" flexDirection="column" gap={3}>
       {!hideHeader && (
-        <Box sx={{ mb: 4 }}>
+        <Box sx={{ mb: 1 }}>
           <Typography variant="h4" fontWeight="900" fontFamily="Outfit" color="#0F0F14">
             Admin Profile Settings
           </Typography>
@@ -2305,13 +2594,10 @@ const ProfileView = ({ hideHeader }) => {
         </Box>
       )}
 
-      <Grid container spacing={4}>
+      <DashboardGrid>
         {/* Info Edit */}
-        <Grid item xs={12} md={6}>
-          <Paper sx={{ p: 4, borderRadius: 2, boxShadow: '0 2px 10px rgba(0,0,0,0.03)' }}>
-            <Typography variant="subtitle1" fontWeight="bold" sx={{ mb: 3, fontFamily: 'Outfit' }}>
-              Update Profile Details
-            </Typography>
+        <Box sx={span.half}>
+          <DashboardCard title="Update Profile Details">
             <form onSubmit={handleUpdateProfile}>
               <Stack spacing={2.5}>
                 <TextField
@@ -2336,20 +2622,30 @@ const ProfileView = ({ hideHeader }) => {
                   value={phone}
                   onChange={(e) => setPhone(e.target.value)}
                 />
-                <Button type="submit" variant="contained" disabled={profileSaving} sx={{ bgcolor: '#1A73E8', '&:hover': { bgcolor: '#155cb0' }, py: 1 }}>
+                <Button
+                  type="submit"
+                  variant="contained"
+                  disabled={profileSaving}
+                  sx={{
+                    bgcolor: tokens.colors.primary,
+                    color: '#ffffff',
+                    borderRadius: `${tokens.borderRadiusSm}px`,
+                    textTransform: 'none',
+                    fontWeight: 700,
+                    py: 1,
+                    '&:hover': { bgcolor: '#222222' }
+                  }}
+                >
                   {profileSaving ? 'Saving...' : 'Save Changes'}
                 </Button>
               </Stack>
             </form>
-          </Paper>
-        </Grid>
+          </DashboardCard>
+        </Box>
 
         {/* Password update */}
-        <Grid item xs={12} md={6}>
-          <Paper sx={{ p: 4, borderRadius: 2, boxShadow: '0 2px 10px rgba(0,0,0,0.03)' }}>
-            <Typography variant="subtitle1" fontWeight="bold" sx={{ mb: 3, fontFamily: 'Outfit' }}>
-              Change Account Password
-            </Typography>
+        <Box sx={span.half}>
+          <DashboardCard title="Change Account Password">
             <form onSubmit={handleChangePassword}>
               <Stack spacing={2.5}>
                 <TextField
@@ -2368,14 +2664,27 @@ const ProfileView = ({ hideHeader }) => {
                   value={newPassword}
                   onChange={(e) => setNewPassword(e.target.value)}
                 />
-                <Button type="submit" variant="contained" disabled={passwordSaving} sx={{ bgcolor: '#ef4444', '&:hover': { bgcolor: '#dc2626' }, py: 1 }}>
+                <Button
+                  type="submit"
+                  variant="contained"
+                  disabled={passwordSaving}
+                  sx={{
+                    bgcolor: '#ef4444',
+                    color: '#ffffff',
+                    borderRadius: `${tokens.borderRadiusSm}px`,
+                    textTransform: 'none',
+                    fontWeight: 700,
+                    py: 1,
+                    '&:hover': { bgcolor: '#dc2626' }
+                  }}
+                >
                   {passwordSaving ? 'Updating...' : 'Update Password'}
                 </Button>
               </Stack>
             </form>
-          </Paper>
-        </Grid>
-      </Grid>
+          </DashboardCard>
+        </Box>
+      </DashboardGrid>
     </Box>
   );
 };

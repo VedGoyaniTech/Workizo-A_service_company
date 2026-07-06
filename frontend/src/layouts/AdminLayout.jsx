@@ -24,6 +24,8 @@ import BarChartIcon from '@mui/icons-material/BarChart';
 import CampaignIcon from '@mui/icons-material/Campaign';
 import SettingsIcon from '@mui/icons-material/Settings';
 import PersonIcon from '@mui/icons-material/Person';
+import { tokens } from '../design/tokens';
+
 
 const drawerWidth = 260;
 
@@ -233,7 +235,7 @@ const AdminLayout = () => {
   );
 
   return (
-    <Box display="flex" minHeight="100vh" bgcolor="#F4F6F8">
+    <Box display="flex" minHeight="100vh" bgcolor={tokens.colors.bg}>
       {/* AppBar Header */}
       <AppBar
         position="fixed"
@@ -362,7 +364,7 @@ const AdminLayout = () => {
           width: { md: `calc(100% - ${currentDrawerWidth}px)` },
           ml: { md: `${currentDrawerWidth}px` },
           mt: '64px',
-          bgcolor: '#F4F6F9',
+          bgcolor: tokens.colors.bg,
           display: 'flex',
           flexDirection: 'column',
           transition: theme.transitions.create(['width', 'margin'], {

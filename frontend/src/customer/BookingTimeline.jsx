@@ -423,9 +423,9 @@ function BookingTimeline() {
             {/* Media Upload Verification Section */}
             {(booking.before_photo || booking.after_photo) && (
               <DashboardCard title="Job Inspection Media" subtitle="Verification photo files uploaded by your Captain">
-                <Grid container spacing={3} sx={{ mt: 1 }}>
+                <DashboardGrid sx={{ mt: 1 }}>
                   {booking.before_photo && (
-                    <Grid item xs={12} sm={6}>
+                    <Box sx={span.half}>
                       <Typography variant="subtitle2" fontWeight="700" sx={{ mb: 1 }}>Before Repair Photo</Typography>
                       <Box 
                         component="img" 
@@ -433,10 +433,10 @@ function BookingTimeline() {
                         alt="Before repair"
                         sx={{ width: '100%', borderRadius: `${tokens.borderRadiusSm}px`, objectFit: 'cover', border: `1px solid ${tokens.borderColor}` }}
                       />
-                    </Grid>
+                    </Box>
                   )}
                   {booking.after_photo && (
-                    <Grid item xs={12} sm={6}>
+                    <Box sx={span.half}>
                       <Typography variant="subtitle2" fontWeight="700" sx={{ mb: 1 }}>After Repair Photo</Typography>
                       <Box 
                         component="img" 
@@ -444,9 +444,9 @@ function BookingTimeline() {
                         alt="After repair"
                         sx={{ width: '100%', borderRadius: `${tokens.borderRadiusSm}px`, objectFit: 'cover', border: `1px solid ${tokens.borderColor}` }}
                       />
-                    </Grid>
+                    </Box>
                   )}
-                </Grid>
+                </DashboardGrid>
               </DashboardCard>
             )}
 
@@ -720,9 +720,9 @@ function BookingTimeline() {
             </Box>
           ) : (
             <Box sx={{ py: 2 }}>
-              <Grid container spacing={2}>
+              <Box display="flex" flexDirection="column" gap={2}>
                 {['upi', 'card', 'cash'].map((method) => (
-                  <Grid item xs={12} key={method}>
+                  <Box key={method}>
                     <Button
                       fullWidth
                       variant={selectedPaymentMethod === method ? 'contained' : 'outlined'}
@@ -743,9 +743,9 @@ function BookingTimeline() {
                     >
                       {method}
                     </Button>
-                  </Grid>
+                  </Box>
                 ))}
-              </Grid>
+              </Box>
             </Box>
           )}
         </DialogContent>

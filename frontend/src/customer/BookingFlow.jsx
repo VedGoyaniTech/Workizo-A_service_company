@@ -3,7 +3,7 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { 
   Box, Typography, TextField, Button, MenuItem, 
-  Grid, InputAdornment, LinearProgress, List, ListItem, ListItemIcon, ListItemText
+  InputAdornment, LinearProgress, List, ListItem, ListItemIcon, ListItemText
 } from '@mui/material';
 import api from '../services/api';
 import toast from 'react-hot-toast';
@@ -120,10 +120,10 @@ function BookingFlow() {
         <Box sx={span.twoThirds}>
           <DashboardCard title="Booking Details" subtitle="Provide the problem description and service location details">
             <Box component="form" onSubmit={handleSubmit(onSubmit)} noValidate sx={{ mt: 2 }}>
-              <Grid container spacing={3}>
+              <DashboardGrid sx={{ gap: 2.5 }}>
                 {/* Category */}
                 {!preselectedCategoryId ? (
-                  <Grid item xs={12}>
+                  <Box sx={span.full}>
                     <TextField
                       select
                       fullWidth
@@ -139,9 +139,9 @@ function BookingFlow() {
                         </MenuItem>
                       ))}
                     </TextField>
-                  </Grid>
+                  </Box>
                 ) : (
-                  <Grid item xs={12}>
+                  <Box sx={span.full}>
                     <Box sx={{ 
                       p: 2.5, 
                       background: tokens.colors.accentLight, 
@@ -159,11 +159,11 @@ function BookingFlow() {
                       </Typography>
                       <input type="hidden" {...register('service_category')} value={preselectedCategoryId} />
                     </Box>
-                  </Grid>
+                  </Box>
                 )}
 
                 {/* Problem Type */}
-                <Grid item xs={12}>
+                <Box sx={span.full}>
                   <TextField
                     fullWidth
                     label="What is the problem? (e.g. AC Filter Clogged, Socket Sparking)"
@@ -172,10 +172,10 @@ function BookingFlow() {
                     error={!!errors.problem_type}
                     helperText={errors.problem_type?.message}
                   />
-                </Grid>
+                </Box>
 
                 {/* Problem Description */}
-                <Grid item xs={12}>
+                <Box sx={span.full}>
                   <TextField
                     fullWidth
                     multiline
@@ -186,10 +186,10 @@ function BookingFlow() {
                     error={!!errors.problem_description}
                     helperText={errors.problem_description?.message}
                   />
-                </Grid>
+                </Box>
 
                 {/* Booking Type Select */}
-                <Grid item xs={12}>
+                <Box sx={span.full}>
                   <TextField
                     select
                     fullWidth
@@ -202,11 +202,11 @@ function BookingFlow() {
                     <MenuItem value="instant">Instant Service (Get Captain in 10-40 mins)</MenuItem>
                     <MenuItem value="slot">Slot-Based Booking (Schedule for later)</MenuItem>
                   </TextField>
-                </Grid>
+                </Box>
 
                 {bookingType === 'slot' && (
                   <>
-                    <Grid item xs={12} sm={6}>
+                    <Box sx={span.half}>
                       <TextField
                         fullWidth
                         type="date"
@@ -225,9 +225,9 @@ function BookingFlow() {
                         error={!!errors.preferred_date}
                         helperText={errors.preferred_date?.message}
                       />
-                    </Grid>
+                    </Box>
 
-                    <Grid item xs={12} sm={6}>
+                    <Box sx={span.half}>
                       <TextField
                         select
                         fullWidth
@@ -252,12 +252,12 @@ function BookingFlow() {
                         <MenuItem value="03:00 PM - 05:00 PM">03:00 PM - 05:00 PM</MenuItem>
                         <MenuItem value="05:00 PM - 07:00 PM">05:00 PM - 07:00 PM</MenuItem>
                       </TextField>
-                    </Grid>
+                    </Box>
                   </>
                 )}
 
                 {/* Address details */}
-                <Grid item xs={12}>
+                <Box sx={span.full}>
                   <TextField
                     fullWidth
                     multiline
@@ -277,18 +277,18 @@ function BookingFlow() {
                     error={!!errors.address}
                     helperText={errors.address?.message}
                   />
-                </Grid>
+                </Box>
 
-                <Grid item xs={12} sm={6}>
+                <Box sx={span.half}>
                   <TextField
                     fullWidth
                     label="City"
                     defaultValue="Ahmedabad"
                     {...register('city')}
                   />
-                </Grid>
+                </Box>
 
-                <Grid item xs={12} sm={6}>
+                <Box sx={span.half}>
                   <TextField
                     fullWidth
                     label="Pincode"
@@ -299,10 +299,10 @@ function BookingFlow() {
                     error={!!errors.pincode}
                     helperText={errors.pincode?.message}
                   />
-                </Grid>
+                </Box>
 
                 {/* Optional photo upload */}
-                <Grid item xs={12}>
+                <Box sx={span.full}>
                   <Typography variant="subtitle2" sx={{ mb: 1, fontWeight: '700' }}>
                     Upload Reference Images (Optional)
                   </Typography>
@@ -319,10 +319,10 @@ function BookingFlow() {
                       fontSize: '14px'
                     }}
                   />
-                </Grid>
+                </Box>
 
                 {/* Submit */}
-                <Grid item xs={12} sx={{ mt: 2 }}>
+                <Box sx={span.full} sx={{ mt: 2 }}>
                   <Button
                     type="submit"
                     variant="contained"
@@ -342,8 +342,8 @@ function BookingFlow() {
                   >
                     {submitting ? 'Placing Booking...' : 'Request Service'}
                   </Button>
-                </Grid>
-              </Grid>
+                </Box>
+              </DashboardGrid>
             </Box>
           </DashboardCard>
         </Box>
