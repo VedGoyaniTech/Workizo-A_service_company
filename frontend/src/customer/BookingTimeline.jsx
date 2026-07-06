@@ -375,8 +375,6 @@ function BookingTimeline() {
                       )}
 
                       {/* Step Circle */}
-                      <Box 
-                        sx={{ 
                       <Box sx={{ 
                           width: 30, 
                           height: 30, 

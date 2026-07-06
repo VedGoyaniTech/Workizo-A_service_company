@@ -191,7 +191,7 @@ const DashboardView = ({ hideHeader }) => {
     <Box sx={{ display: 'flex', flexDirection: 'column', gap: `${tokens.sectionGap}px` }}>
       {!hideHeader && (
         <Box sx={{ mb: 1 }}>
-          <Typography variant="h4" fontWeight="900" fontFamily="Outfit" color="#0F0F14">
+          <Typography variant="h4" fontWeight={700} fontFamily="Outfit" color="#0F0F14">
             Dashboard
           </Typography>
           <Typography variant="body2" color="text.secondary">
@@ -453,7 +453,7 @@ const BookingsView = ({ hideHeader }) => {
     <Box display="flex" flexDirection="column" gap={3}>
       {!hideHeader && (
         <Box sx={{ mb: 1 }}>
-          <Typography variant="h4" fontWeight="900" fontFamily="Outfit" color="#0F0F14">
+          <Typography variant="h4" fontWeight={700} fontFamily="Outfit" color="#0F0F14">
             Booking Management
           </Typography>
           <Typography variant="body2" color="text.secondary">
@@ -543,20 +543,20 @@ const BookingsView = ({ hideHeader }) => {
             <Table>
               <TableHead>
                 <TableRow sx={{ bgcolor: tokens.colors.bg }}>
-                  <TableCell sx={{ fontWeight: 800, fontFamily: 'Outfit', color: tokens.colors.primary }}>Booking ID</TableCell>
-                  <TableCell sx={{ fontWeight: 800, fontFamily: 'Outfit', color: tokens.colors.primary }}>Customer</TableCell>
-                  <TableCell sx={{ fontWeight: 800, fontFamily: 'Outfit', color: tokens.colors.primary }}>Captain</TableCell>
-                  <TableCell sx={{ fontWeight: 800, fontFamily: 'Outfit', color: tokens.colors.primary }}>Service Category</TableCell>
-                  <TableCell sx={{ fontWeight: 800, fontFamily: 'Outfit', color: tokens.colors.primary }}>Status</TableCell>
-                  <TableCell sx={{ fontWeight: 800, fontFamily: 'Outfit', color: tokens.colors.primary }}>Date</TableCell>
-                  <TableCell sx={{ fontWeight: 800, fontFamily: 'Outfit', color: tokens.colors.primary }} align="right">Actions</TableCell>
+                  <TableCell sx={{ fontWeight: 600, fontFamily: 'Outfit', color: tokens.colors.primary }}>Booking ID</TableCell>
+                  <TableCell sx={{ fontWeight: 600, fontFamily: 'Outfit', color: tokens.colors.primary }}>Customer</TableCell>
+                  <TableCell sx={{ fontWeight: 600, fontFamily: 'Outfit', color: tokens.colors.primary }}>Captain</TableCell>
+                  <TableCell sx={{ fontWeight: 600, fontFamily: 'Outfit', color: tokens.colors.primary }}>Service Category</TableCell>
+                  <TableCell sx={{ fontWeight: 600, fontFamily: 'Outfit', color: tokens.colors.primary }}>Status</TableCell>
+                  <TableCell sx={{ fontWeight: 600, fontFamily: 'Outfit', color: tokens.colors.primary }}>Date</TableCell>
+                  <TableCell sx={{ fontWeight: 600, fontFamily: 'Outfit', color: tokens.colors.primary }} align="right">Actions</TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
                 {bookings.map((b) => (
                   <TableRow key={b.id} hover>
                     <TableCell>
-                      <Typography variant="body2" fontWeight="800" sx={{ fontFamily: 'Outfit' }}>{b.tracking_id || `#${b.id}`}</Typography>
+                      <Typography variant="body2" fontWeight={700} sx={{ fontFamily: 'Outfit' }}>{b.tracking_id || `#${b.id}`}</Typography>
                     </TableCell>
                     <TableCell sx={{ fontWeight: 600 }}>{b.customer?.full_name}</TableCell>
                     <TableCell sx={{ fontWeight: 600 }}>{b.worker?.full_name || <Typography variant="caption" color="error" sx={{ fontWeight: 700 }}>Not Assigned</Typography>}</TableCell>
@@ -566,7 +566,7 @@ const BookingsView = ({ hideHeader }) => {
                         label={b.status.replace('_', ' ').toUpperCase()}
                         color={getStatusChipColor(b.status)}
                         size="small"
-                        sx={{ fontWeight: 800, fontSize: '0.7rem' }}
+                        sx={{ fontWeight: 700, fontSize: '0.7rem' }}
                       />
                     </TableCell>
                     <TableCell sx={{ color: tokens.colors.textSecondary, fontWeight: 500 }}>{new Date(b.created_at).toLocaleDateString()}</TableCell>
@@ -863,7 +863,7 @@ const WorkersView = ({ hideHeader }) => {
     <Box display="flex" flexDirection="column" gap={3}>
       {!hideHeader && (
         <Box sx={{ mb: 1 }}>
-          <Typography variant="h4" fontWeight="900" fontFamily="Outfit" color="#0F0F14">
+          <Typography variant="h4" fontWeight={700} fontFamily="Outfit" color="#0F0F14">
             Worker (Captain) Management
           </Typography>
           <Typography variant="body2" color="text.secondary">
@@ -880,13 +880,13 @@ const WorkersView = ({ hideHeader }) => {
             <Table>
               <TableHead>
                 <TableRow sx={{ bgcolor: tokens.colors.bg }}>
-                  <TableCell sx={{ fontWeight: 800, fontFamily: 'Outfit', color: tokens.colors.primary }}>Captain</TableCell>
-                  <TableCell sx={{ fontWeight: 800, fontFamily: 'Outfit', color: tokens.colors.primary }}>Category</TableCell>
-                  <TableCell sx={{ fontWeight: 800, fontFamily: 'Outfit', color: tokens.colors.primary }}>Experience</TableCell>
-                  <TableCell sx={{ fontWeight: 800, fontFamily: 'Outfit', color: tokens.colors.primary }}>Online Status</TableCell>
-                  <TableCell sx={{ fontWeight: 800, fontFamily: 'Outfit', color: tokens.colors.primary }}>Registration Status</TableCell>
-                  <TableCell sx={{ fontWeight: 800, fontFamily: 'Outfit', color: tokens.colors.primary }}>Rating</TableCell>
-                  <TableCell sx={{ fontWeight: 800, fontFamily: 'Outfit', color: tokens.colors.primary }} align="right">Actions</TableCell>
+                  <TableCell sx={{ fontWeight: 600, fontFamily: 'Outfit', color: tokens.colors.primary }}>Captain</TableCell>
+                  <TableCell sx={{ fontWeight: 600, fontFamily: 'Outfit', color: tokens.colors.primary }}>Category</TableCell>
+                  <TableCell sx={{ fontWeight: 600, fontFamily: 'Outfit', color: tokens.colors.primary }}>Experience</TableCell>
+                  <TableCell sx={{ fontWeight: 600, fontFamily: 'Outfit', color: tokens.colors.primary }}>Online Status</TableCell>
+                  <TableCell sx={{ fontWeight: 600, fontFamily: 'Outfit', color: tokens.colors.primary }}>Registration Status</TableCell>
+                  <TableCell sx={{ fontWeight: 600, fontFamily: 'Outfit', color: tokens.colors.primary }}>Rating</TableCell>
+                  <TableCell sx={{ fontWeight: 600, fontFamily: 'Outfit', color: tokens.colors.primary }} align="right">Actions</TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
@@ -896,7 +896,7 @@ const WorkersView = ({ hideHeader }) => {
                       <Box display="flex" alignItems="center" gap={2}>
                         <Avatar src={w.profile?.profile_photo ? `http://127.0.0.1:8001${w.profile.profile_photo}` : ''} />
                         <Box>
-                          <Typography variant="body2" fontWeight="800" sx={{ fontFamily: 'Outfit' }}>{w.user.full_name}</Typography>
+                          <Typography variant="body2" fontWeight={700} sx={{ fontFamily: 'Outfit' }}>{w.user.full_name}</Typography>
                           <Typography variant="caption" color="text.secondary" sx={{ fontWeight: 600 }}>{w.user.email} | {w.user.phone}</Typography>
                         </Box>
                       </Box>
@@ -905,7 +905,7 @@ const WorkersView = ({ hideHeader }) => {
                     <TableCell sx={{ fontWeight: 500 }}>{w.profile?.experience} Years</TableCell>
                     <TableCell>
                       {w.profile?.online_status ? (
-                        <Chip label="ONLINE" color="success" size="small" variant="outlined" sx={{ fontWeight: 800 }} />
+                        <Chip label="ONLINE" color="success" size="small" variant="outlined" sx={{ fontWeight: 700 }} />
                       ) : (
                         <Chip label="OFFLINE" color="default" size="small" variant="outlined" sx={{ fontWeight: 600 }} />
                       )}
@@ -915,7 +915,7 @@ const WorkersView = ({ hideHeader }) => {
                         label={w.profile?.approval_status?.toUpperCase() || 'PENDING'}
                         color={w.profile?.approval_status === 'approved' ? 'success' : w.profile?.approval_status === 'rejected' ? 'error' : 'warning'}
                         size="small"
-                        sx={{ fontWeight: 800 }}
+                        sx={{ fontWeight: 700 }}
                       />
                     </TableCell>
                     <TableCell>
@@ -1046,10 +1046,10 @@ const WorkersView = ({ hideHeader }) => {
                       <Table size="small">
                         <TableHead>
                           <TableRow sx={{ bgcolor: tokens.colors.bg }}>
-                            <TableCell sx={{ fontWeight: 800 }}>Description</TableCell>
-                            <TableCell sx={{ fontWeight: 800 }}>Type</TableCell>
-                            <TableCell align="right" sx={{ fontWeight: 800 }}>Amount</TableCell>
-                            <TableCell sx={{ fontWeight: 800 }}>Date</TableCell>
+                            <TableCell sx={{ fontWeight: 600 }}>Description</TableCell>
+                            <TableCell sx={{ fontWeight: 600 }}>Type</TableCell>
+                            <TableCell align="right" sx={{ fontWeight: 600 }}>Amount</TableCell>
+                            <TableCell sx={{ fontWeight: 600 }}>Date</TableCell>
                           </TableRow>
                         </TableHead>
                         <TableBody>
@@ -1160,7 +1160,7 @@ const CustomersView = ({ hideHeader }) => {
     <Box display="flex" flexDirection="column" gap={3}>
       {!hideHeader && (
         <Box sx={{ mb: 1 }}>
-          <Typography variant="h4" fontWeight="900" fontFamily="Outfit" color="#0F0F14">
+          <Typography variant="h4" fontWeight={700} fontFamily="Outfit" color="#0F0F14">
             Customer Directory
           </Typography>
           <Typography variant="body2" color="text.secondary">
@@ -1177,13 +1177,13 @@ const CustomersView = ({ hideHeader }) => {
             <Table>
               <TableHead>
                 <TableRow sx={{ bgcolor: tokens.colors.bg }}>
-                  <TableCell sx={{ fontWeight: 800, fontFamily: 'Outfit', color: tokens.colors.primary }}>Customer Name</TableCell>
-                  <TableCell sx={{ fontWeight: 800, fontFamily: 'Outfit', color: tokens.colors.primary }}>Email Address</TableCell>
-                  <TableCell sx={{ fontWeight: 800, fontFamily: 'Outfit', color: tokens.colors.primary }}>Mobile Phone</TableCell>
-                  <TableCell sx={{ fontWeight: 800, fontFamily: 'Outfit', color: tokens.colors.primary }}>Location (City)</TableCell>
-                  <TableCell sx={{ fontWeight: 800, fontFamily: 'Outfit', color: tokens.colors.primary }}>Bookings Placed</TableCell>
-                  <TableCell sx={{ fontWeight: 800, fontFamily: 'Outfit', color: tokens.colors.primary }}>Status</TableCell>
-                  <TableCell sx={{ fontWeight: 800, fontFamily: 'Outfit', color: tokens.colors.primary }} align="right">Actions</TableCell>
+                  <TableCell sx={{ fontWeight: 600, fontFamily: 'Outfit', color: tokens.colors.primary }}>Customer Name</TableCell>
+                  <TableCell sx={{ fontWeight: 600, fontFamily: 'Outfit', color: tokens.colors.primary }}>Email Address</TableCell>
+                  <TableCell sx={{ fontWeight: 600, fontFamily: 'Outfit', color: tokens.colors.primary }}>Mobile Phone</TableCell>
+                  <TableCell sx={{ fontWeight: 600, fontFamily: 'Outfit', color: tokens.colors.primary }}>Location (City)</TableCell>
+                  <TableCell sx={{ fontWeight: 600, fontFamily: 'Outfit', color: tokens.colors.primary }}>Bookings Placed</TableCell>
+                  <TableCell sx={{ fontWeight: 600, fontFamily: 'Outfit', color: tokens.colors.primary }}>Status</TableCell>
+                  <TableCell sx={{ fontWeight: 600, fontFamily: 'Outfit', color: tokens.colors.primary }} align="right">Actions</TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
@@ -1193,12 +1193,12 @@ const CustomersView = ({ hideHeader }) => {
                     <TableCell sx={{ fontWeight: 500 }}>{c.user.email}</TableCell>
                     <TableCell sx={{ fontWeight: 500 }}>{c.user.phone}</TableCell>
                     <TableCell sx={{ color: tokens.colors.textSecondary }}>{c.profile?.city || 'Not specified'}</TableCell>
-                    <TableCell sx={{ fontWeight: 800 }} align="center">{c.total_bookings}</TableCell>
+                    <TableCell sx={{ fontWeight: 700 }} align="center">{c.total_bookings}</TableCell>
                     <TableCell>
                       {c.user.is_active ? (
-                        <Chip label="ACTIVE" color="success" size="small" sx={{ fontWeight: 800 }} />
+                        <Chip label="ACTIVE" color="success" size="small" sx={{ fontWeight: 700 }} />
                       ) : (
-                        <Chip label="BLOCKED" color="error" size="small" sx={{ fontWeight: 800 }} />
+                        <Chip label="BLOCKED" color="error" size="small" sx={{ fontWeight: 700 }} />
                       )}
                     </TableCell>
                     <TableCell align="right">
@@ -1277,10 +1277,10 @@ const CustomersView = ({ hideHeader }) => {
               <Table size="small">
                 <TableHead>
                   <TableRow sx={{ bgcolor: tokens.colors.bg }}>
-                    <TableCell sx={{ fontWeight: 800 }}>Booking ID</TableCell>
-                    <TableCell sx={{ fontWeight: 800 }}>Service</TableCell>
-                    <TableCell sx={{ fontWeight: 800 }}>Status</TableCell>
-                    <TableCell sx={{ fontWeight: 800 }}>Date</TableCell>
+                    <TableCell sx={{ fontWeight: 600 }}>Booking ID</TableCell>
+                    <TableCell sx={{ fontWeight: 600 }}>Service</TableCell>
+                    <TableCell sx={{ fontWeight: 600 }}>Status</TableCell>
+                    <TableCell sx={{ fontWeight: 600 }}>Date</TableCell>
                   </TableRow>
                 </TableHead>
                 <TableBody>
@@ -1309,10 +1309,10 @@ const CustomersView = ({ hideHeader }) => {
               <Table size="small">
                 <TableHead>
                   <TableRow sx={{ bgcolor: tokens.colors.bg }}>
-                    <TableCell sx={{ fontWeight: 800 }}>Transaction ID</TableCell>
-                    <TableCell sx={{ fontWeight: 800 }}>Amount</TableCell>
-                    <TableCell sx={{ fontWeight: 800 }}>Method</TableCell>
-                    <TableCell sx={{ fontWeight: 800 }}>Status</TableCell>
+                    <TableCell sx={{ fontWeight: 600 }}>Transaction ID</TableCell>
+                    <TableCell sx={{ fontWeight: 600 }}>Amount</TableCell>
+                    <TableCell sx={{ fontWeight: 600 }}>Method</TableCell>
+                    <TableCell sx={{ fontWeight: 600 }}>Status</TableCell>
                   </TableRow>
                 </TableHead>
                 <TableBody>
@@ -1403,7 +1403,7 @@ const CategoriesView = ({ hideHeader }) => {
     <Box display="flex" flexDirection="column" gap={3}>
       {!hideHeader && (
         <Box sx={{ mb: 1 }}>
-          <Typography variant="h4" fontWeight="900" fontFamily="Outfit" color="#0F0F14">
+          <Typography variant="h4" fontWeight={700} fontFamily="Outfit" color="#0F0F14">
             Service Categories Management
           </Typography>
           <Typography variant="body2" color="text.secondary">
@@ -1420,12 +1420,12 @@ const CategoriesView = ({ hideHeader }) => {
             <Table>
               <TableHead>
                 <TableRow sx={{ bgcolor: tokens.colors.bg }}>
-                  <TableCell sx={{ fontWeight: 800, fontFamily: 'Outfit', color: tokens.colors.primary }}>Category Name</TableCell>
-                  <TableCell sx={{ fontWeight: 800, fontFamily: 'Outfit', color: tokens.colors.primary }}>Display Icon</TableCell>
-                  <TableCell sx={{ fontWeight: 800, fontFamily: 'Outfit', color: tokens.colors.primary }}>Description</TableCell>
-                  <TableCell sx={{ fontWeight: 800, fontFamily: 'Outfit', color: tokens.colors.primary }}>Base Labour Fee</TableCell>
-                  <TableCell sx={{ fontWeight: 800, fontFamily: 'Outfit', color: tokens.colors.primary }}>Status</TableCell>
-                  <TableCell sx={{ fontWeight: 800, fontFamily: 'Outfit', color: tokens.colors.primary }} align="right">Actions</TableCell>
+                  <TableCell sx={{ fontWeight: 600, fontFamily: 'Outfit', color: tokens.colors.primary }}>Category Name</TableCell>
+                  <TableCell sx={{ fontWeight: 600, fontFamily: 'Outfit', color: tokens.colors.primary }}>Display Icon</TableCell>
+                  <TableCell sx={{ fontWeight: 600, fontFamily: 'Outfit', color: tokens.colors.primary }}>Description</TableCell>
+                  <TableCell sx={{ fontWeight: 600, fontFamily: 'Outfit', color: tokens.colors.primary }}>Base Labour Fee</TableCell>
+                  <TableCell sx={{ fontWeight: 600, fontFamily: 'Outfit', color: tokens.colors.primary }}>Status</TableCell>
+                  <TableCell sx={{ fontWeight: 600, fontFamily: 'Outfit', color: tokens.colors.primary }} align="right">Actions</TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
@@ -1569,7 +1569,7 @@ const PaymentsView = ({ hideHeader }) => {
     <Box display="flex" flexDirection="column" gap={3}>
       {!hideHeader && (
         <Box sx={{ mb: 1 }}>
-          <Typography variant="h4" fontWeight="900" fontFamily="Outfit" color="#0F0F14">
+          <Typography variant="h4" fontWeight={700} fontFamily="Outfit" color="#0F0F14">
             Payment Management
           </Typography>
           <Typography variant="body2" color="text.secondary">
@@ -1622,14 +1622,14 @@ const PaymentsView = ({ hideHeader }) => {
             <Table>
               <TableHead>
                 <TableRow sx={{ bgcolor: tokens.colors.bg }}>
-                  <TableCell sx={{ fontWeight: 800, fontFamily: 'Outfit', color: tokens.colors.primary }}>Payment ID</TableCell>
-                  <TableCell sx={{ fontWeight: 800, fontFamily: 'Outfit', color: tokens.colors.primary }}>Booking ID</TableCell>
-                  <TableCell sx={{ fontWeight: 800, fontFamily: 'Outfit', color: tokens.colors.primary }}>Customer</TableCell>
-                  <TableCell sx={{ fontWeight: 800, fontFamily: 'Outfit', color: tokens.colors.primary }}>Captain</TableCell>
-                  <TableCell sx={{ fontWeight: 800, fontFamily: 'Outfit', color: tokens.colors.primary }}>Payment Method</TableCell>
-                  <TableCell sx={{ fontWeight: 800, fontFamily: 'Outfit', color: tokens.colors.primary }}>Amount</TableCell>
-                  <TableCell sx={{ fontWeight: 800, fontFamily: 'Outfit', color: tokens.colors.primary }}>Status</TableCell>
-                  <TableCell sx={{ fontWeight: 800, fontFamily: 'Outfit', color: tokens.colors.primary }}>Payment Date</TableCell>
+                  <TableCell sx={{ fontWeight: 600, fontFamily: 'Outfit', color: tokens.colors.primary }}>Payment ID</TableCell>
+                  <TableCell sx={{ fontWeight: 600, fontFamily: 'Outfit', color: tokens.colors.primary }}>Booking ID</TableCell>
+                  <TableCell sx={{ fontWeight: 600, fontFamily: 'Outfit', color: tokens.colors.primary }}>Customer</TableCell>
+                  <TableCell sx={{ fontWeight: 600, fontFamily: 'Outfit', color: tokens.colors.primary }}>Captain</TableCell>
+                  <TableCell sx={{ fontWeight: 600, fontFamily: 'Outfit', color: tokens.colors.primary }}>Payment Method</TableCell>
+                  <TableCell sx={{ fontWeight: 600, fontFamily: 'Outfit', color: tokens.colors.primary }}>Amount</TableCell>
+                  <TableCell sx={{ fontWeight: 600, fontFamily: 'Outfit', color: tokens.colors.primary }}>Status</TableCell>
+                  <TableCell sx={{ fontWeight: 600, fontFamily: 'Outfit', color: tokens.colors.primary }}>Payment Date</TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
@@ -1715,7 +1715,7 @@ const BillsView = ({ hideHeader }) => {
     <Box display="flex" flexDirection="column" gap={3}>
       {!hideHeader && (
         <Box sx={{ mb: 1 }}>
-          <Typography variant="h4" fontWeight="900" fontFamily="Outfit" color="#0F0F14">
+          <Typography variant="h4" fontWeight={700} fontFamily="Outfit" color="#0F0F14">
             Invoice & Bill Registry
           </Typography>
           <Typography variant="body2" color="text.secondary">
@@ -1768,14 +1768,14 @@ const BillsView = ({ hideHeader }) => {
             <Table>
               <TableHead>
                 <TableRow sx={{ bgcolor: tokens.colors.bg }}>
-                  <TableCell sx={{ fontWeight: 800, fontFamily: 'Outfit', color: tokens.colors.primary }}>Bill Number</TableCell>
-                  <TableCell sx={{ fontWeight: 800, fontFamily: 'Outfit', color: tokens.colors.primary }}>Booking ID</TableCell>
-                  <TableCell sx={{ fontWeight: 800, fontFamily: 'Outfit', color: tokens.colors.primary }}>Customer</TableCell>
-                  <TableCell sx={{ fontWeight: 800, fontFamily: 'Outfit', color: tokens.colors.primary }}>Captain</TableCell>
-                  <TableCell sx={{ fontWeight: 800, fontFamily: 'Outfit', color: tokens.colors.primary }}>Labour Fee</TableCell>
-                  <TableCell sx={{ fontWeight: 800, fontFamily: 'Outfit', color: tokens.colors.primary }}>GST (18%)</TableCell>
-                  <TableCell sx={{ fontWeight: 800, fontFamily: 'Outfit', color: tokens.colors.primary }}>Total Amount</TableCell>
-                  <TableCell sx={{ fontWeight: 800, fontFamily: 'Outfit', color: tokens.colors.primary }} align="right">Actions</TableCell>
+                  <TableCell sx={{ fontWeight: 600, fontFamily: 'Outfit', color: tokens.colors.primary }}>Bill Number</TableCell>
+                  <TableCell sx={{ fontWeight: 600, fontFamily: 'Outfit', color: tokens.colors.primary }}>Booking ID</TableCell>
+                  <TableCell sx={{ fontWeight: 600, fontFamily: 'Outfit', color: tokens.colors.primary }}>Customer</TableCell>
+                  <TableCell sx={{ fontWeight: 600, fontFamily: 'Outfit', color: tokens.colors.primary }}>Captain</TableCell>
+                  <TableCell sx={{ fontWeight: 600, fontFamily: 'Outfit', color: tokens.colors.primary }}>Labour Fee</TableCell>
+                  <TableCell sx={{ fontWeight: 600, fontFamily: 'Outfit', color: tokens.colors.primary }}>GST (18%)</TableCell>
+                  <TableCell sx={{ fontWeight: 600, fontFamily: 'Outfit', color: tokens.colors.primary }}>Total Amount</TableCell>
+                  <TableCell sx={{ fontWeight: 600, fontFamily: 'Outfit', color: tokens.colors.primary }} align="right">Actions</TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
@@ -1950,7 +1950,7 @@ const ReviewsView = ({ hideHeader }) => {
     <Box display="flex" flexDirection="column" gap={3}>
       {!hideHeader && (
         <Box sx={{ mb: 1 }}>
-          <Typography variant="h4" fontWeight="900" fontFamily="Outfit" color="#0F0F14">
+          <Typography variant="h4" fontWeight={700} fontFamily="Outfit" color="#0F0F14">
             Ratings & Reviews
           </Typography>
           <Typography variant="body2" color="text.secondary">
@@ -1986,13 +1986,13 @@ const ReviewsView = ({ hideHeader }) => {
             <Table>
               <TableHead>
                 <TableRow sx={{ bgcolor: tokens.colors.bg }}>
-                  <TableCell sx={{ fontWeight: 800, fontFamily: 'Outfit', color: tokens.colors.primary }}>Booking</TableCell>
-                  <TableCell sx={{ fontWeight: 800, fontFamily: 'Outfit', color: tokens.colors.primary }}>Customer</TableCell>
-                  <TableCell sx={{ fontWeight: 800, fontFamily: 'Outfit', color: tokens.colors.primary }}>Captain</TableCell>
-                  <TableCell sx={{ fontWeight: 800, fontFamily: 'Outfit', color: tokens.colors.primary }}>Rating</TableCell>
-                  <TableCell sx={{ fontWeight: 800, fontFamily: 'Outfit', color: tokens.colors.primary }}>Review</TableCell>
-                  <TableCell sx={{ fontWeight: 800, fontFamily: 'Outfit', color: tokens.colors.primary }}>Visibility</TableCell>
-                  <TableCell sx={{ fontWeight: 800, fontFamily: 'Outfit', color: tokens.colors.primary }} align="right">Actions</TableCell>
+                  <TableCell sx={{ fontWeight: 600, fontFamily: 'Outfit', color: tokens.colors.primary }}>Booking</TableCell>
+                  <TableCell sx={{ fontWeight: 600, fontFamily: 'Outfit', color: tokens.colors.primary }}>Customer</TableCell>
+                  <TableCell sx={{ fontWeight: 600, fontFamily: 'Outfit', color: tokens.colors.primary }}>Captain</TableCell>
+                  <TableCell sx={{ fontWeight: 600, fontFamily: 'Outfit', color: tokens.colors.primary }}>Rating</TableCell>
+                  <TableCell sx={{ fontWeight: 600, fontFamily: 'Outfit', color: tokens.colors.primary }}>Review</TableCell>
+                  <TableCell sx={{ fontWeight: 600, fontFamily: 'Outfit', color: tokens.colors.primary }}>Visibility</TableCell>
+                  <TableCell sx={{ fontWeight: 600, fontFamily: 'Outfit', color: tokens.colors.primary }} align="right">Actions</TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
@@ -2100,7 +2100,7 @@ const ReportsView = ({ hideHeader }) => {
       {!hideHeader && (
         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1 }}>
           <Box>
-            <Typography variant="h4" fontWeight="900" fontFamily="Outfit" color="#0F0F14">
+            <Typography variant="h4" fontWeight={700} fontFamily="Outfit" color="#0F0F14">
               Reports & Analytics
             </Typography>
             <Typography variant="body2" color="text.secondary">
@@ -2154,9 +2154,9 @@ const ReportsView = ({ hideHeader }) => {
           <Table>
             <TableHead>
               <TableRow sx={{ bgcolor: tokens.colors.bg }}>
-                <TableCell sx={{ fontWeight: 800, fontFamily: 'Outfit', color: tokens.colors.primary }}>Category</TableCell>
-                <TableCell sx={{ fontWeight: 800, fontFamily: 'Outfit', color: tokens.colors.primary }} align="center">Total Bookings Count</TableCell>
-                <TableCell sx={{ fontWeight: 800, fontFamily: 'Outfit', color: tokens.colors.primary }} align="right">Aggregated Grand Total</TableCell>
+                <TableCell sx={{ fontWeight: 600, fontFamily: 'Outfit', color: tokens.colors.primary }}>Category</TableCell>
+                <TableCell sx={{ fontWeight: 600, fontFamily: 'Outfit', color: tokens.colors.primary }} align="center">Total Bookings Count</TableCell>
+                <TableCell sx={{ fontWeight: 600, fontFamily: 'Outfit', color: tokens.colors.primary }} align="right">Aggregated Grand Total</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
@@ -2227,7 +2227,7 @@ const NotificationsView = ({ hideHeader }) => {
     <Box display="flex" flexDirection="column" gap={3}>
       {!hideHeader && (
         <Box sx={{ mb: 1 }}>
-          <Typography variant="h4" fontWeight="900" fontFamily="Outfit" color="#0F0F14">
+          <Typography variant="h4" fontWeight={700} fontFamily="Outfit" color="#0F0F14">
             Broadcast Announcements
           </Typography>
           <Typography variant="body2" color="text.secondary">
@@ -2392,7 +2392,7 @@ const SettingsView = ({ hideHeader }) => {
     <Box display="flex" flexDirection="column" gap={3}>
       {!hideHeader && (
         <Box sx={{ mb: 1 }}>
-          <Typography variant="h4" fontWeight="900" fontFamily="Outfit" color="#0F0F14">
+          <Typography variant="h4" fontWeight={700} fontFamily="Outfit" color="#0F0F14">
             System Settings
           </Typography>
           <Typography variant="body2" color="text.secondary">
@@ -2582,7 +2582,7 @@ const ProfileView = ({ hideHeader }) => {
     <Box display="flex" flexDirection="column" gap={3}>
       {!hideHeader && (
         <Box sx={{ mb: 1 }}>
-          <Typography variant="h4" fontWeight="900" fontFamily="Outfit" color="#0F0F14">
+          <Typography variant="h4" fontWeight={700} fontFamily="Outfit" color="#0F0F14">
             Admin Profile Settings
           </Typography>
           <Typography variant="body2" color="text.secondary">

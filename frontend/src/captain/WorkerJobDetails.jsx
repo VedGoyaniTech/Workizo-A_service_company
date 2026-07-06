@@ -383,7 +383,7 @@ function WorkerJobDetails() {
                           }
                         }}
                       >
-                        <Typography variant="caption" fontWeight="800">
+                        <Typography variant="caption" fontWeight={600}>
                           {step.label}
                         </Typography>
                       </StepLabel>
@@ -403,7 +403,7 @@ function WorkerJobDetails() {
                     startIcon={<PlayArrowIcon />}
                     onClick={() => updateJobStatus('on_the_way')}
                     disabled={submitting}
-                    sx={{ bgcolor: tokens.colors.accent, color: '#ffffff', py: 1.5, borderRadius: `${tokens.borderRadiusSm}px`, fontWeight: '800' }}
+                    sx={{ bgcolor: tokens.colors.accent, color: '#ffffff', py: 1.5, borderRadius: `${tokens.borderRadiusSm}px`, fontWeight: 700 }}
                   >
                     Start Journey (Travelling)
                   </Button>
@@ -415,7 +415,7 @@ function WorkerJobDetails() {
                     variant="contained"
                     onClick={() => updateJobStatus('arrived')}
                     disabled={submitting}
-                    sx={{ bgcolor: tokens.colors.accent, color: '#ffffff', py: 1.5, borderRadius: `${tokens.borderRadiusSm}px`, fontWeight: '800' }}
+                    sx={{ bgcolor: tokens.colors.accent, color: '#ffffff', py: 1.5, borderRadius: `${tokens.borderRadiusSm}px`, fontWeight: 700 }}
                   >
                     Arrived at Customer Location
                   </Button>
@@ -500,7 +500,7 @@ function WorkerJobDetails() {
                 )}
 
                 {booking.status === 'completed' && (
-                  <Typography variant="body1" fontWeight="800" color="success.main" sx={{ display: 'flex', alignItems: 'center' }}>
+                  <Typography variant="body1" fontWeight={700} color="success.main" sx={{ display: 'flex', alignItems: 'center' }}>
                     <CheckCircleIcon sx={{ mr: 1 }} /> Job runs verified & completed successfully. Payout confirmed.
                   </Typography>
                 )}
@@ -532,7 +532,7 @@ function WorkerJobDetails() {
                     </Grid>
                   </Grid>
 
-                  <Typography variant="subtitle2" sx={{ mb: 2, fontWeight: '800' }}>
+                  <Typography variant="subtitle2" sx={{ mb: 2, fontWeight: 600 }}>
                     Spare Parts Used Details
                   </Typography>
 
@@ -584,7 +584,7 @@ function WorkerJobDetails() {
 
                   <Divider sx={{ my: 2 }} />
 
-                  <Typography variant="subtitle2" sx={{ mb: 1.5, fontWeight: '800' }}>
+                  <Typography variant="subtitle2" sx={{ mb: 1.5, fontWeight: 600 }}>
                     OR Upload Supplier Invoice Copy (Image/PDF)
                   </Typography>
                   <Button variant="outlined" component="label" startIcon={<CloudUploadIcon />} sx={{ textTransform: 'none', borderRadius: `${tokens.borderRadiusSm}px`, mb: 3 }}>
@@ -598,7 +598,7 @@ function WorkerJobDetails() {
                     variant="contained"
                     onClick={handleGenerateBill}
                     disabled={generatingBill}
-                    sx={{ bgcolor: tokens.colors.primary, color: '#ffffff', py: 1.5, borderRadius: `${tokens.borderRadiusSm}px`, fontWeight: '850', '&:hover': { bgcolor: '#23232F' } }}
+                    sx={{ bgcolor: tokens.colors.primary, color: '#ffffff', py: 1.5, borderRadius: `${tokens.borderRadiusSm}px`, fontWeight: 700, '&:hover': { bgcolor: '#23232F' } }}
                   >
                     {generatingBill ? 'Compiling Invoices...' : 'Generate & Submit Invoice'}
                   </Button>
@@ -610,7 +610,7 @@ function WorkerJobDetails() {
             {existingBill && (
               <DashboardCard title="Service Invoice Preview" subtitle={`Status: ${existingBill.is_approved ? 'APPROVED & PAID' : 'AWAITING CUSTOMER CONFIRMATION'}`}>
                 <Box sx={{ mt: 1 }}>
-                  <Typography variant="h5" fontWeight="900" sx={{ mb: 2, fontFamily: 'Outfit, sans-serif' }}>
+                  <Typography variant="h5" fontWeight={700} sx={{ mb: 2, fontFamily: 'Outfit, sans-serif' }}>
                     Grand Total Invoice: ₹{existingBill.grand_total}
                   </Typography>
                   <Button
@@ -630,7 +630,7 @@ function WorkerJobDetails() {
                 <Box sx={{ mt: 2 }}>
                   <Grid container spacing={3} sx={{ mb: 3 }}>
                     <Grid item xs={12} sm={6}>
-                      <Typography variant="caption" fontWeight="800" color="text.secondary" display="block" sx={{ mb: 1 }}>Before Repair Photo</Typography>
+                      <Typography variant="caption" fontWeight={600} color="text.secondary" display="block" sx={{ mb: 1 }}>Before Repair Photo</Typography>
                       <Button variant="outlined" component="label" fullWidth startIcon={<CloudUploadIcon />} sx={{ textTransform: 'none', borderRadius: `${tokens.borderRadiusSm}px` }}>
                         Upload Before Photo
                         <input type="file" hidden accept="image/*" onChange={(e) => setBeforePhoto(e.target.files[0])} />
@@ -639,7 +639,7 @@ function WorkerJobDetails() {
                     </Grid>
 
                     <Grid item xs={12} sm={6}>
-                      <Typography variant="caption" fontWeight="800" color="text.secondary" display="block" sx={{ mb: 1 }}>After Repair Photo</Typography>
+                      <Typography variant="caption" fontWeight={600} color="text.secondary" display="block" sx={{ mb: 1 }}>After Repair Photo</Typography>
                       <Button variant="outlined" component="label" fullWidth startIcon={<CloudUploadIcon />} sx={{ textTransform: 'none', borderRadius: `${tokens.borderRadiusSm}px` }}>
                         Upload After Photo
                         <input type="file" hidden accept="image/*" onChange={(e) => setAfterPhoto(e.target.files[0])} />
@@ -648,7 +648,7 @@ function WorkerJobDetails() {
                     </Grid>
 
                     <Grid item xs={12} sm={6}>
-                      <Typography variant="caption" fontWeight="800" color="text.secondary" display="block" sx={{ mb: 1 }}>Spare Part Photo</Typography>
+                      <Typography variant="caption" fontWeight={600} color="text.secondary" display="block" sx={{ mb: 1 }}>Spare Part Photo</Typography>
                       <Button variant="outlined" component="label" fullWidth startIcon={<CloudUploadIcon />} sx={{ textTransform: 'none', borderRadius: `${tokens.borderRadiusSm}px` }}>
                         Upload Parts Photo
                         <input type="file" hidden accept="image/*" onChange={(e) => setSparePartPhoto(e.target.files[0])} />
@@ -657,7 +657,7 @@ function WorkerJobDetails() {
                     </Grid>
 
                     <Grid item xs={12} sm={6}>
-                      <Typography variant="caption" fontWeight="800" color="text.secondary" display="block" sx={{ mb: 1 }}>Supplier Invoice Copy</Typography>
+                      <Typography variant="caption" fontWeight={600} color="text.secondary" display="block" sx={{ mb: 1 }}>Supplier Invoice Copy</Typography>
                       <Button variant="outlined" component="label" fullWidth startIcon={<CloudUploadIcon />} sx={{ textTransform: 'none', borderRadius: `${tokens.borderRadiusSm}px` }}>
                         Upload Invoice Image
                         <input type="file" hidden accept="image/*" onChange={(e) => setInvoicePhoto(e.target.files[0])} />
@@ -666,7 +666,7 @@ function WorkerJobDetails() {
                     </Grid>
 
                     <Grid item xs={12}>
-                      <Typography variant="caption" fontWeight="800" color="text.secondary" display="block" sx={{ mb: 1 }}>Optional Video (MP4/MOV)</Typography>
+                      <Typography variant="caption" fontWeight={600} color="text.secondary" display="block" sx={{ mb: 1 }}>Optional Video (MP4/MOV)</Typography>
                       <Button variant="outlined" component="label" fullWidth startIcon={<CloudUploadIcon />} sx={{ textTransform: 'none', borderRadius: `${tokens.borderRadiusSm}px` }}>
                         Upload Diagnostic Video
                         <input type="file" hidden accept="video/*" onChange={(e) => setOptionalVideo(e.target.files[0])} />
@@ -696,7 +696,7 @@ function WorkerJobDetails() {
             {/* Customer Details Contact Card */}
             <DashboardCard title="Customer Contact Details" subtitle="Contact coordinates for customer location">
               <Box sx={{ mt: 1 }}>
-                <Typography variant="subtitle1" fontWeight="800">
+                <Typography variant="subtitle1" fontWeight={700}>
                   {booking.customer?.full_name}
                 </Typography>
                 <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>
@@ -770,9 +770,9 @@ function WorkerJobDetails() {
                   {booking.repair_token && (
                     <Box sx={{ p: 2, bgcolor: tokens.colors.accentLight, borderRadius: `${tokens.borderRadiusSm}px`, border: '1px solid rgba(26, 115, 232, 0.15)' }}>
                       <Typography variant="caption" color="text.secondary">Active Token ID:</Typography>
-                      <Typography variant="body2" fontWeight="800">{booking.repair_token.token_number}</Typography>
+                      <Typography variant="body2" fontWeight={700}>{booking.repair_token.token_number}</Typography>
                       <Typography variant="caption" color="text.secondary" sx={{ mt: 1, display: 'block' }}>Milestone:</Typography>
-                      <Typography variant="body2" fontWeight="800" sx={{ textTransform: 'uppercase', color: tokens.colors.accent }}>
+                      <Typography variant="body2" fontWeight={700} sx={{ textTransform: 'uppercase', color: tokens.colors.accent }}>
                         {booking.repair_token.status.replace('_', ' ')}
                       </Typography>
                     </Box>
@@ -810,17 +810,17 @@ function WorkerJobDetails() {
 
                   {booking.major_repairs && booking.major_repairs.length > 0 && (
                     <Box sx={{ mt: 2 }}>
-                      <Typography variant="caption" fontWeight="800" color="text.secondary">Submitted Estimates Log:</Typography>
+                      <Typography variant="caption" fontWeight={600} color="text.secondary">Submitted Estimates Log:</Typography>
                       <List disablePadding sx={{ mt: 1 }}>
                         {booking.major_repairs.map((rep) => (
                           <ListItem key={rep.id} sx={{ px: 0, py: 1 }} divider>
-                            <ListItemText primary={rep.reason} secondary={`Estimate: ₹${rep.estimated_cost}`} primaryTypographyProps={{ fontSize: '0.85rem', fontWeight: 700 }} />
+                            <ListItemText primary={rep.reason} secondary={`Estimate: ₹${rep.estimated_cost}`} primaryTypographyProps={{ fontSize: '0.85rem', fontWeight: 600 }} />
                             <Box sx={{ 
                               px: 1, py: 0.25, borderRadius: '4px',
                               bgcolor: rep.status === 'approved' ? 'rgba(22, 163, 74, 0.08)' : rep.status === 'rejected' ? 'rgba(220, 38, 38, 0.08)' : 'rgba(217, 119, 6, 0.08)',
                               border: rep.status === 'approved' ? '1px solid rgba(22, 163, 74, 0.15)' : rep.status === 'rejected' ? '1px solid rgba(220, 38, 38, 0.15)' : '1px solid rgba(217, 119, 6, 0.15)'
                             }}>
-                              <Typography variant="caption" fontWeight="800" color={rep.status === 'approved' ? 'success.main' : rep.status === 'rejected' ? 'error.main' : 'warning.main'}>
+                              <Typography variant="caption" fontWeight={700} color={rep.status === 'approved' ? 'success.main' : rep.status === 'rejected' ? 'error.main' : 'warning.main'}>
                                 {rep.status.toUpperCase()}
                               </Typography>
                             </Box>
@@ -842,7 +842,7 @@ function WorkerJobDetails() {
         onClose={() => setCancelWarningOpen(false)}
         PaperProps={{ style: { borderRadius: `${tokens.borderRadius}px` } }}
       >
-        <DialogTitle sx={{ fontFamily: 'Outfit, sans-serif', fontWeight: '800' }}>
+        <DialogTitle sx={{ fontFamily: 'Outfit, sans-serif', fontWeight: 600 }}>
           ⚠️ Cancel Job Warning
         </DialogTitle>
         <DialogContent>

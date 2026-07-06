@@ -208,17 +208,17 @@ function WorkerJobHistory() {
                         <Grid container spacing={3} alignItems="center">
                           <Grid item xs={12} md={8}>
                             <Box display="flex" alignItems="center" gap={1.5} sx={{ mb: 1.5 }}>
-                              <Typography variant="subtitle1" fontWeight="800">
+                              <Typography variant="subtitle1" fontWeight={700}>
                                 Job #{job.id}
                               </Typography>
                               <Box sx={{ px: 1.25, py: 0.25, borderRadius: '4px', bgcolor: style.bg, border: style.border }}>
-                                <Typography variant="caption" fontWeight="800" color={style.color}>
+                                <Typography variant="caption" fontWeight={700} color={style.color}>
                                   {job.status.replace('_', ' ').toUpperCase()}
                                 </Typography>
                               </Box>
                             </Box>
 
-                            <Typography variant="body2" fontWeight="700">
+                            <Typography variant="body2" fontWeight={600}>
                               Customer: {job.customer?.full_name}
                             </Typography>
                             <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>
@@ -232,7 +232,7 @@ function WorkerJobHistory() {
                           <Grid item xs={12} md={4} sx={{ display: 'flex', flexDirection: 'column', alignItems: { md: 'flex-end' }, gap: 2 }}>
                             <Box sx={{ textAlign: { md: 'right' } }}>
                               <Typography variant="caption" color="text.secondary">Completion Date</Typography>
-                              <Typography variant="body2" fontWeight="800">
+                              <Typography variant="body2" fontWeight={400}>
                                 {new Date(job.updated_at).toLocaleDateString('en-US', { dateStyle: 'medium' })}
                               </Typography>
                             </Box>

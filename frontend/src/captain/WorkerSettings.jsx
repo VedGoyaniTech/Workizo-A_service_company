@@ -134,7 +134,7 @@ function WorkerSettings() {
             {/* Policies */}
             <DashboardCard title="Privacy & Legal Policies" subtitle="Independent partner legal bounds and terms">
               <Box sx={{ mt: 1 }}>
-                <Typography variant="subtitle2" fontWeight="700">
+                <Typography variant="subtitle2" fontWeight={600}>
                   Terms & Conditions of Service
                 </Typography>
                 <Typography variant="body2" color="text.secondary" paragraph sx={{ mt: 0.5 }}>
@@ -143,7 +143,7 @@ function WorkerSettings() {
 
                 <Divider sx={{ my: 3 }} />
 
-                <Typography variant="subtitle2" fontWeight="700">
+                <Typography variant="subtitle2" fontWeight={600}>
                   Partner Privacy Policy
                 </Typography>
                 <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>
@@ -162,13 +162,13 @@ function WorkerSettings() {
                 Got questions or queries regarding service payouts, verification checks, or client disputes? Reach our dedicated Captain assistance team:
               </Typography>
               <Box sx={{ p: 2, bgcolor: tokens.colors.bg, borderRadius: `${tokens.borderRadiusSm}px` }}>
-                <Typography variant="body2" fontWeight="800">
+                <Typography variant="body2" fontWeight={600}>
                   Email Support:
                 </Typography>
                 <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
                   captain-support@workizo.com
                 </Typography>
-                <Typography variant="body2" fontWeight="800">
+                <Typography variant="body2" fontWeight={600}>
                   Phone Assistance:
                 </Typography>
                 <Typography variant="body2" color="text.secondary">

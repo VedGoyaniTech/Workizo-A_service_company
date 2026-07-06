@@ -101,7 +101,7 @@ const LandingPage = () => {
                 component="h1"
                 sx={{
                   fontSize: { xs: '2.5rem', sm: '3.2rem', md: '4rem' },
-                  fontWeight: 900,
+                  fontWeight: 700,
                   letterSpacing: '-0.04em',
                   lineHeight: 1.15,
                   mb: 2.5,
@@ -171,7 +171,7 @@ const LandingPage = () => {
                 }}
               >
                 <Box sx={{ flex: 1 }}>
-                  <Typography variant="h6" sx={{ fontWeight: 900, fontSize: '1.2rem', color: '#0F0F14' }}>
+                  <Typography variant="h6" sx={{ fontWeight: 700, fontSize: '1.2rem', color: '#0F0F14' }}>
                     Verified
                   </Typography>
                   <Typography variant="caption" sx={{ color: '#6B7280', fontWeight: 600, display: 'block', mt: 0.5 }}>
@@ -179,7 +179,7 @@ const LandingPage = () => {
                   </Typography>
                 </Box>
                 <Box sx={{ flex: 1 }}>
-                  <Typography variant="h6" sx={{ fontWeight: 900, fontSize: '1.2rem', color: '#0F0F14' }}>
+                  <Typography variant="h6" sx={{ fontWeight: 700, fontSize: '1.2rem', color: '#0F0F14' }}>
                     Live
                   </Typography>
                   <Typography variant="caption" sx={{ color: '#6B7280', fontWeight: 600, display: 'block', mt: 0.5 }}>
@@ -187,7 +187,7 @@ const LandingPage = () => {
                   </Typography>
                 </Box>
                 <Box sx={{ flex: 1 }}>
-                  <Typography variant="h6" sx={{ fontWeight: 900, fontSize: '1.2rem', color: '#0F0F14' }}>
+                  <Typography variant="h6" sx={{ fontWeight: 700, fontSize: '1.2rem', color: '#0F0F14' }}>
                     Fixed
                   </Typography>
                   <Typography variant="caption" sx={{ color: '#6B7280', fontWeight: 600, display: 'block', mt: 0.5 }}>
@@ -243,10 +243,10 @@ const LandingPage = () => {
       <Box sx={{ bgcolor: '#FAFAFB', py: 10, borderBottom: '1px solid #E5E7EB' }}>
         <Container maxWidth="lg">
           <Box sx={{ textAlign: 'center', mb: 6 }}>
-            <Typography variant="caption" sx={{ color: '#000000', fontWeight: 800, letterSpacing: '0.1rem', textTransform: 'uppercase' }}>
+            <Typography variant="caption" sx={{ color: '#000000', fontWeight: 700, letterSpacing: '0.1rem', textTransform: 'uppercase' }}>
               Simple Process
             </Typography>
-            <Typography variant="h3" sx={{ fontWeight: 900, mt: 1, mb: 2, fontFamily: 'Outfit, sans-serif' }}>
+            <Typography variant="h3" sx={{ fontWeight: 700, mt: 1, mb: 2, fontFamily: 'Outfit, sans-serif' }}>
               How It Works
             </Typography>
             <Typography variant="body1" sx={{ color: '#6B7280', maxWidth: '600px', mx: 'auto' }}>
@@ -277,8 +277,8 @@ const LandingPage = () => {
               <Grid item xs={12} md={6} sx={{ order: { xs: 2, md: 1 }, pl: { xs: 8, md: 0 }, pr: { xs: 0, md: 6 } }}>
                 <Box display="flex" justifyContent={{ xs: 'flex-start', md: 'flex-end' }}>
                   <Card sx={{ p: 4, maxWidth: '460px', width: '100%', borderRadius: '16px', border: '1px solid #E5E7EB', boxShadow: '0 4px 20px rgba(0,0,0,0.02)', bgcolor: '#ffffff' }}>
-                    <Typography variant="h5" sx={{ fontWeight: 900, mb: 1.5, color: '#1A73E8' }}>01</Typography>
-                    <Typography variant="subtitle1" sx={{ fontWeight: 800, mb: 1, color: '#0F0F14' }}>Choose Category</Typography>
+                    <Typography variant="h5" sx={{ fontWeight: 700, mb: 1.5, color: '#1A73E8' }}>01</Typography>
+                    <Typography variant="subtitle1" sx={{ fontWeight: 700, mb: 1, color: '#0F0F14' }}>Choose Category</Typography>
                     <Typography variant="body2" sx={{ color: '#6B7280', lineHeight: 1.6 }}>
                       Select from our list of vetted experts (plumber, electrician, etc.) and search local providers.
                     </Typography>
@@ -341,8 +341,8 @@ const LandingPage = () => {
               <Grid item xs={12} md={6} sx={{ pl: { xs: 8, md: 6 } }}>
                 <Box display="flex" justifyContent="flex-start">
                   <Card sx={{ p: 4, maxWidth: '460px', width: '100%', borderRadius: '16px', border: '1px solid #E5E7EB', boxShadow: '0 4px 20px rgba(0,0,0,0.02)', bgcolor: '#ffffff' }}>
-                    <Typography variant="h5" sx={{ fontWeight: 900, mb: 1.5, color: '#34A853' }}>02</Typography>
-                    <Typography variant="subtitle1" sx={{ fontWeight: 800, mb: 1, color: '#0F0F14' }}>Match Nearby</Typography>
+                    <Typography variant="h5" sx={{ fontWeight: 700, mb: 1.5, color: '#34A853' }}>02</Typography>
+                    <Typography variant="subtitle1" sx={{ fontWeight: 700, mb: 1, color: '#0F0F14' }}>Match Nearby</Typography>
                     <Typography variant="body2" sx={{ color: '#6B7280', lineHeight: 1.6 }}>
                       Our live dispatcher alerts all online Captains in your category and pairs you in under 5 minutes.
                     </Typography>
@@ -357,8 +357,8 @@ const LandingPage = () => {
               <Grid item xs={12} md={6} sx={{ order: { xs: 2, md: 1 }, pl: { xs: 8, md: 0 }, pr: { xs: 0, md: 6 } }}>
                 <Box display="flex" justifyContent={{ xs: 'flex-start', md: 'flex-end' }}>
                   <Card sx={{ p: 4, maxWidth: '460px', width: '100%', borderRadius: '16px', border: '1px solid #E5E7EB', boxShadow: '0 4px 20px rgba(0,0,0,0.02)', bgcolor: '#ffffff' }}>
-                    <Typography variant="h5" sx={{ fontWeight: 900, mb: 1.5, color: '#FBBC05' }}>03</Typography>
-                    <Typography variant="subtitle1" sx={{ fontWeight: 800, mb: 1, color: '#0F0F14' }}>Track Timeline</Typography>
+                    <Typography variant="h5" sx={{ fontWeight: 700, mb: 1.5, color: '#FBBC05' }}>03</Typography>
+                    <Typography variant="subtitle1" sx={{ fontWeight: 700, mb: 1, color: '#0F0F14' }}>Track Timeline</Typography>
                     <Typography variant="body2" sx={{ color: '#6B7280', lineHeight: 1.6 }}>
                       Track the assigned Captain live on the interactive timeline, verify via secure QR, and settle payments.
                     </Typography>
@@ -396,7 +396,7 @@ const LandingPage = () => {
 
       {/* Redesigned Category Search & Selection Section */}
       <Container maxWidth="md" sx={{ mt: 10 }}>
-        <Typography variant="h4" fontWeight="900" align="center" sx={{ mb: 1.5, fontFamily: 'Outfit, sans-serif' }}>
+        <Typography variant="h4" fontWeight={700} align="center" sx={{ mb: 1.5, fontFamily: 'Outfit, sans-serif' }}>
           Select a Service Category
         </Typography>
         <Typography variant="body1" align="center" sx={{ color: '#6B7280', mb: 5 }}>
@@ -513,7 +513,7 @@ const LandingPage = () => {
       <Container maxWidth="lg" sx={{ mt: 10, pt: 8, borderTop: '1px solid #E5E7EB', pb: 10 }}>
         {/* Header Block */}
         <Box sx={{ textAlign: 'center', mb: 6 }}>
-          <Typography variant="h3" sx={{ fontWeight: 900, mb: 2, fontFamily: 'Outfit, sans-serif' }}>
+          <Typography variant="h3" sx={{ fontWeight: 700, mb: 2, fontFamily: 'Outfit, sans-serif' }}>
             Workizo Quality & Safety Assurance
           </Typography>
           <Typography variant="body1" sx={{ color: '#6B7280', maxWidth: '700px', mx: 'auto', mb: 3 }}>

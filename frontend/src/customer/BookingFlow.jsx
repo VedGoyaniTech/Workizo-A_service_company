@@ -322,7 +322,7 @@ function BookingFlow() {
                 </Box>
 
                 {/* Submit */}
-                <Box sx={span.full} sx={{ mt: 2 }}>
+                <Box sx={{ ...span.full, mt: 2 }}>
                   <Button
                     type="submit"
                     variant="contained"

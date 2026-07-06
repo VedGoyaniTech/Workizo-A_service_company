@@ -236,7 +236,7 @@ const WorkerProfile = () => {
 
                 {/* KYC Details */}
                 <Box sx={span.full} style={{ marginTop: '8px' }}>
-                  <Typography variant="subtitle2" color="primary" sx={{ mb: 1, fontWeight: '800' }}>
+                  <Typography variant="subtitle2" color="primary" sx={{ mb: 1, fontWeight: 600 }}>
                     Government KYC Numbers
                   </Typography>
                   <Divider />
@@ -260,7 +260,7 @@ const WorkerProfile = () => {
 
                 {/* Bank Details */}
                 <Box sx={span.full} style={{ marginTop: '8px' }}>
-                  <Typography variant="subtitle2" color="primary" sx={{ mb: 1, fontWeight: '800' }}>
+                  <Typography variant="subtitle2" color="primary" sx={{ mb: 1, fontWeight: 600 }}>
                     Direct Settlement Bank Account
                   </Typography>
                   <Divider />
@@ -282,14 +282,14 @@ const WorkerProfile = () => {
 
                 {/* Document Uploads */}
                 <Box sx={span.full} style={{ marginTop: '8px' }}>
-                  <Typography variant="subtitle2" color="primary" sx={{ mb: 1, fontWeight: '800' }}>
+                  <Typography variant="subtitle2" color="primary" sx={{ mb: 1, fontWeight: 600 }}>
                     KYC Upload Documents (Image Files)
                   </Typography>
                   <Divider />
                 </Box>
                 
                 <Box sx={span.third}>
-                  <Typography variant="caption" color="text.secondary" display="block" sx={{ mb: 1, fontWeight: 700 }}>
+                  <Typography variant="caption" color="text.secondary" display="block" sx={{ mb: 1, fontWeight: 500 }}>
                     Profile Photo
                   </Typography>
                   <Button variant="outlined" component="label" fullWidth sx={{ textTransform: 'none', py: 1 }}>
@@ -313,7 +313,7 @@ const WorkerProfile = () => {
                 </Box>
 
                 <Box sx={span.third}>
-                  <Typography variant="caption" color="text.secondary" display="block" sx={{ mb: 1, fontWeight: 700 }}>
+                  <Typography variant="caption" color="text.secondary" display="block" sx={{ mb: 1, fontWeight: 500 }}>
                     Aadhaar Card Copy
                   </Typography>
                   <Button variant="outlined" component="label" fullWidth sx={{ textTransform: 'none', py: 1 }}>
@@ -331,13 +331,13 @@ const WorkerProfile = () => {
                     </Typography>
                   ) : user?.profile?.aadhaar_photo && (
                     <Box sx={{ mt: 1.5, textAlign: 'center', pt: 1 }}>
-                      <a href={buildMediaUrl(user.profile.aadhaar_photo)} target="_blank" rel="noreferrer" style={{ fontSize: '12px', textDecoration: 'none', color: tokens.colors.accent, fontWeight: '800' }}>View Aadhaar Image</a>
+                      <a href={buildMediaUrl(user.profile.aadhaar_photo)} target="_blank" rel="noreferrer" style={{ fontSize: '12px', textDecoration: 'none', color: tokens.colors.accent, fontWeight: '600' }}>View Aadhaar Image</a>
                     </Box>
                   )}
                 </Box>
 
                 <Box sx={span.third}>
-                  <Typography variant="caption" color="text.secondary" display="block" sx={{ mb: 1, fontWeight: 700 }}>
+                  <Typography variant="caption" color="text.secondary" display="block" sx={{ mb: 1, fontWeight: 500 }}>
                     PAN Card Copy
                   </Typography>
                   <Button variant="outlined" component="label" fullWidth sx={{ textTransform: 'none', py: 1 }}>
@@ -355,7 +355,7 @@ const WorkerProfile = () => {
                     </Typography>
                   ) : user?.profile?.pan_photo && (
                     <Box sx={{ mt: 1.5, textAlign: 'center', pt: 1 }}>
-                      <a href={buildMediaUrl(user.profile.pan_photo)} target="_blank" rel="noreferrer" style={{ fontSize: '12px', textDecoration: 'none', color: tokens.colors.accent, fontWeight: '800' }}>View PAN Image</a>
+                      <a href={buildMediaUrl(user.profile.pan_photo)} target="_blank" rel="noreferrer" style={{ fontSize: '12px', textDecoration: 'none', color: tokens.colors.accent, fontWeight: '600' }}>View PAN Image</a>
                     </Box>
                   )}
                 </Box>
