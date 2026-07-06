@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { useForm } from 'react-hook-form';
-import api from '../services/api';
+import api, { buildMediaUrl } from '../services/api';
 import {
   Container, Paper, Grid, Typography, TextField, Button, Box,
   Divider, MenuItem, CircularProgress, Alert, Chip
@@ -311,7 +311,7 @@ const WorkerProfile = () => {
                     </Typography>
                   ) : user.profile?.profile_photo && (
                     <Box sx={{ mt: 1, textAlign: 'center' }}>
-                      <img src={`http://127.0.0.1:8001${user.profile.profile_photo}`} alt="Profile" style={{ width: '50px', height: '50px', borderRadius: '50%', objectFit: 'cover', border: '1px solid #E5E7EB' }} />
+                      <img src={buildMediaUrl(user.profile.profile_photo)} alt="Profile" style={{ width: '50px', height: '50px', borderRadius: '50%', objectFit: 'cover', border: '1px solid #E5E7EB' }} />
                     </Box>
                   )}
                 </Grid>
@@ -335,7 +335,7 @@ const WorkerProfile = () => {
                     </Typography>
                   ) : user.profile?.aadhaar_photo && (
                     <Box sx={{ mt: 1.5, textAlign: 'center' }}>
-                      <a href={`http://127.0.0.1:8001${user.profile.aadhaar_photo}`} target="_blank" rel="noreferrer" style={{ fontSize: '11px', textDecoration: 'none', color: '#1A73E8', fontWeight: 'bold' }}>View Aadhaar Image</a>
+                      <a href={buildMediaUrl(user.profile.aadhaar_photo)} target="_blank" rel="noreferrer" style={{ fontSize: '11px', textDecoration: 'none', color: '#1A73E8', fontWeight: 'bold' }}>View Aadhaar Image</a>
                     </Box>
                   )}
                 </Grid>
@@ -359,7 +359,7 @@ const WorkerProfile = () => {
                     </Typography>
                   ) : user.profile?.pan_photo && (
                     <Box sx={{ mt: 1.5, textAlign: 'center' }}>
-                      <a href={`http://127.0.0.1:8001${user.profile.pan_photo}`} target="_blank" rel="noreferrer" style={{ fontSize: '11px', textDecoration: 'none', color: '#1A73E8', fontWeight: 'bold' }}>View PAN Image</a>
+                      <a href={buildMediaUrl(user.profile.pan_photo)} target="_blank" rel="noreferrer" style={{ fontSize: '11px', textDecoration: 'none', color: '#1A73E8', fontWeight: 'bold' }}>View PAN Image</a>
                     </Box>
                   )}
                 </Grid>

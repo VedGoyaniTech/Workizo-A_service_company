@@ -1,7 +1,30 @@
 import axios from 'axios';
 
+const FALLBACK_API_ORIGIN = 'http://127.0.0.1:8001';
+const configuredApiOrigin = import.meta.env.VITE_API_ORIGIN?.replace(/\/$/, '');
+
+export const API_ORIGIN = configuredApiOrigin || FALLBACK_API_ORIGIN;
+export const API_BASE_URL = `${API_ORIGIN}/api/`;
+
+export const buildMediaUrl = (path) => {
+  if (!path) return '';
+  if (/^https?:\/\//i.test(path)) return path;
+  return `${API_ORIGIN}${path}`;
+};
+
+export const buildApiUrl = (path) => {
+  const normalizedPath = path.startsWith('/') ? path : `/${path}`;
+  return `${API_ORIGIN}${normalizedPath}`;
+};
+
+export const buildWsUrl = (path, query = '') => {
+  const wsOrigin = API_ORIGIN.replace(/^http/i, 'ws');
+  const normalizedPath = path.startsWith('/') ? path : `/${path}`;
+  return `${wsOrigin}${normalizedPath}${query}`;
+};
+
 const api = axios.create({
-  baseURL: 'http://127.0.0.1:8001/api/',
+  baseURL: API_BASE_URL,
   headers: {
     'Content-Type': 'application/json',
   },
@@ -44,7 +67,7 @@ api.interceptors.response.use(
       if (refreshToken) {
         try {
           // Attempt token refresh
-          const response = await axios.post('http://127.0.0.1:8001/api/accounts/refresh/', {
+          const response = await axios.post(buildApiUrl('/api/accounts/refresh/'), {
             refresh: refreshToken,
           });
           

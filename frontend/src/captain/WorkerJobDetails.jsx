@@ -4,9 +4,9 @@ import {
   Box, Container, Typography, Card, CardContent, Grid, Button, 
   Divider, TextField, List, ListItem, ListItemText, IconButton,
   Dialog, DialogTitle, DialogContent, DialogActions, LinearProgress,
-  Badge, Stepper, Step, StepLabel, DialogContentText
+  Badge, Stepper, Step, StepLabel, DialogContentText, MenuItem
 } from '@mui/material';
-import api from '../services/api';
+import api, { buildApiUrl, buildWsUrl } from '../services/api';
 import toast from 'react-hot-toast';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import PlayArrowIcon from '@mui/icons-material/PlayArrow';
@@ -96,9 +96,8 @@ function WorkerJobDetails() {
     fetchJobDetails();
 
     // Establish WebSocket Connection for real-time customer updates
-    const wsScheme = window.location.protocol === "https:" ? "wss" : "ws";
     const token = localStorage.getItem('access_token');
-    ws.current = new WebSocket(`${wsScheme}://127.0.0.1:8001/ws/bookings/${id}/?token=${token}`);
+    ws.current = new WebSocket(buildWsUrl(`/ws/bookings/${id}/`, `?token=${token}`));
 
     ws.current.onmessage = (event) => {
       try {
@@ -287,7 +286,7 @@ function WorkerJobDetails() {
   };
 
   const handleDownloadInvoice = () => {
-    window.open(`http://127.0.0.1:8001/api/billing/${id}/download-invoice/`, '_blank');
+    window.open(buildApiUrl(`/api/billing/${id}/download-invoice/`), '_blank');
   };
 
   if (loading) {

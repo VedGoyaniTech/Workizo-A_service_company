@@ -12,7 +12,7 @@ import DownloadIcon from '@mui/icons-material/Download';
 import HandymanIcon from '@mui/icons-material/Handyman';
 import OpenInNewIcon from '@mui/icons-material/OpenInNew';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
-import api from '../services/api';
+import api, { buildApiUrl } from '../services/api';
 import toast from 'react-hot-toast';
 
 function WorkerJobHistory() {
@@ -38,7 +38,7 @@ function WorkerJobHistory() {
   };
 
   const handleDownloadInvoice = (bookingId) => {
-    window.open(`http://127.0.0.1:8001/api/billing/${bookingId}/download-invoice/`, '_blank');
+    window.open(buildApiUrl(`/api/billing/${bookingId}/download-invoice/`), '_blank');
   };
 
   const filteredJobs = jobs.filter(job => {

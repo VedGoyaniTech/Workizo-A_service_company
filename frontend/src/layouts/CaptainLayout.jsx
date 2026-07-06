@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation, Outlet } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import {
@@ -13,11 +13,10 @@ import AccountBalanceWalletIcon from '@mui/icons-material/AccountBalanceWallet';
 import PersonIcon from '@mui/icons-material/Person';
 import SettingsIcon from '@mui/icons-material/Settings';
 import LogoutIcon from '@mui/icons-material/Logout';
-import HandymanIcon from '@mui/icons-material/Handyman';
 import NotificationsIcon from '@mui/icons-material/Notifications';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
-import api from '../services/api';
+import api, { buildMediaUrl } from '../services/api';
 import toast from 'react-hot-toast';
 
 const drawerWidth = 260;
@@ -36,6 +35,18 @@ const CaptainLayout = () => {
 
   const isOnline = !!user?.profile?.online_status;
   
+  useEffect(() => {
+    const fetchFreshProfile = async () => {
+      try {
+        const res = await api.get('accounts/me/');
+        updateProfileState(res.data);
+      } catch (err) {
+        console.error("Error fetching fresh profile in CaptainLayout", err);
+      }
+    };
+    fetchFreshProfile();
+  }, []);
+
   // Dynamic desktop drawer width
   const currentDrawerWidth = isCollapsed ? 80 : 260;
 
@@ -202,7 +213,7 @@ const CaptainLayout = () => {
         }}
       >
         <Avatar
-          src={user?.profile_photo ? `http://127.0.0.1:8001${user.profile_photo}` : ''}
+          src={buildMediaUrl(user?.profile?.profile_photo)}
           sx={{ bgcolor: '#1A73E8', width: 40, height: 40, fontWeight: 700 }}
         >
           {user?.full_name?.charAt(0).toUpperCase()}
@@ -267,39 +278,43 @@ const CaptainLayout = () => {
             </IconButton>
 
             {/* Online Status Toggle Switch in header */}
-            <FormControlLabel
-              control={
-                <Switch
-                  checked={isOnline}
-                  onChange={handleOnlineToggle}
-                  disabled={togglingOnline || user?.profile?.approval_status !== 'approved'}
-                  size="small"
-                  sx={{
-                    '& .MuiSwitch-switchBase.Mui-checked': {
-                      color: '#1A73E8',
-                      '& + .MuiSwitch-track': {
-                        backgroundColor: '#1A73E8',
-                        opacity: 0.9,
-                      },
-                    },
-                  }}
+            <Tooltip title={user?.profile?.approval_status !== 'approved' ? "KYC verification pending admin approval" : ""}>
+              <span>
+                <FormControlLabel
+                  control={
+                    <Switch
+                      checked={isOnline}
+                      onChange={handleOnlineToggle}
+                      disabled={togglingOnline || user?.profile?.approval_status !== 'approved'}
+                      size="small"
+                      sx={{
+                        '& .MuiSwitch-switchBase.Mui-checked': {
+                          color: '#1A73E8',
+                          '& + .MuiSwitch-track': {
+                            backgroundColor: '#1A73E8',
+                            opacity: 0.9,
+                          },
+                        },
+                      }}
+                    />
+                  }
+                  label={
+                    <Box display="flex" alignItems="center">
+                      <Typography variant="body2" sx={{ fontWeight: 800, fontSize: '0.85rem' }}>
+                        {isOnline ? 'ONLINE' : 'OFFLINE'}
+                      </Typography>
+                      {isOnline && (
+                        <Box sx={{
+                          width: 6, height: 6, bgcolor: 'success.main', borderRadius: '50%', ml: 1,
+                          animation: 'pulse 1.5s infinite'
+                        }} />
+                      )}
+                    </Box>
+                  }
+                  sx={{ m: 0 }}
                 />
-              }
-              label={
-                <Box display="flex" alignItems="center">
-                  <Typography variant="body2" sx={{ fontWeight: 800, fontSize: '0.85rem' }}>
-                    {isOnline ? 'ONLINE' : 'OFFLINE'}
-                  </Typography>
-                  {isOnline && (
-                    <Box sx={{
-                      width: 6, height: 6, bgcolor: 'success.main', borderRadius: '50%', ml: 1,
-                      animation: 'pulse 1.5s infinite'
-                    }} />
-                  )}
-                </Box>
-              }
-              sx={{ m: 0 }}
-            />
+              </span>
+            </Tooltip>
           </Box>
 
           <Box display="flex" alignItems="center" gap={2}>
@@ -334,7 +349,7 @@ const CaptainLayout = () => {
             {/* Avatar Dropdown */}
             <IconButton onClick={handleMenuOpen} sx={{ p: 0 }}>
               <Avatar
-                src={user?.profile_photo ? `http://127.0.0.1:8001${user.profile_photo}` : ''}
+                src={buildMediaUrl(user?.profile?.profile_photo)}
                 sx={{ bgcolor: '#1A73E8', width: 36, height: 36, fontWeight: 700 }}
               >
                 {user?.full_name?.charAt(0).toUpperCase()}

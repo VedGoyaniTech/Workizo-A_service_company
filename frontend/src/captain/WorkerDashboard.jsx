@@ -5,10 +5,10 @@ import {
   Container, Paper, Typography, Box, Button, Grid, Card, CardContent,
   Switch, FormControlLabel, Alert, Divider, List, ListItem, ListItemText,
   Dialog, DialogTitle, DialogContent, DialogActions, TextField, LinearProgress,
-  DialogContentText, Skeleton, Avatar
+  DialogContentText, Skeleton, Avatar, Tooltip as MuiTooltip
 } from '@mui/material';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
-import api from '../services/api';
+import api, { buildWsUrl } from '../services/api';
 import toast from 'react-hot-toast';
 import SignalCellularAltIcon from '@mui/icons-material/SignalCellularAlt';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
@@ -49,13 +49,19 @@ function WorkerDashboard() {
       const statsRes = await api.get('/api/workers/dashboard-stats/');
       setStats(statsRes.data);
       
-      // Update online status in auth state if they mismatch
-      if (statsRes.data.online_status !== !!user?.profile?.online_status) {
+      // Sync online status and approval status in auth state if they mismatch
+      const backendOnline = !!statsRes.data.online_status;
+      const backendApproval = statsRes.data.verification_status;
+      const frontendOnline = !!user?.profile?.online_status;
+      const frontendApproval = user?.profile?.approval_status;
+
+      if (backendOnline !== frontendOnline || backendApproval !== frontendApproval) {
         updateProfileState({
           user: user,
           profile: {
             ...user.profile,
-            online_status: statsRes.data.online_status
+            online_status: backendOnline,
+            approval_status: backendApproval
           }
         });
       }
@@ -102,9 +108,8 @@ function WorkerDashboard() {
       pollingInterval.current = setInterval(fetchAvailableBookings, 5000);
 
       // Connect notification websocket
-      const wsScheme = window.location.protocol === "https:" ? "wss" : "ws";
       const token = localStorage.getItem('access_token');
-      notiWs.current = new WebSocket(`${wsScheme}://127.0.0.1:8001/ws/notifications/?token=${token}`);
+      notiWs.current = new WebSocket(buildWsUrl('/ws/notifications/', `?token=${token}`));
 
       notiWs.current.onmessage = (event) => {
         try {
@@ -298,37 +303,41 @@ function WorkerDashboard() {
           </Grid>
 
           <Grid item>
-            <FormControlLabel
-              control={
-                <Switch
-                  checked={online}
-                  onChange={handleOnlineToggle}
-                  disabled={togglingOnline || stats?.verification_status !== 'approved'}
-                  sx={{
-                    '& .MuiSwitch-switchBase.Mui-checked': {
-                      color: '#1A73E8',
-                      '& + .MuiSwitch-track': {
-                        backgroundColor: '#1A73E8',
-                        opacity: 0.9,
-                      },
-                    },
-                  }}
+            <MuiTooltip title={stats?.verification_status !== 'approved' ? "KYC verification pending admin approval" : ""}>
+              <span>
+                <FormControlLabel
+                  control={
+                    <Switch
+                      checked={online}
+                      onChange={handleOnlineToggle}
+                      disabled={togglingOnline || stats?.verification_status !== 'approved'}
+                      sx={{
+                        '& .MuiSwitch-switchBase.Mui-checked': {
+                          color: '#1A73E8',
+                          '& + .MuiSwitch-track': {
+                            backgroundColor: '#1A73E8',
+                            opacity: 0.9,
+                          },
+                        },
+                      }}
+                    />
+                  }
+                  label={
+                    <Box display="flex" alignItems="center">
+                      <Typography variant="subtitle1" fontWeight="800">
+                        {online ? 'ONLINE' : 'OFFLINE'}
+                      </Typography>
+                      {online && (
+                        <Box sx={{
+                          width: 8, height: 8, bgcolor: 'success.main', borderRadius: '50%', ml: 1.5,
+                          animation: 'pulse 1.5s infinite'
+                        }} />
+                      )}
+                    </Box>
+                  }
                 />
-              }
-              label={
-                <Box display="flex" alignItems="center">
-                  <Typography variant="subtitle1" fontWeight="800">
-                    {online ? 'ONLINE' : 'OFFLINE'}
-                  </Typography>
-                  {online && (
-                    <Box sx={{
-                      width: 8, height: 8, bgcolor: 'success.main', borderRadius: '50%', ml: 1.5,
-                      animation: 'pulse 1.5s infinite'
-                    }} />
-                  )}
-                </Box>
-              }
-            />
+              </span>
+            </MuiTooltip>
           </Grid>
         </Grid>
       </Paper>
