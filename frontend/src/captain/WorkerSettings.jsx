@@ -32,7 +32,7 @@ function WorkerSettings() {
         { label: 'Settings' }
       ]}
       title="System Settings & Support"
-      description="Configure sound alerts, system interface language, or access partner documentation."
+      description="Configure system configurations, notification channels, or consult policies."
       actions={
         <Button 
           startIcon={<ArrowBackIcon />} 

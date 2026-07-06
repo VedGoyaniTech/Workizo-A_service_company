@@ -113,7 +113,7 @@ function WorkerWallet() {
         { label: 'Settlement Wallet' }
       ]}
       title="Settlement Wallet & Payouts"
-      description="Manage direct bank deposits, review weekly statements, and execute payouts."
+      description="Manage your settlement transactions, view earnings milestones, and execute bank payouts."
       summary={summary}
       loading={loading}
       actions={

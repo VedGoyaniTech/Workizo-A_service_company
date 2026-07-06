@@ -97,7 +97,7 @@ const CustomerLayout = () => {
                   fontSize: '1.3rem'
                 }}
               >
-                Workizo
+                WORKIZO
               </Typography>
             </Box>
 
@@ -311,7 +311,7 @@ const CustomerLayout = () => {
                     fontSize: '1.3rem'
                   }}
                 >
-                  Workizo
+                  WORKIZO
                 </Typography>
               </Box>
               <Typography variant="body2" sx={{ color: '#9CA3AF', mb: 3, lineHeight: 1.6 }}>

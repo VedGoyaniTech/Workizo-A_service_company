@@ -336,8 +336,8 @@ function WorkerJobDetails() {
         { label: 'Dashboard', path: '/captain/dashboard' },
         { label: 'Job Details' }
       ]}
-      title={`Job Order Workspace #${booking.id}`}
-      description={`Customer Name: ${booking.customer?.full_name} | Location: ${booking.city} (${booking.pincode})`}
+      title={`Job Booking #${booking.id}`}
+      description={`Service: ${booking.service_category_detail?.name} (${booking.problem_type})`}
       summary={summary}
       actions={
         <Box display="flex" gap={1.5}>

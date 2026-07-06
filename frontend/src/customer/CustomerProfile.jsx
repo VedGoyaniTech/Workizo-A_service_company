@@ -82,7 +82,7 @@ const CustomerProfile = () => {
         { label: 'Profile Settings' }
       ]}
       title="Profile Settings"
-      description="Update your contact particulars, addresses, and secure account credentials."
+      description="Update your account details and contact address"
     >
       <DashboardGrid>
         {/* Profile Info Form */}

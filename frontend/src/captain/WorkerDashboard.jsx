@@ -254,8 +254,8 @@ function WorkerDashboard() {
   return (
     <DashboardPage
       breadcrumbs={[{ label: 'Home', path: '/' }, { label: 'Captain Dashboard' }]}
-      title={`Welcome back, ${stats?.worker_name || 'Captain'}!`}
-      description={`Category: ${stats?.service_category} | Verification Status: ${stats?.verification_status?.toUpperCase()}`}
+      title={stats?.welcome_message || 'Welcome back!'}
+      description={stats ? `Service: ${stats.service_category} | Approval Status: ${stats.verification_status?.toUpperCase()}` : ''}
       summary={summary}
       loading={loadingStats}
       actions={

@@ -247,8 +247,8 @@ function BookingTimeline() {
         { label: 'Dashboard', path: '/customer/dashboard' },
         { label: 'Service Timeline' }
       ]}
-      title={`Booking Timeline #${booking.id}`}
-      description={`Tracking ID: ${booking.tracking_id || booking.id}`}
+      title={`Tracking ID: ${booking.tracking_id || booking.id}`}
+      description="Monitor progress, verify security codes, and check repair bills in real-time."
       summary={summary}
       actions={
         <Button

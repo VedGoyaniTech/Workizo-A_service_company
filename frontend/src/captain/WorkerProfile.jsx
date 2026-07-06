@@ -140,8 +140,8 @@ const WorkerProfile = () => {
         { label: 'Dashboard', path: '/captain/dashboard' },
         { label: 'Profile' }
       ]}
-      title="Profile & KYC Settings"
-      description="Keep your personal, KYC documents, and direct settlement bank account information up to date."
+      title="Onboarding & Verification Portal"
+      description="Provide details to begin receiving customer requests."
       actions={getStatusChip()}
     >
       {user?.profile?.approval_status === 'rejected' && (

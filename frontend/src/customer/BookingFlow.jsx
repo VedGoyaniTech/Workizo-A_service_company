@@ -103,7 +103,7 @@ function BookingFlow() {
         { label: 'Dashboard', path: '/customer/dashboard' },
         { label: 'Book Partner' }
       ]}
-      title="Request a Service Partner"
+      title="Book a Service"
       description="Provide booking details and location. A certified Captain will accept your request."
       actions={
         <Button 

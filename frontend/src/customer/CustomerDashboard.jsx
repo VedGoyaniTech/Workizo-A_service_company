@@ -127,7 +127,7 @@ function CustomerDashboard() {
   return (
     <DashboardPage
       breadcrumbs={[{ label: 'Home', path: '/' }, { label: 'Customer Dashboard' }]}
-      title={`Hello, ${user?.full_name || 'Customer'}!`}
+      title="Customer Dashboard"
       description="Book home repair and maintenance services in Ahmedabad with verified local experts."
       summary={summary}
       loading={loading}

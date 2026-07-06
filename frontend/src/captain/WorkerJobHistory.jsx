@@ -112,7 +112,7 @@ function WorkerJobHistory() {
         { label: 'Job History' }
       ]}
       title="Job History Ledger"
-      description="Review settled accounts, active operations, and download PDF invoices."
+      description="Search, filter, and review all your assigned job runs and invoices."
       summary={summary}
       actions={
         <Button 
