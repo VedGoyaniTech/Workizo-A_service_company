@@ -1439,7 +1439,7 @@ const CategoriesView = ({ hideHeader }) => {
                     <TableCell sx={{ fontWeight: 700 }}>₹{c.base_labour_charge}</TableCell>
                     <TableCell>
                       {c.is_active ? (
-                        <Chip label="ENABLED" color="success" size="small" sx={{ fontWeight: 800 }} />
+                        <Chip label="ENABLED" color="success" size="small" sx={{ fontWeight: 700 }} />
                       ) : (
                         <Chip label="DISABLED" color="default" size="small" sx={{ fontWeight: 600 }} />
                       )}
@@ -1646,7 +1646,7 @@ const PaymentsView = ({ hideHeader }) => {
                         label={p.status.toUpperCase()}
                         color={p.status === 'success' ? 'success' : p.status === 'failed' ? 'error' : 'warning'}
                         size="small"
-                        sx={{ fontWeight: 800 }}
+                        sx={{ fontWeight: 700 }}
                       />
                     </TableCell>
                     <TableCell sx={{ color: tokens.colors.textSecondary }}>{new Date(p.created_at).toLocaleDateString()}</TableCell>
@@ -1787,7 +1787,7 @@ const BillsView = ({ hideHeader }) => {
                     <TableCell sx={{ fontWeight: 500 }}>{b.booking_detail?.worker?.full_name || 'N/A'}</TableCell>
                     <TableCell>₹{b.labour_charges}</TableCell>
                     <TableCell>₹{b.gst}</TableCell>
-                    <TableCell sx={{ fontWeight: 800, color: tokens.colors.primary }}>₹{b.grand_total}</TableCell>
+                    <TableCell sx={{ fontWeight: 700, color: tokens.colors.primary }}>₹{b.grand_total}</TableCell>
                     <TableCell align="right">
                       <Button
                         variant="outlined"
@@ -1859,9 +1859,9 @@ const BillsView = ({ hideHeader }) => {
                     <Table size="small">
                       <TableHead>
                         <TableRow sx={{ bgcolor: tokens.colors.bg }}>
-                          <TableCell sx={{ fontWeight: 800 }}>Part Name</TableCell>
-                          <TableCell align="center" sx={{ fontWeight: 800 }}>Qty</TableCell>
-                          <TableCell align="right" sx={{ fontWeight: 800 }}>Price</TableCell>
+                          <TableCell sx={{ fontWeight: 600 }}>Part Name</TableCell>
+                          <TableCell align="center" sx={{ fontWeight: 600 }}>Qty</TableCell>
+                          <TableCell align="right" sx={{ fontWeight: 600 }}>Price</TableCell>
                         </TableRow>
                       </TableHead>
                       <TableBody>
@@ -2012,9 +2012,9 @@ const ReviewsView = ({ hideHeader }) => {
                     </TableCell>
                     <TableCell>
                       {r.is_hidden ? (
-                        <Chip label="HIDDEN" color="error" size="small" variant="outlined" sx={{ fontWeight: 800 }} />
+                        <Chip label="HIDDEN" color="error" size="small" variant="outlined" sx={{ fontWeight: 700 }} />
                       ) : (
-                        <Chip label="VISIBLE" color="success" size="small" variant="outlined" sx={{ fontWeight: 800 }} />
+                        <Chip label="VISIBLE" color="success" size="small" variant="outlined" sx={{ fontWeight: 700 }} />
                       )}
                     </TableCell>
                     <TableCell align="right">
@@ -2130,7 +2130,7 @@ const ReportsView = ({ hideHeader }) => {
           <DashboardCard>
             <Box sx={{ py: 2, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: 140 }}>
               <Typography variant="caption" color="text.secondary" sx={{ fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em' }}>Success Completion Rate</Typography>
-              <Typography variant="h3" fontWeight="900" sx={{ mt: 1.5, color: '#34A853', fontFamily: 'Outfit' }}>
+              <Typography variant="h3" fontWeight={700} sx={{ mt: 1.5, color: '#34A853', fontFamily: 'Outfit' }}>
                 {reportData.successRate}%
               </Typography>
             </Box>
@@ -2140,7 +2140,7 @@ const ReportsView = ({ hideHeader }) => {
           <DashboardCard>
             <Box sx={{ py: 2, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: 140 }}>
               <Typography variant="caption" color="text.secondary" sx={{ fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em' }}>Booking Cancellation Rate</Typography>
-              <Typography variant="h3" fontWeight="900" sx={{ mt: 1.5, color: '#EA4335', fontFamily: 'Outfit' }}>
+              <Typography variant="h3" fontWeight={700} sx={{ mt: 1.5, color: '#EA4335', fontFamily: 'Outfit' }}>
                 {reportData.cancelRate}%
               </Typography>
             </Box>
@@ -2164,7 +2164,7 @@ const ReportsView = ({ hideHeader }) => {
                 <TableRow key={idx} hover>
                   <TableCell fontWeight="bold" sx={{ fontFamily: 'Outfit', fontWeight: 700 }}>{c.service_category__name || 'Unspecified'}</TableCell>
                   <TableCell align="center" sx={{ fontWeight: 600 }}>{c.count}</TableCell>
-                  <TableCell align="right" sx={{ fontWeight: 800 }}>₹{c.total_rev ? parseFloat(c.total_rev).toFixed(2) : '0.00'}</TableCell>
+                  <TableCell align="right" sx={{ fontWeight: 700 }}>₹{c.total_rev ? parseFloat(c.total_rev).toFixed(2) : '0.00'}</TableCell>
                 </TableRow>
               ))}
             </TableBody>
@@ -2301,8 +2301,8 @@ const NotificationsView = ({ hideHeader }) => {
                 {announcements.map((a) => (
                   <Box key={a.id} sx={{ p: 2.5, border: `1px solid ${tokens.borderColor}`, borderRadius: `${tokens.borderRadiusSm}px`, bgcolor: tokens.colors.bg }}>
                     <Box display="flex" justifyContent="space-between" alignItems="flex-start" mb={1} gap={2}>
-                      <Typography variant="body2" fontWeight="800" sx={{ fontFamily: 'Outfit' }}>{a.title}</Typography>
-                      <Chip label={a.recipient_type.replace('_', ' ').toUpperCase()} size="small" sx={{ fontWeight: 800 }} />
+                      <Typography variant="body2" fontWeight={700} sx={{ fontFamily: 'Outfit' }}>{a.title}</Typography>
+                      <Chip label={a.recipient_type.replace('_', ' ').toUpperCase()} size="small" sx={{ fontWeight: 700 }} />
                     </Box>
                     <Typography variant="body2" color="text.secondary" sx={{ mb: 2, fontWeight: 500 }}>{a.message}</Typography>
                     <Typography variant="caption" color="text.disabled" sx={{ fontWeight: 700 }}>

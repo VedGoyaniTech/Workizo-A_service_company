@@ -457,7 +457,7 @@ function WorkerJobDetails() {
                     variant="contained"
                     onClick={() => updateJobStatus('inspection')}
                     disabled={submitting}
-                    sx={{ bgcolor: tokens.colors.accent, color: '#ffffff', py: 1.5, borderRadius: `${tokens.borderRadiusSm}px`, fontWeight: '800' }}
+                    sx={{ bgcolor: tokens.colors.accent, color: '#ffffff', py: 1.5, borderRadius: `${tokens.borderRadiusSm}px`, fontWeight: 700 }}
                   >
                     Initiate Inspection
                   </Button>
@@ -469,7 +469,7 @@ function WorkerJobDetails() {
                     variant="contained"
                     onClick={() => updateJobStatus('repair_started')}
                     disabled={submitting}
-                    sx={{ bgcolor: tokens.colors.accent, color: '#ffffff', py: 1.5, borderRadius: `${tokens.borderRadiusSm}px`, fontWeight: '800' }}
+                    sx={{ bgcolor: tokens.colors.accent, color: '#ffffff', py: 1.5, borderRadius: `${tokens.borderRadiusSm}px`, fontWeight: 700 }}
                   >
                     Start Repair Work
                   </Button>
@@ -481,7 +481,7 @@ function WorkerJobDetails() {
                     variant="contained"
                     onClick={() => updateJobStatus('repair_completed')}
                     disabled={submitting}
-                    sx={{ bgcolor: tokens.colors.accent, color: '#ffffff', py: 1.5, borderRadius: `${tokens.borderRadiusSm}px`, fontWeight: '800' }}
+                    sx={{ bgcolor: tokens.colors.accent, color: '#ffffff', py: 1.5, borderRadius: `${tokens.borderRadiusSm}px`, fontWeight: 700 }}
                   >
                     Mark Repair Completed
                   </Button>
