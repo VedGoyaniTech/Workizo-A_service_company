@@ -153,7 +153,7 @@ function CustomerDashboard() {
         {/* Active Trackers */}
         {activeBookings.length > 0 && (
           <Box sx={{ ...span.full, display: 'flex', flexDirection: 'column', gap: 2 }}>
-            <Typography variant="h6" fontWeight="800" sx={{ fontFamily: 'Outfit, sans-serif' }}>
+            <Typography variant="h6" fontWeight={600} sx={{ fontFamily: 'Outfit, sans-serif' }}>
               Active Service Trackers
             </Typography>
             <DashboardGrid>
@@ -168,7 +168,7 @@ function CustomerDashboard() {
                         bgcolor: 'rgba(26, 115, 232, 0.08)',
                         border: '1px solid rgba(26, 115, 232, 0.15)'
                       }}>
-                        <Typography variant="caption" sx={{ color: '#1A73E8', fontWeight: 800, textTransform: 'uppercase' }}>
+                        <Typography variant="caption" sx={{ color: '#1A73E8', fontWeight: 700, textTransform: 'uppercase' }}>
                           {bk.status.replace('_', ' ')}
                         </Typography>
                       </Box>
@@ -247,7 +247,7 @@ function CustomerDashboard() {
                       }}>
                         {styles.icon}
                       </Box>
-                      <Typography variant="subtitle2" fontWeight="800" sx={{ color: tokens.colors.primary }}>
+                      <Typography variant="subtitle2" fontWeight={700} sx={{ color: tokens.colors.primary }}>
                         {cat.name}
                       </Typography>
                     </Box>
@@ -272,7 +272,7 @@ function CustomerDashboard() {
                     <ListItemText
                       primary={bk.service_category_detail?.name}
                       secondary={`${new Date(bk.created_at).toLocaleDateString()} | ID: ${bk.tracking_id || bk.id}`}
-                      primaryTypographyProps={{ fontWeight: 700 }}
+                      primaryTypographyProps={{ fontWeight: 600 }}
                     />
                     <Box sx={{ textAlign: 'right' }}>
                       <Box sx={{ 
@@ -280,7 +280,7 @@ function CustomerDashboard() {
                         bgcolor: bk.status === 'completed' ? 'rgba(22, 163, 74, 0.08)' : 'rgba(220, 38, 38, 0.08)',
                         border: bk.status === 'completed' ? '1px solid rgba(22, 163, 74, 0.15)' : '1px solid rgba(220, 38, 38, 0.15)'
                       }}>
-                        <Typography variant="caption" fontWeight="800" color={bk.status === 'completed' ? 'success.main' : 'error.main'}>
+                        <Typography variant="caption" fontWeight={700} color={bk.status === 'completed' ? 'success.main' : 'error.main'}>
                           {bk.status.toUpperCase()}
                         </Typography>
                       </Box>

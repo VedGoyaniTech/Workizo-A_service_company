@@ -188,7 +188,7 @@ const DashboardView = ({ hideHeader }) => {
   ];
 
   return (
-    <Box display="flex" flexDirection="column" gap={3}>
+    <Box sx={{ display: 'flex', flexDirection: 'column', gap: `${tokens.sectionGap}px` }}>
       {!hideHeader && (
         <Box sx={{ mb: 1 }}>
           <Typography variant="h4" fontWeight="900" fontFamily="Outfit" color="#0F0F14">
@@ -214,7 +214,7 @@ const DashboardView = ({ hideHeader }) => {
         ))}
       </SummaryGrid>
 
-      {/* Charts Grid */}
+      {/* Charts & Analytics Grid */}
       <DashboardGrid>
         {/* Daily Bookings Chart */}
         <Box sx={span.twoThirds}>
@@ -270,10 +270,7 @@ const DashboardView = ({ hideHeader }) => {
             </Box>
           </DashboardCard>
         </Box>
-      </DashboardGrid>
 
-      {/* Analytics Part 2 */}
-      <DashboardGrid>
         {/* Monthly Revenue Chart */}
         <Box sx={span.half}>
           <DashboardCard

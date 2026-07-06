@@ -163,7 +163,7 @@ const BookingTracker = () => {
                               }
                             }}
                           >
-                            <Typography variant="subtitle2" fontWeight="800">
+                            <Typography variant="subtitle2" fontWeight={700}>
                               {step.label}
                             </Typography>
                           </StepLabel>
@@ -188,7 +188,7 @@ const BookingTracker = () => {
                     </Box>
                     <Box sx={{ mb: 2 }}>
                       <Typography variant="caption" color="text.secondary" display="block">Preferred Slot Schedule</Typography>
-                      <Typography variant="body2" fontWeight="700">
+                      <Typography variant="body2" fontWeight={400}>
                         {booking.preferred_date ? `${booking.preferred_date} | ` : ''} {booking.preferred_time || 'Instant'}
                       </Typography>
                     </Box>

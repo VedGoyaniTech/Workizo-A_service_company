@@ -47,7 +47,7 @@ const SummaryCard = ({
               variant="caption"
               sx={{
                 color: tokens.colors.textSecondary,
-                fontWeight: 700,
+                fontWeight: 600,
                 textTransform: 'uppercase',
                 letterSpacing: '0.06em',
                 display: 'block',
@@ -59,7 +59,7 @@ const SummaryCard = ({
             <Typography
               variant="h4"
               sx={{
-                fontWeight: 800,
+                fontWeight: 700,
                 color: tokens.colors.primary,
                 letterSpacing: '-0.02em',
                 lineHeight: 1.1,

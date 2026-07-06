@@ -188,7 +188,7 @@ const CaptainLayout = () => {
                   {!isCollapsed && (
                     <ListItemText 
                       primary={item.text} 
-                      primaryTypographyProps={{ fontSize: '0.95rem', fontWeight: isActive ? 700 : 500 }} 
+                      primaryTypographyProps={{ fontSize: '0.95rem', fontWeight: isActive ? 600 : 500 }} 
                     />
                   )}
                 </ListItemButton>
@@ -300,7 +300,7 @@ const CaptainLayout = () => {
                   }
                   label={
                     <Box display="flex" alignItems="center">
-                      <Typography variant="body2" sx={{ fontWeight: 800, fontSize: '0.85rem' }}>
+                      <Typography variant="body2" sx={{ fontWeight: 700, fontSize: '0.85rem' }}>
                         {isOnline ? 'ONLINE' : 'OFFLINE'}
                       </Typography>
                       {isOnline && (
@@ -334,7 +334,7 @@ const CaptainLayout = () => {
               onClick={() => navigate('/captain/wallet')}
             >
               <AccountBalanceWalletIcon sx={{ color: '#1A73E8', fontSize: 18 }} />
-              <Typography variant="body2" sx={{ fontWeight: 800, color: '#1A73E8' }}>
+              <Typography variant="body2" sx={{ fontWeight: 700, color: '#1A73E8' }}>
                 ₹{user?.profile?.wallet_balance || '0.00'}
               </Typography>
             </Box>

@@ -159,7 +159,7 @@ const WorkerRegister = () => {
         <Box display="flex" justifyContent="center">
           <Typography variant="body2" color="text.secondary">
             Already registered?{' '}
-            <Link component={RouterLink} to="/captain/login" color="secondary" fontWeight="bold">
+            <Link component={RouterLink} to="/captain/login" color="secondary" fontWeight={600}>
               Log In
             </Link>
           </Typography>

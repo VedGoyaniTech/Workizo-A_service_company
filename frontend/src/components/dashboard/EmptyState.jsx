@@ -21,7 +21,7 @@ const EmptyState = ({ icon, title, description, action }) => (
         {icon}
       </Box>
     )}
-    <Typography variant="subtitle1" fontWeight={700} gutterBottom>
+    <Typography variant="subtitle1" fontWeight={400} gutterBottom>
       {title}
     </Typography>
     {description && (

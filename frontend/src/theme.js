@@ -32,7 +32,7 @@ const theme = createTheme({
   },
   typography: {
     fontFamily: '"Outfit", "Inter", "Roboto", "Helvetica", sans-serif',
-    h1: { fontWeight: 800, letterSpacing: '-0.03em' },
+    h1: { fontWeight: 700, letterSpacing: '-0.03em' },
     h2: { fontWeight: 700, letterSpacing: '-0.02em' },
     h3: { fontWeight: 700, letterSpacing: '-0.01em' },
     h4: { fontWeight: 700, letterSpacing: '-0.02em' },
@@ -124,9 +124,9 @@ const theme = createTheme({
           color: tokens.colors.primary,
           borderBottom: `1px solid ${tokens.borderColor}`,
           boxShadow: 'none',
+          },
         },
       },
-    },
     MuiDrawer: {
       styleOverrides: {
         paper: {
@@ -137,7 +137,7 @@ const theme = createTheme({
     MuiTableCell: {
       styleOverrides: {
         head: {
-          fontWeight: 700,
+          fontWeight: 600,
           color: tokens.colors.textSecondary,
           textTransform: 'uppercase',
           fontSize: '0.7rem',

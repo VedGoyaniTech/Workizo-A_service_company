@@ -125,7 +125,7 @@ const CustomerLogin = () => {
         <Box display="flex" justifyContent="center">
           <Typography variant="body2" color="text.secondary">
             Don't have an account?{' '}
-            <Link component={RouterLink} to="/customer/register" color="primary" fontWeight="bold">
+            <Link component={RouterLink} to="/customer/register" color="primary" fontWeight={600}>
               Register Here
             </Link>
           </Typography>

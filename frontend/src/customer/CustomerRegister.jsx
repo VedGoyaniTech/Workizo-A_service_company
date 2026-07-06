@@ -159,7 +159,7 @@ const CustomerRegister = () => {
         <Box display="flex" justifyContent="center">
           <Typography variant="body2" color="text.secondary">
             Already have an account?{' '}
-            <Link component={RouterLink} to="/customer/login" color="primary" fontWeight="bold">
+            <Link component={RouterLink} to="/customer/login" color="primary" fontWeight={600}>
               Log In
             </Link>
           </Typography>

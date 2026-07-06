@@ -280,7 +280,7 @@ function WorkerDashboard() {
               }
               label={
                 <Box display="flex" alignItems="center">
-                  <Typography variant="subtitle2" fontWeight="800">
+                  <Typography variant="subtitle2" fontWeight={700}>
                     {online ? 'ONLINE' : 'OFFLINE'}
                   </Typography>
                   {online && (
@@ -322,7 +322,7 @@ function WorkerDashboard() {
               >
                 <Box sx={{ mt: 2, display: 'flex', flexDirection: 'column', gap: 2 }}>
                   <Box sx={{ p: 2.5, bgcolor: tokens.colors.bg, borderRadius: `${tokens.borderRadiusSm}px` }}>
-                    <Typography variant="subtitle1" fontWeight="800">
+                    <Typography variant="subtitle1" fontWeight={700}>
                       Customer: {activeJob.customer?.full_name}
                     </Typography>
                     <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>
@@ -350,14 +350,14 @@ function WorkerDashboard() {
             >
               {!online ? (
                 <Box sx={{ py: 6, textAlign: 'center' }}>
-                  <Typography variant="subtitle1" fontWeight="700">You are Offline</Typography>
+                  <Typography variant="subtitle1" fontWeight={600}>You are Offline</Typography>
                   <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
                     Toggle your status to ONLINE in the top banner to start receiving client request cards.
                   </Typography>
                 </Box>
               ) : availableBookings.length === 0 ? (
                 <Box sx={{ py: 6, textAlign: 'center' }}>
-                  <Typography variant="subtitle1" fontWeight="700">No bookings nearby</Typography>
+                  <Typography variant="subtitle1" fontWeight={600}>No bookings nearby</Typography>
                   <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
                     Listening for real customer service requests matching your skill category...
                   </Typography>
@@ -382,7 +382,7 @@ function WorkerDashboard() {
                         }
                       }}>
                         <Box display="flex" justifyContent="space-between" alignItems="center" sx={{ mb: 2 }}>
-                          <Typography variant="caption" color="textSecondary" fontWeight="800">
+                          <Typography variant="caption" color="textSecondary" fontWeight={600}>
                             ID: #{b.id}
                           </Typography>
                           <Box sx={{ 
@@ -390,13 +390,13 @@ function WorkerDashboard() {
                             bgcolor: tokens.colors.accentLight, 
                             border: '1px solid rgba(26, 115, 232, 0.15)'
                           }}>
-                            <Typography variant="caption" fontWeight="800" color="primary">
+                            <Typography variant="caption" fontWeight={700} color="primary">
                               {b.booking_type === 'instant' ? 'INSTANT' : 'SLOT'}
                             </Typography>
                           </Box>
                         </Box>
 
-                        <Typography variant="subtitle1" fontWeight="800">
+                        <Typography variant="subtitle1" fontWeight={700}>
                           {b.customer?.full_name}
                         </Typography>
                         <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>
@@ -465,7 +465,7 @@ function WorkerDashboard() {
             {/* Wallet Balance Card */}
             <DashboardCard title="Settlement Wallet" subtitle="Total complete earnings balance">
               <Box sx={{ py: 1 }}>
-                <Typography variant="h3" fontWeight="950" sx={{ fontFamily: 'Outfit, sans-serif', letterSpacing: '-0.03em' }}>
+                <Typography variant="h3" fontWeight={700} sx={{ fontFamily: 'Outfit, sans-serif', letterSpacing: '-0.03em' }}>
                   ₹{stats?.wallet_balance}
                 </Typography>
                 <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
@@ -492,25 +492,25 @@ function WorkerDashboard() {
               <List disablePadding>
                 <ListItem sx={{ px: 0, py: 1.5 }} divider>
                   <ListItemText primary="Acceptance Rate" secondary="Percentage of matching jobs accepted" />
-                  <Typography variant="body2" fontWeight="800">
+                  <Typography variant="body2" fontWeight={700}>
                     {stats?.acceptance_rate}%
                   </Typography>
                 </ListItem>
                 <ListItem sx={{ px: 0, py: 1.5 }} divider>
                   <ListItemText primary="Completion Rate" secondary="Percentage of accepted jobs completed" />
-                  <Typography variant="body2" fontWeight="800">
+                  <Typography variant="body2" fontWeight={700}>
                     {stats?.completion_rate}%
                   </Typography>
                 </ListItem>
                 <ListItem sx={{ px: 0, py: 1.5 }} divider>
                   <ListItemText primary="Pending Assignments" secondary="Services waiting repair actions" />
-                  <Typography variant="body2" fontWeight="800">
+                  <Typography variant="body2" fontWeight={700}>
                     {stats?.pending_jobs}
                   </Typography>
                 </ListItem>
                 <ListItem sx={{ px: 0, py: 1.5 }}>
                   <ListItemText primary="Completed Work" secondary="Total customer orders settled" />
-                  <Typography variant="body2" fontWeight="800">
+                  <Typography variant="body2" fontWeight={700}>
                     {stats?.completed_jobs}
                   </Typography>
                 </ListItem>
@@ -528,7 +528,7 @@ function WorkerDashboard() {
                       <ListItemText
                         primary={act.action}
                         secondary={act.time}
-                        primaryTypographyProps={{ fontSize: '0.85rem', fontWeight: 700 }}
+                        primaryTypographyProps={{ fontSize: '0.85rem', fontWeight: 600 }}
                         secondaryTypographyProps={{ fontSize: '0.75rem' }}
                       />
                     </ListItem>

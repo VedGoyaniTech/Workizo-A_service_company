@@ -70,7 +70,7 @@ const ForgotPassword = () => {
         </Button>
 
         <Box display="flex" justifyContent="center">
-          <Link component={RouterLink} to="/" color="primary" fontWeight="bold">
+          <Link component={RouterLink} to="/" color="primary" fontWeight={600}>
             Back to Home
           </Link>
         </Box>

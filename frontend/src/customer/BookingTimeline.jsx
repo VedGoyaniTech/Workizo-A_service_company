@@ -302,7 +302,7 @@ function BookingTimeline() {
                           <HourglassEmptyIcon sx={{ animation: 'spin 3s linear infinite' }} />
                         </Box>
                       </Box>
-                      <Typography variant="h6" fontWeight="800" sx={{ mb: 1 }}>
+                      <Typography variant="h6" fontWeight={600} sx={{ mb: 1 }}>
                         Searching for Captains
                       </Typography>
                       <Typography variant="body2" color="text.secondary" sx={{ mb: 3, maxWidth: '400px' }}>
@@ -377,6 +377,7 @@ function BookingTimeline() {
                       {/* Step Circle */}
                       <Box 
                         sx={{ 
+                      <Box sx={{ 
                           width: 30, 
                           height: 30, 
                           borderRadius: '50%', 
@@ -386,7 +387,7 @@ function BookingTimeline() {
                           display: 'flex', 
                           alignItems: 'center', 
                           justifyContent: 'center',
-                          fontWeight: '800',
+                          fontWeight: 700,
                           fontSize: '0.85rem',
                           zIndex: 2,
                           boxShadow: isActive ? `0 0 0 4px ${tokens.colors.accentLight}` : 'none',
@@ -395,13 +396,13 @@ function BookingTimeline() {
                       >
                         {idx + 1}
                       </Box>
-
+ 
                       {/* Step Info */}
                       <Box sx={{ flex: 1, pt: 0.25 }}>
                         <Typography 
                           sx={{ 
                             fontSize: '1rem', 
-                            fontWeight: isActive ? '800' : isCompleted ? '700' : '500', 
+                            fontWeight: isActive ? 700 : isCompleted ? 600 : 500, 
                             color: isActive || isCompleted ? tokens.colors.primary : tokens.colors.textSecondary,
                             fontFamily: 'Outfit, sans-serif'
                           }}
@@ -426,7 +427,7 @@ function BookingTimeline() {
                 <DashboardGrid sx={{ mt: 1 }}>
                   {booking.before_photo && (
                     <Box sx={span.half}>
-                      <Typography variant="subtitle2" fontWeight="700" sx={{ mb: 1 }}>Before Repair Photo</Typography>
+                      <Typography variant="subtitle2" fontWeight={600} sx={{ mb: 1 }}>Before Repair Photo</Typography>
                       <Box 
                         component="img" 
                         src={`http://127.0.0.1:8001${booking.before_photo}`} 
@@ -437,7 +438,7 @@ function BookingTimeline() {
                   )}
                   {booking.after_photo && (
                     <Box sx={span.half}>
-                      <Typography variant="subtitle2" fontWeight="700" sx={{ mb: 1 }}>After Repair Photo</Typography>
+                      <Typography variant="subtitle2" fontWeight={600} sx={{ mb: 1 }}>After Repair Photo</Typography>
                       <Box 
                         component="img" 
                         src={`http://127.0.0.1:8001${booking.after_photo}`} 
@@ -462,7 +463,7 @@ function BookingTimeline() {
                   >
                     <Box sx={{ mt: 2, display: 'flex', flexDirection: 'column', gap: 2 }}>
                       <Box sx={{ p: 2, bgcolor: tokens.colors.bg, borderRadius: `${tokens.borderRadiusSm}px` }}>
-                        <Typography variant="h6" fontWeight="800">
+                        <Typography variant="h6" fontWeight={700}>
                           Estimate: ₹{rep.estimated_cost}
                         </Typography>
                         <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>
@@ -496,7 +497,7 @@ function BookingTimeline() {
                           bgcolor: rep.status === 'approved' ? 'rgba(22, 163, 74, 0.08)' : 'rgba(220, 38, 38, 0.08)',
                           border: rep.status === 'approved' ? '1px solid rgba(22, 163, 74, 0.15)' : '1px solid rgba(220, 38, 38, 0.15)'
                         }}>
-                          <Typography variant="caption" fontWeight="800" color={rep.status === 'approved' ? 'success.main' : 'error.main'}>
+                          <Typography variant="caption" fontWeight={700} color={rep.status === 'approved' ? 'success.main' : 'error.main'}>
                             {rep.status.toUpperCase()}
                           </Typography>
                         </Box>
@@ -519,11 +520,11 @@ function BookingTimeline() {
                 <Box display="flex" flexDirection="column" alignItems="center" textAlign="center" py={2}>
                   <Avatar
                     src={booking.worker.profile_photo ? `http://127.0.0.1:8001${booking.worker.profile_photo}` : ''}
-                    sx={{ width: 72, height: 72, mb: 2, bgcolor: tokens.colors.accent, fontWeight: 800, fontSize: '28px' }}
+                    sx={{ width: 72, height: 72, mb: 2, bgcolor: tokens.colors.accent, fontWeight: 700, fontSize: '28px' }}
                   >
                     {booking.worker.full_name[0]}
                   </Avatar>
-                  <Typography variant="subtitle1" fontWeight="800">
+                  <Typography variant="subtitle1" fontWeight={700}>
                     {booking.worker.full_name}
                   </Typography>
                   <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
@@ -569,7 +570,7 @@ function BookingTimeline() {
                     bgcolor: tokens.colors.bg,
                     fontFamily: 'monospace',
                     fontSize: '20px',
-                    fontWeight: '800',
+                    fontWeight: 700,
                     letterSpacing: '1px'
                   }}>
                     {booking.qr_code_value.substring(0, 8).toUpperCase()}
@@ -584,14 +585,14 @@ function BookingTimeline() {
                 <Box display="flex" justify="space-between" align="center" py={1}>
                   <Box>
                     <Typography variant="body2" color="text.secondary">Workshop Token ID</Typography>
-                    <Typography variant="h6" fontWeight="800">{booking.repair_token.token_number}</Typography>
+                    <Typography variant="h6" fontWeight={700}>{booking.repair_token.token_number}</Typography>
                   </Box>
                   <Box sx={{ 
                     px: 1.5, py: 0.5, borderRadius: '4px',
                     bgcolor: tokens.colors.accentLight,
                     border: '1px solid rgba(26, 115, 232, 0.15)'
                   }}>
-                    <Typography variant="caption" fontWeight="800" color="primary">
+                    <Typography variant="caption" fontWeight={700} color="primary">
                       {booking.repair_token.status.replace('_', ' ').toUpperCase()}
                     </Typography>
                   </Box>
@@ -623,8 +624,8 @@ function BookingTimeline() {
                   )}
                   <Divider sx={{ my: 1.5 }} />
                   <ListItem sx={{ py: 1.25, px: 0 }}>
-                    <ListItemText primary="Total Amount" primaryTypographyProps={{ fontWeight: '800' }} />
-                    <Typography variant="h6" fontWeight="800">
+                    <ListItemText primary="Total Amount" primaryTypographyProps={{ fontWeight: 700 }} />
+                    <Typography variant="h6" fontWeight={700}>
                       ₹{bill.grand_total}
                     </Typography>
                   </ListItem>
@@ -708,7 +709,7 @@ function BookingTimeline() {
         onClose={() => !paying && setPaymentModalOpen(false)}
         PaperProps={{ style: { borderRadius: `${tokens.borderRadius}px`, padding: '12px' } }}
       >
-        <DialogTitle sx={{ fontFamily: 'Outfit, sans-serif', fontWeight: '800' }}>
+        <DialogTitle sx={{ fontFamily: 'Outfit, sans-serif', fontWeight: 600 }}>
           Select Payment Method
         </DialogTitle>
         <DialogContent>

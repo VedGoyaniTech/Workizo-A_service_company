@@ -151,10 +151,10 @@ function BookingFlow() {
                       flexDirection: 'column',
                       gap: 0.5
                     }}>
-                      <Typography variant="caption" color="primary" fontWeight="800" sx={{ textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                      <Typography variant="caption" color="primary" fontWeight={600} sx={{ textTransform: 'uppercase', letterSpacing: '0.5px' }}>
                         Selected Service Category
                       </Typography>
-                      <Typography variant="h6" fontWeight="800" sx={{ fontFamily: 'Outfit, sans-serif' }}>
+                      <Typography variant="h6" fontWeight={700} sx={{ fontFamily: 'Outfit, sans-serif' }}>
                         {selectedCategory ? selectedCategory.name : 'Loading service details...'}
                       </Typography>
                       <input type="hidden" {...register('service_category')} value={preselectedCategoryId} />
@@ -303,7 +303,7 @@ function BookingFlow() {
 
                 {/* Optional photo upload */}
                 <Box sx={span.full}>
-                  <Typography variant="subtitle2" sx={{ mb: 1, fontWeight: '700' }}>
+                  <Typography variant="subtitle2" sx={{ mb: 1, fontWeight: 500 }}>
                     Upload Reference Images (Optional)
                   </Typography>
                   <input
@@ -358,7 +358,7 @@ function BookingFlow() {
                   <ListItemText 
                     primary="Verified Captains Only" 
                     secondary="All workers pass a background check and verify identification proofs."
-                    primaryTypographyProps={{ fontWeight: 700 }}
+                    primaryTypographyProps={{ fontWeight: 600 }}
                   />
                 </ListItem>
                 <ListItem sx={{ px: 0, py: 1.5 }}>
@@ -366,7 +366,7 @@ function BookingFlow() {
                   <ListItemText 
                     primary="Zero Booking Fee" 
                     secondary="Booking requests are processed for free. Pay only for labor and parts."
-                    primaryTypographyProps={{ fontWeight: 700 }}
+                    primaryTypographyProps={{ fontWeight: 600 }}
                   />
                 </ListItem>
                 <ListItem sx={{ px: 0, py: 1.5 }}>
@@ -374,7 +374,7 @@ function BookingFlow() {
                   <ListItemText 
                     primary="Cancellation Policy" 
                     secondary="Cancel bookings free of charge before a Captain reaches your site."
-                    primaryTypographyProps={{ fontWeight: 700 }}
+                    primaryTypographyProps={{ fontWeight: 600 }}
                   />
                 </ListItem>
               </List>

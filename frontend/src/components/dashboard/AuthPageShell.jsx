@@ -32,7 +32,7 @@ const AuthPageShell = ({ title, subtitle, children, maxWidth = 440 }) => (
           alt="Workizo"
           sx={{ width: 40, height: 40, mb: 2, objectFit: 'contain' }}
         />
-        <Typography variant="h5" fontWeight={800} gutterBottom>
+        <Typography variant="h5" fontWeight={700} gutterBottom>
           {title}
         </Typography>
         {subtitle && (

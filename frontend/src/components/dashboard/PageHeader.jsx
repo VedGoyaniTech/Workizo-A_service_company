@@ -68,7 +68,7 @@ const PageHeader = ({ breadcrumbs = [], title, description, actions, loading }) 
             variant="h4"
             component="h1"
             sx={{
-              fontWeight: 800,
+              fontWeight: 700,
               letterSpacing: '-0.02em',
               color: tokens.colors.primary,
               lineHeight: 1.2,

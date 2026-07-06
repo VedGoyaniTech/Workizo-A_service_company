@@ -177,7 +177,7 @@ const AdminLayout = () => {
                   {!isCollapsed && (
                     <ListItemText 
                       primary={item.text} 
-                      primaryTypographyProps={{ fontSize: '0.9rem', fontWeight: isActive ? 700 : 500 }} 
+                      primaryTypographyProps={{ fontSize: '0.9rem', fontWeight: isActive ? 600 : 500 }} 
                     />
                   )}
                 </ListItemButton>
@@ -265,7 +265,7 @@ const AdminLayout = () => {
               <MenuIcon />
             </IconButton>
             <AdminPanelSettingsIcon sx={{ color: '#1A73E8', mr: 1, display: { xs: 'none', sm: 'block' } }} />
-            <Typography variant="subtitle1" fontWeight="800" sx={{ letterSpacing: '0.02em', display: { xs: 'none', sm: 'block' } }}>
+            <Typography variant="subtitle1" fontWeight="700" sx={{ letterSpacing: '0.02em', display: { xs: 'none', sm: 'block' } }}>
               Workizo Administrative Panel
             </Typography>
           </Box>

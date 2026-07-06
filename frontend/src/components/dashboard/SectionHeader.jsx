@@ -12,7 +12,7 @@ const SectionHeader = ({ title, subtitle, action }) => (
     }}
   >
     <Box>
-      <Typography variant="h6" fontWeight={700} component="h2">
+      <Typography variant="h6" fontWeight={600} component="h2">
         {title}
       </Typography>
       {subtitle && (

@@ -216,7 +216,7 @@ const CustomerLayout = () => {
                     anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
                   >
                     <Box sx={{ px: 2, py: 1.5, borderBottom: '1px solid #E5E7EB' }}>
-                      <Typography variant="subtitle2" noWrap fontWeight="bold">
+                      <Typography variant="subtitle2" noWrap fontWeight={700}>
                         {user.full_name}
                       </Typography>
                       <Typography variant="caption" color="text.secondary" noWrap display="block">
@@ -351,7 +351,7 @@ const CustomerLayout = () => {
 
             {/* Column 2: Quick Links */}
             <Box sx={{ flex: '1 1 150px', minWidth: '150px', maxWidth: '200px' }}>
-              <Typography variant="subtitle1" fontWeight="bold" sx={{ color: '#ffffff', mb: 2.5, fontFamily: 'Outfit' }}>
+              <Typography variant="subtitle1" fontWeight={600} sx={{ color: '#ffffff', mb: 2.5, fontFamily: 'Outfit' }}>
                 Quick Links
               </Typography>
               <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1.5 }}>
@@ -405,7 +405,7 @@ const CustomerLayout = () => {
 
             {/* Column 3: Services */}
             <Box sx={{ flex: '1 1 150px', minWidth: '150px', maxWidth: '200px' }}>
-              <Typography variant="subtitle1" fontWeight="bold" sx={{ color: '#ffffff', mb: 2.5, fontFamily: 'Outfit' }}>
+              <Typography variant="subtitle1" fontWeight={600} sx={{ color: '#ffffff', mb: 2.5, fontFamily: 'Outfit' }}>
                 Services
               </Typography>
               <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1.5 }}>
@@ -453,7 +453,7 @@ const CustomerLayout = () => {
 
             {/* Column 4: Contact Us */}
             <Box sx={{ flex: '1 1 250px', minWidth: '220px', maxWidth: '300px' }}>
-              <Typography variant="subtitle1" fontWeight="bold" sx={{ color: '#ffffff', mb: 2.5, fontFamily: 'Outfit' }}>
+              <Typography variant="subtitle1" fontWeight={600} sx={{ color: '#ffffff', mb: 2.5, fontFamily: 'Outfit' }}>
                 Contact Us
               </Typography>
               <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>

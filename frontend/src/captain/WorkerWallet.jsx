@@ -162,19 +162,19 @@ function WorkerWallet() {
               <List disablePadding>
                 <ListItem sx={{ px: 0, py: 1.25 }} divider>
                   <ListItemText primary="Today's Earnings" />
-                  <Typography variant="body2" fontWeight="800">
+                  <Typography variant="body2" fontWeight={700}>
                     ₹{stats?.today_earnings}
                   </Typography>
                 </ListItem>
                 <ListItem sx={{ px: 0, py: 1.25 }} divider>
                   <ListItemText primary="Weekly Earnings" />
-                  <Typography variant="body2" fontWeight="800">
+                  <Typography variant="body2" fontWeight={700}>
                     ₹{stats?.weekly_earnings}
                   </Typography>
                 </ListItem>
                 <ListItem sx={{ px: 0, py: 1.25 }}>
                   <ListItemText primary="Monthly Earnings" />
-                  <Typography variant="body2" fontWeight="800">
+                  <Typography variant="body2" fontWeight={700}>
                     ₹{stats?.monthly_earnings}
                   </Typography>
                 </ListItem>
@@ -198,12 +198,12 @@ function WorkerWallet() {
                     <ListItem sx={{ py: 2, px: 0 }}>
                       <ListItemText
                         primary={txn.description}
-                        primaryTypographyProps={{ fontWeight: '700', variant: 'body2' }}
+                        primaryTypographyProps={{ fontWeight: 600, variant: 'body2' }}
                         secondary={new Date(txn.created_at).toLocaleString('en-US', { dateStyle: 'medium', timeStyle: 'short' })}
                       />
                       <Typography 
                         variant="body1" 
-                        fontWeight="800" 
+                        fontWeight={700} 
                         color={txn.transaction_type === 'credit' ? 'success.main' : 'error.main'}
                       >
                         {txn.transaction_type === 'credit' ? '+' : '-'}₹{txn.amount}
@@ -224,7 +224,7 @@ function WorkerWallet() {
         onClose={() => !withdrawing && setWithdrawModalOpen(false)}
         PaperProps={{ style: { borderRadius: `${tokens.borderRadius}px`, padding: '8px' } }}
       >
-        <DialogTitle sx={{ fontFamily: 'Outfit, sans-serif', fontWeight: '800' }}>
+        <DialogTitle sx={{ fontFamily: 'Outfit, sans-serif', fontWeight: 600 }}>
           Execute Bank Payout Transfer
         </DialogTitle>
         <DialogContent>

@@ -45,7 +45,7 @@ const DashboardCard = ({
       >
         <Box sx={{ minWidth: 0 }}>
           {title && (
-            <Typography variant="subtitle1" fontWeight={700} color="text.primary">
+            <Typography variant="subtitle1" fontWeight={600} color="text.primary">
               {title}
             </Typography>
           )}
