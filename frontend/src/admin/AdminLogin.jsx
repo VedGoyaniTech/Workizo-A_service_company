@@ -7,8 +7,10 @@ import {
   CircularProgress
 } from '@mui/material';
 
+import toast from 'react-hot-toast';
+
 const AdminLogin = () => {
-  const { login, isAuthenticated, user } = useAuth();
+  const { login, logout, isAuthenticated, user } = useAuth();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   
@@ -19,13 +21,12 @@ const AdminLogin = () => {
     if (isAuthenticated && user) {
       if (user.role === 'admin') {
         navigate('/admin/dashboard');
-      } else if (user.role === 'worker') {
-        navigate('/captain/dashboard');
-      } else if (user.role === 'customer') {
-        navigate('/customer/dashboard');
+      } else {
+        // Log out customer/worker to allow logging in as admin
+        logout();
       }
     }
-  }, [isAuthenticated, user, navigate]);
+  }, [isAuthenticated, user, navigate, logout]);
 
   const onSubmit = async (data) => {
     setLoading(true);
@@ -33,12 +34,9 @@ const AdminLogin = () => {
       const loggedUser = await login(data.email, data.password);
       if (loggedUser.role === 'admin') {
         navigate('/admin/dashboard');
-      } else if (loggedUser.role === 'worker') {
-        navigate('/captain/dashboard');
-      } else if (loggedUser.role === 'customer') {
-        navigate('/customer/dashboard');
       } else {
-        navigate('/');
+        await logout();
+        toast.error('Access denied. This portal is only for administrators.');
       }
     } catch (err) {
       console.error(err);

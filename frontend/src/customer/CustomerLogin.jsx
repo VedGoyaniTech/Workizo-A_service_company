@@ -7,8 +7,10 @@ import {
   CircularProgress
 } from '@mui/material';
 
+import toast from 'react-hot-toast';
+
 const CustomerLogin = () => {
-  const { login, isAuthenticated, user } = useAuth();
+  const { login, logout, isAuthenticated, user } = useAuth();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   
@@ -25,19 +27,12 @@ const CustomerLogin = () => {
         } else {
           navigate('/customer/dashboard');
         }
-      } else if (user.role === 'worker') {
-        const redirectPath = localStorage.getItem('redirect_after_login');
-        if (redirectPath && redirectPath.includes('/captain/')) {
-          localStorage.removeItem('redirect_after_login');
-          navigate(redirectPath);
-        } else {
-          navigate('/captain/dashboard');
-        }
-      } else if (user.role === 'admin') {
-        navigate('/admin/dashboard');
+      } else {
+        // Log out worker/admin to allow logging in as customer
+        logout();
       }
     }
-  }, [isAuthenticated, user, navigate]);
+  }, [isAuthenticated, user, navigate, logout]);
 
   const onSubmit = async (data) => {
     setLoading(true);
@@ -51,17 +46,9 @@ const CustomerLogin = () => {
         } else {
           navigate('/customer/dashboard');
         }
-      } else if (loggedUser.role === 'worker') {
-        if (redirectPath && redirectPath.includes('/captain/')) {
-          localStorage.removeItem('redirect_after_login');
-          navigate(redirectPath);
-        } else {
-          navigate('/captain/dashboard');
-        }
-      } else if (loggedUser.role === 'admin') {
-        navigate('/admin/dashboard');
       } else {
-        navigate('/');
+        await logout();
+        toast.error('This portal is only for Customers. Please log in on the Captain Portal.');
       }
     } catch (err) {
       console.error(err);
