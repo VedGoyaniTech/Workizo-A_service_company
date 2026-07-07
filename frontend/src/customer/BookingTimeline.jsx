@@ -7,7 +7,7 @@ import {
   IconButton, Avatar
 } from '@mui/material';
 import { motion, AnimatePresence } from 'framer-motion';
-import api from '../services/api';
+import api, { buildWsUrl } from '../services/api';
 import toast from 'react-hot-toast';
 import PhoneIcon from '@mui/icons-material/Phone';
 import ChatIcon from '@mui/icons-material/Chat';
@@ -39,7 +39,7 @@ const STATUS_STEPS = [
 ];
 
 function BookingTimeline({ bookingId, open, onClose, onRefresh }) {
-  const id = bookingId;
+  const id = bookingId ? String(bookingId) : '';
   const navigate = useNavigate();
   const [booking, setBooking] = useState(null);
   const [bill, setBill] = useState(null);
@@ -79,7 +79,10 @@ function BookingTimeline({ bookingId, open, onClose, onRefresh }) {
     }
   };
 
+  console.log('[BookingTimeline Render] id:', id, 'booking:', booking?.id, 'loading:', loading, 'open:', open);
+
   useEffect(() => {
+    console.log('[BookingTimeline Effect START] id:', id);
     if (!id) return;
     fetchDetails();
 
@@ -91,19 +94,21 @@ function BookingTimeline({ bookingId, open, onClose, onRefresh }) {
     const connect = () => {
       if (!isActive) return;
 
-      const wsScheme = window.location.protocol === 'https:' ? 'wss' : 'ws';
       const token = localStorage.getItem('access_token');
-      socket = new WebSocket(`${wsScheme}://127.0.0.1:8001/ws/bookings/${id}/?token=${token}`);
+      const wsUrl = buildWsUrl(`/ws/bookings/${id}/`, `?token=${token}`);
+      console.log('[WS] Connecting to:', wsUrl);
+      socket = new WebSocket(wsUrl);
       ws.current = socket;
 
       socket.onopen = () => {
-        console.log('[WS] Booking tracker connected');
+        console.log('[WS] Booking tracker connected, socket readyState:', socket.readyState);
       };
 
       socket.onmessage = (event) => {
         if (!isActive) return;
         try {
           const payload = JSON.parse(event.data);
+          console.log('[WS] Received payload:', payload);
           if (payload.type === 'booking_status') {
             setBooking(payload.booking);
             if (onRefresh) onRefresh();
@@ -118,11 +123,13 @@ function BookingTimeline({ bookingId, open, onClose, onRefresh }) {
         }
       };
 
-      socket.onerror = () => {
+      socket.onerror = (err) => {
+        console.error('[WS] Error event received:', err);
         socket.close();
       };
 
-      socket.onclose = () => {
+      socket.onclose = (event) => {
+        console.log('[WS] Close event received. Code:', event.code, 'Reason:', event.reason);
         ws.current = null;
         if (isActive) {
           console.log('[WS] Disconnected. Reconnecting in 3s…');
@@ -134,9 +141,13 @@ function BookingTimeline({ bookingId, open, onClose, onRefresh }) {
     connect();
 
     return () => {
+      console.log('[BookingTimeline Effect CLEANUP] id:', id);
       isActive = false;
       clearTimeout(reconnectTimer);
-      if (socket) socket.close();
+      if (socket) {
+        console.log('[WS] Closing socket in cleanup…');
+        socket.close();
+      }
       if (searchTimer.current) clearTimeout(searchTimer.current);
     };
   }, [id]);
