@@ -82,7 +82,7 @@ function BookingFlow() {
         }
       });
       toast.success('Booking request placed successfully!');
-      navigate(`/customer/booking/${res.data.id}`);
+      navigate('/customer/dashboard', { state: { openBookingId: res.data.id } });
     } catch (err) {
       console.error(err);
       const detail = err.response?.data?.detail || 'Failed to place booking';

@@ -100,28 +100,56 @@ function WorkerJobDetails() {
   useEffect(() => {
     fetchJobDetails();
 
-    // Establish WebSocket Connection for real-time customer updates
-    const token = localStorage.getItem('access_token');
-    ws.current = new WebSocket(buildWsUrl(`/ws/bookings/${id}/`, `?token=${token}`));
+    let isActive = true;
+    let socket = null;
+    let reconnectTimer = null;
 
-    ws.current.onmessage = (event) => {
-      try {
-        const payload = JSON.parse(event.data);
-        if (payload.type === 'booking_status') {
-          setBooking(payload.booking);
-          if (['completed', 'waiting_approval', 'repair_completed'].includes(payload.booking.status)) {
-            api.get(`/api/billing/${id}/get-bill/`)
-              .then(res => setExistingBill(res.data))
-              .catch(() => setExistingBill(null));
+    const connect = () => {
+      if (!isActive) return;
+      const token = localStorage.getItem('access_token');
+      socket = new WebSocket(buildWsUrl(`/ws/bookings/${id}/`, `?token=${token}`));
+      ws.current = socket;
+
+      socket.onopen = () => {
+        console.log('[WS] Job details connected');
+      };
+
+      socket.onmessage = (event) => {
+        if (!isActive) return;
+        try {
+          const payload = JSON.parse(event.data);
+          if (payload.type === 'booking_status') {
+            setBooking(payload.booking);
+            if (['completed', 'waiting_approval', 'repair_completed'].includes(payload.booking.status)) {
+              api.get(`/api/billing/${id}/get-bill/`)
+                .then(res => setExistingBill(res.data))
+                .catch(() => setExistingBill(null));
+            }
           }
+        } catch (err) {
+          console.error('[WS] Message parse error:', err);
         }
-      } catch (err) {
-        console.error(err);
-      }
+      };
+
+      socket.onerror = () => {
+        socket.close();
+      };
+
+      socket.onclose = () => {
+        ws.current = null;
+        if (isActive) {
+          console.log('[WS] Job WS disconnected. Reconnecting in 3s…');
+          reconnectTimer = setTimeout(connect, 3000);
+        }
+      };
     };
 
+    connect();
+
     return () => {
-      if (ws.current) ws.current.close();
+      isActive = false;
+      clearTimeout(reconnectTimer);
+      if (socket) socket.close();
     };
   }, [id]);
 

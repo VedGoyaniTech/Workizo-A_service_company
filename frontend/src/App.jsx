@@ -27,12 +27,10 @@ import CustomerDashboard from './customer/CustomerDashboard';
 import WorkerDashboard from './captain/WorkerDashboard';
 import AdminDashboard from './admin/AdminDashboard';
 import BookingFlow from './customer/BookingFlow';
-import BookingTimeline from './customer/BookingTimeline';
 import WorkerJobDetails from './captain/WorkerJobDetails';
 import WorkerJobHistory from './captain/WorkerJobHistory';
 import WorkerWallet from './captain/WorkerWallet';
 import WorkerSettings from './captain/WorkerSettings';
-import BookingTracker from './customer/BookingTracker';
 
 function App() {
   return (
@@ -44,7 +42,6 @@ function App() {
             {/* Public and Customer Routes under CustomerLayout */}
             <Route element={<CustomerLayout />}>
               <Route path="/" element={<LandingPage />} />
-              <Route path="/track" element={<BookingTracker />} />
               <Route path="/customer/login" element={<CustomerLogin />} />
               <Route path="/customer/register" element={<CustomerRegister />} />
               <Route path="/captain/login" element={<WorkerLogin />} />
@@ -66,14 +63,6 @@ function App() {
                 element={
                   <ProtectedRoute allowedRoles={['customer']}>
                     <BookingFlow />
-                  </ProtectedRoute>
-                }
-              />
-              <Route
-                path="/customer/booking/:id"
-                element={
-                  <ProtectedRoute allowedRoles={['customer']}>
-                    <BookingTimeline />
                   </ProtectedRoute>
                 }
               />

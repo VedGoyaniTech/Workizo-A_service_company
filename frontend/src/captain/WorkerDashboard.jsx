@@ -104,6 +104,10 @@ function WorkerDashboard() {
 
   // Sync available bookings fetching and WebSocket connections based on online state
   useEffect(() => {
+    let isActive = true;
+    let socket = null;
+    let reconnectTimer = null;
+
     if (online && user?.profile?.approval_status === 'approved') {
       fetchAvailableBookings();
 
@@ -111,39 +115,52 @@ function WorkerDashboard() {
       if (pollingInterval.current) clearInterval(pollingInterval.current);
       pollingInterval.current = setInterval(fetchAvailableBookings, 5000);
 
-      // Connect notification websocket
-      const token = localStorage.getItem('access_token');
-      notiWs.current = new WebSocket(buildWsUrl('/ws/notifications/', `?token=${token}`));
+      // StrictMode-safe notification WebSocket with auto-reconnect
+      const connect = () => {
+        if (!isActive) return;
+        const token = localStorage.getItem('access_token');
+        socket = new WebSocket(buildWsUrl('/ws/notifications/', `?token=${token}`));
+        notiWs.current = socket;
 
-      notiWs.current.onmessage = (event) => {
-        try {
-          const payload = JSON.parse(event.data);
-          
-          if (payload.type === 'booking_available') {
-            const booking = payload.booking;
-            setAvailableBookings((prev) => {
-              if (prev.some(b => b.id === booking.id)) return prev;
-              return [booking, ...prev];
-            });
+        socket.onopen = () => {
+          console.log('[WS] Notification socket connected');
+        };
 
-            try {
-              alertAudio.current.play();
-            } catch (e) {
-              console.log('Audio playback blocked', e);
+        socket.onmessage = (event) => {
+          if (!isActive) return;
+          try {
+            const payload = JSON.parse(event.data);
+            if (payload.type === 'booking_available') {
+              const booking = payload.booking;
+              setAvailableBookings((prev) => {
+                if (prev.some(b => b.id === booking.id)) return prev;
+                return [booking, ...prev];
+              });
+              try { alertAudio.current.play(); } catch (e) { /* autoplay blocked */ }
+              toast.success(`New request #${booking.id} matching your skills is available!`);
+            } else if (payload.type === 'booking_taken') {
+              const takenId = payload.booking_id;
+              setAvailableBookings((prev) => prev.filter(b => b.id !== takenId));
             }
-            toast.success(`New request #${booking.id} matching your skills is available!`);
-          } else if (payload.type === 'booking_taken') {
-            const takenId = payload.booking_id;
-            setAvailableBookings((prev) => prev.filter(b => b.id !== takenId));
+          } catch (err) {
+            console.error('[WS] Notification message error:', err);
           }
-        } catch (err) {
-          console.error(err);
-        }
+        };
+
+        socket.onerror = () => {
+          socket.close();
+        };
+
+        socket.onclose = () => {
+          notiWs.current = null;
+          if (isActive) {
+            console.log('[WS] Notification WS disconnected. Reconnecting in 3s…');
+            reconnectTimer = setTimeout(connect, 3000);
+          }
+        };
       };
 
-      notiWs.current.onclose = () => {
-        console.log('Notification WS closed');
-      };
+      connect();
     } else {
       setAvailableBookings([]);
       if (pollingInterval.current) {
@@ -155,6 +172,12 @@ function WorkerDashboard() {
         notiWs.current = null;
       }
     }
+
+    return () => {
+      isActive = false;
+      clearTimeout(reconnectTimer);
+      if (socket) socket.close();
+    };
   }, [user]);
 
   const handleOnlineToggle = async (event) => {

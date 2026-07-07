@@ -130,14 +130,6 @@ const CustomerLayout = () => {
                   >
                     Book Service
                   </Button>
-                  <Button 
-                    variant="text" 
-                    color="inherit" 
-                    onClick={() => navigate('/track')}
-                    sx={{ color: location.pathname.includes('/track') ? '#000000' : '#4B5563', fontWeight: 600 }}
-                  >
-                    Track Booking
-                  </Button>
                 </>
               )}
 
@@ -367,7 +359,6 @@ const CustomerLayout = () => {
                       }
                     } 
                   },
-                  { text: 'Track Booking', path: '/track' },
                   { text: 'Become a Captain', path: '/captain/login' },
                   { text: 'Admin Login', path: '/admin/login' }
                 ].map((link, idx) => (

@@ -16,12 +16,20 @@ class MajorRepairApprovalSerializer(serializers.ModelSerializer):
         model = MajorRepairApproval
         fields = ('id', 'booking', 'reason', 'estimated_cost', 'status', 'created_at')
 
+from services.models import Rating
+
+class RatingSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Rating
+        fields = ('id', 'rating', 'review', 'created_at')
+
 class BookingSerializer(serializers.ModelSerializer):
     customer = UserSerializer(read_only=True)
     worker = UserSerializer(read_only=True)
     service_category_detail = ServiceCategorySerializer(source='service_category', read_only=True)
     repair_token = RepairTokenSerializer(read_only=True)
     major_repairs = MajorRepairApprovalSerializer(many=True, read_only=True)
+    rating = RatingSerializer(read_only=True)
     
     class Meta:
         model = Booking
@@ -30,7 +38,7 @@ class BookingSerializer(serializers.ModelSerializer):
             'problem_type', 'problem_description', 'address', 'city', 'state', 'pincode',
             'preferred_date', 'preferred_time', 'booking_type', 'status', 'qr_code_value',
             'before_photo', 'after_photo', 'spare_part_photo', 'invoice_photo', 'optional_video',
-            'repair_token', 'major_repairs', 'created_at', 'updated_at'
+            'repair_token', 'major_repairs', 'rating', 'created_at', 'updated_at'
         )
         read_only_fields = ('id', 'tracking_id', 'customer', 'worker', 'qr_code_value', 'created_at', 'updated_at')
 
