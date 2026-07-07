@@ -103,3 +103,64 @@ class AuthAPITests(APITestCase):
         self.assertEqual(res.status_code, status.HTTP_200_OK)
         self.assertEqual(res.data['profile']['approval_status'], 'approved')
         self.assertEqual(res.data['profile']['is_verified'], True)
+
+    def test_google_login_new_customer(self):
+        google_login_url = reverse('google_login')
+        mock_token = "mock_token_customer_newgoogle@test.com_Google-Customer-User"
+        
+        payload = {
+            "credential": mock_token,
+            "role": "customer"
+        }
+        res = self.client.post(google_login_url, payload, format='json')
+        self.assertEqual(res.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(res.data['user']['email'], "newgoogle@test.com")
+        self.assertEqual(res.data['user']['role'], "customer")
+        self.assertEqual(res.data['user']['auth_provider'], "GOOGLE")
+        self.assertIn('access', res.data)
+        self.assertIn('refresh', res.data)
+        
+        user = User.objects.get(email="newgoogle@test.com")
+        self.assertTrue(hasattr(user, 'customer_profile'))
+
+    def test_google_login_new_worker(self):
+        google_login_url = reverse('google_login')
+        mock_token = "mock_token_worker_newworkergoogle@test.com_Google-Worker-User"
+        
+        payload = {
+            "credential": mock_token,
+            "role": "worker"
+        }
+        res = self.client.post(google_login_url, payload, format='json')
+        self.assertEqual(res.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(res.data['user']['email'], "newworkergoogle@test.com")
+        self.assertEqual(res.data['user']['role'], "worker")
+        self.assertEqual(res.data['user']['auth_provider'], "GOOGLE")
+        self.assertIn('access', res.data)
+        
+        user = User.objects.get(email="newworkergoogle@test.com")
+        self.assertTrue(hasattr(user, 'worker_profile'))
+        self.assertEqual(user.worker_profile.approval_status, 'pending')
+
+    def test_google_login_existing_user_link(self):
+        existing_user = User.objects.create_user(
+            email="existing@test.com",
+            full_name="Existing Email User",
+            phone="9191919191",
+            password="somepassword",
+            role="customer"
+        )
+        
+        google_login_url = reverse('google_login')
+        mock_token = "mock_token_customer_existing@test.com_Google-Name"
+        
+        payload = {
+            "credential": mock_token,
+            "role": "customer"
+        }
+        res = self.client.post(google_login_url, payload, format='json')
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
+        self.assertEqual(res.data['user']['email'], "existing@test.com")
+        self.assertEqual(res.data['user']['auth_provider'], "EMAIL")
+        self.assertEqual(res.data['user']['google_id'], "mock_google_id_existing@test.com")
+        self.assertIn('access', res.data)

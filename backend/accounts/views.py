@@ -4,6 +4,7 @@ from rest_framework.response import Response
 from django.contrib.auth import get_user_model
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework_simplejwt.views import TokenObtainPairView
+from accounts.google_auth import verify_google_id_token
 
 from accounts.serializers import (
     RegisterSerializer, UserSerializer, ChangePasswordSerializer,
@@ -144,3 +145,78 @@ class ChangePasswordView(APIView):
             return Response({"message": "Password updated successfully"}, status=status.HTTP_200_OK)
             
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+class GoogleLoginView(APIView):
+    permission_classes = (permissions.AllowAny,)
+
+    def post(self, request):
+        token = request.data.get('credential')
+        role = request.data.get('role', 'customer')
+
+        if not token:
+            return Response({"detail": "Google credential token is required"}, status=status.HTTP_400_BAD_REQUEST)
+
+        # Verify Google Token
+        id_info = verify_google_id_token(token)
+        if not id_info:
+            return Response({"detail": "Invalid or expired Google credential token"}, status=status.HTTP_400_BAD_REQUEST)
+
+        google_id = id_info.get('sub')
+        email = id_info.get('email')
+        full_name = id_info.get('name', '')
+        profile_picture = id_info.get('picture', '')
+
+        # Try to find user by google_id or email
+        user = None
+        try:
+            user = User.objects.get(google_id=google_id)
+        except User.DoesNotExist:
+            try:
+                user = User.objects.get(email=email)
+                # Link account
+                if not user.google_id:
+                    user.google_id = google_id
+                if not user.profile_picture:
+                    user.profile_picture = profile_picture
+                user.save()
+            except User.DoesNotExist:
+                user = None
+
+        is_new_user = False
+        if not user:
+            is_new_user = True
+            if role not in ['customer', 'worker']:
+                return Response({"detail": "Invalid role specified"}, status=status.HTTP_400_BAD_REQUEST)
+
+            try:
+                user = User.objects.create_user(
+                    email=email,
+                    full_name=full_name,
+                    role=role,
+                    auth_provider='GOOGLE',
+                    google_id=google_id,
+                    profile_picture=profile_picture
+                )
+                
+                # Create corresponding profile
+                if role == 'customer':
+                    CustomerProfile.objects.create(user=user)
+                elif role == 'worker':
+                    WorkerProfile.objects.create(user=user)
+
+            except Exception as e:
+                return Response({"detail": f"Failed to create user account: {str(e)}"}, status=status.HTTP_400_BAD_REQUEST)
+
+        # Generate JWT tokens
+        refresh = RefreshToken.for_user(user)
+        refresh['role'] = user.role
+        refresh['email'] = user.email
+        refresh['full_name'] = user.full_name
+
+        return Response({
+            'user': UserSerializer(user).data,
+            'refresh': str(refresh),
+            'access': str(refresh.access_token),
+            'message': 'Login successful',
+            'is_new': is_new_user
+        }, status=status.HTTP_200_OK if not is_new_user else status.HTTP_201_CREATED)

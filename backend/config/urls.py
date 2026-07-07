@@ -5,9 +5,11 @@ from django.contrib import admin
 from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
+from accounts.views import GoogleLoginView
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('api/auth/google-login/', GoogleLoginView.as_view(), name='google_login'),
     path('api/accounts/', include('accounts.urls')),
     path('api/services/', include('services.urls')),
     path('api/workers/', include('workers.urls')),

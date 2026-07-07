@@ -1,6 +1,7 @@
 import React from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { ThemeProvider } from '@mui/material/styles';
+import { GoogleOAuthProvider } from '@react-oauth/google';
 import CssBaseline from '@mui/material/CssBaseline';
 import { Toaster } from 'react-hot-toast';
 
@@ -31,13 +32,20 @@ import WorkerJobDetails from './captain/WorkerJobDetails';
 import WorkerJobHistory from './captain/WorkerJobHistory';
 import WorkerWallet from './captain/WorkerWallet';
 import WorkerSettings from './captain/WorkerSettings';
+import WorkerOnboarding from './captain/WorkerOnboarding';
+import WorkerWaiting from './captain/WorkerWaiting';
+import CaptainRouteWrapper from './components/CaptainRouteWrapper';
+import { Outlet } from 'react-router-dom';
+
+const googleClientId = import.meta.env.VITE_GOOGLE_CLIENT_ID || "1036814981144-mockgoogleclientid.apps.googleusercontent.com";
 
 function App() {
   return (
-    <ThemeProvider theme={theme}>
-      <CssBaseline />
-      <BrowserRouter>
-        <AuthProvider>
+    <GoogleOAuthProvider clientId={googleClientId}>
+      <ThemeProvider theme={theme}>
+        <CssBaseline />
+        <BrowserRouter>
+          <AuthProvider>
           <Routes>
             {/* Public and Customer Routes under CustomerLayout */}
             <Route element={<CustomerLayout />}>
@@ -76,11 +84,27 @@ function App() {
               />
             </Route>
 
+            {/* Captain Onboarding/Waiting (Non-approved) Routes */}
+            <Route
+              element={
+                <ProtectedRoute allowedRoles={['worker']}>
+                  <CaptainRouteWrapper requireApproved={false}>
+                    <Outlet />
+                  </CaptainRouteWrapper>
+                </ProtectedRoute>
+              }
+            >
+              <Route path="/captain/onboarding" element={<WorkerOnboarding />} />
+              <Route path="/captain/waiting" element={<WorkerWaiting />} />
+            </Route>
+
             {/* Captain Protected Routes under CaptainLayout */}
             <Route
               element={
                 <ProtectedRoute allowedRoles={['worker']}>
-                  <CaptainLayout />
+                  <CaptainRouteWrapper requireApproved={true}>
+                    <CaptainLayout />
+                  </CaptainRouteWrapper>
                 </ProtectedRoute>
               }
             >
@@ -113,11 +137,11 @@ function App() {
               }
             }}
           />
-        </AuthProvider>
-      </BrowserRouter>
-    </ThemeProvider>
+          </AuthProvider>
+        </BrowserRouter>
+      </ThemeProvider>
+    </GoogleOAuthProvider>
   );
 }
 
 export default App;
-

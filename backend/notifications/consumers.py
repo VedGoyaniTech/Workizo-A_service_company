@@ -12,7 +12,7 @@ def get_worker_category_id(user):
         # Re-fetch user in db context to avoid stale cache/lazy load issues
         u = User.objects.get(id=user.id)
         profile = getattr(u, 'worker_profile', None)
-        if profile and profile.service_category:
+        if profile and profile.approval_status == 'approved' and profile.online_status and profile.service_category:
             return profile.service_category.id
     except Exception:
         pass

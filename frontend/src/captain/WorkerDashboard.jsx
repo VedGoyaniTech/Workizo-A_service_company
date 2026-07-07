@@ -423,6 +423,9 @@ function WorkerDashboard() {
                           {b.customer?.full_name}
                         </Typography>
                         <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>
+                          Category: <b>{b.service_category_detail?.name}</b>
+                        </Typography>
+                        <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>
                           Area: <b>{b.city} ({b.pincode})</b>
                         </Typography>
                         

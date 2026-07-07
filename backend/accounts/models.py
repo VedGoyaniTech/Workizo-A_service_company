@@ -2,10 +2,12 @@ from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
 
 class UserManager(BaseUserManager):
-    def create_user(self, email, full_name, phone, password=None, role='customer', **extra_fields):
+    def create_user(self, email, full_name, phone=None, password=None, role='customer', **extra_fields):
         if not email:
             raise ValueError('Users must have an email address')
-        if not phone:
+        
+        auth_provider = extra_fields.get('auth_provider', 'EMAIL')
+        if auth_provider == 'EMAIL' and not phone:
             raise ValueError('Users must have a phone number')
         
         email = self.normalize_email(email)
@@ -53,9 +55,14 @@ class User(AbstractBaseUser, PermissionsMixin):
     
     full_name = models.CharField(max_length=255)
     email = models.EmailField(unique=True, max_length=255)
-    phone = models.CharField(unique=True, max_length=20)
+    phone = models.CharField(unique=True, max_length=20, null=True, blank=True)
     role = models.CharField(max_length=20, choices=ROLE_CHOICES, default='customer')
     profile_photo = models.ImageField(upload_to='profile_photos/', blank=True, null=True)
+    
+    # Google Authentication fields
+    google_id = models.CharField(max_length=255, unique=True, null=True, blank=True)
+    profile_picture = models.URLField(max_length=500, null=True, blank=True)
+    auth_provider = models.CharField(max_length=50, default='EMAIL')
     
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False) # for Django admin panel integration

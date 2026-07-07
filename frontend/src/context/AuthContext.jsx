@@ -101,6 +101,36 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
+  // Google Login Function
+  const googleLogin = async (credential, role) => {
+    setLoading(true);
+    try {
+      const res = await api.post('auth/google-login/', { credential, role });
+      const { access, refresh, user: loggedUser } = res.data;
+      
+      localStorage.setItem('access_token', access);
+      localStorage.setItem('refresh_token', refresh);
+      
+      // Fetch full profile info right after login
+      const profileRes = await api.get('accounts/me/');
+      const fullUser = {
+        ...loggedUser,
+        profile: profileRes.data.profile
+      };
+      
+      localStorage.setItem('user', JSON.stringify(fullUser));
+      setUser(fullUser);
+      toast.success(`Welcome, ${fullUser.full_name}!`);
+      return fullUser;
+    } catch (err) {
+      const errorMsg = err.response?.data?.detail || 'Google login failed';
+      toast.error(errorMsg);
+      throw err;
+    } finally {
+      setLoading(false);
+    }
+  };
+
   // Update Profile State
   const updateProfileState = (updatedUserAndProfile) => {
     const updated = {
@@ -135,6 +165,7 @@ export const AuthProvider = ({ children }) => {
     loading,
     login,
     register,
+    googleLogin,
     logout,
     updateProfileState,
   };

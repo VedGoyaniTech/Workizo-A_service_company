@@ -40,9 +40,12 @@ class WorkerRegisterProfileView(APIView):
         # Perform updates
         serializer = WorkerProfileSerializer(profile, data=request.data, partial=True)
         if serializer.is_valid():
-            serializer.save()
+            profile_obj = serializer.save()
+            profile_obj.approval_status = 'pending'
+            profile_obj.is_verified = False
+            profile_obj.save()
             return Response({
-                'profile': serializer.data,
+                'profile': WorkerProfileSerializer(profile_obj).data,
                 'message': 'Worker profile details and documents uploaded successfully.'
             }, status=status.HTTP_200_OK)
             
