@@ -244,6 +244,9 @@ class OCRExtractView(APIView):
         except TypeError as te:
             # Unsupported document type (e.g. classification failed)
             return Response({"detail": "Unsupported document."}, status=status.HTTP_400_BAD_REQUEST)
+        except ValueError as ve:
+            # Strict formatting/validation failure
+            return Response({"detail": str(ve)}, status=status.HTTP_400_BAD_REQUEST)
         except Exception as e:
             logger.error(f"OCR document extraction failed: {e}")
             return Response({

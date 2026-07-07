@@ -235,17 +235,21 @@ def extract_document_info(image_bytes, filename=None):
     if is_testing or (filename and ('mock' in filename.lower() or 'test' in filename.lower())):
         logger.info(f"Mocking OCR document extraction for filename: {filename}")
         if filename and 'aadhaar' in filename.lower():
+            if 'invalid' in filename.lower():
+                raise ValueError("Invalid Aadhaar Card. Please upload a clear and valid Aadhaar Card.")
             return {
                 "document_type": "AADHAAR",
-                "name": "Mock Aadhaar User",
+                "name": "Mock Captain User",
                 "aadhaar_number": "123456789012",
                 "dob": "01/01/1990",
                 "gender": "MALE"
             }
         elif filename and 'pan' in filename.lower():
+            if 'invalid' in filename.lower():
+                raise ValueError("Invalid PAN Card. Please upload a clear and valid PAN Card.")
             return {
                 "document_type": "PAN",
-                "name": "Mock PAN User",
+                "name": "Mock Captain User",
                 "pan_number": "ABCDE1234F",
                 "father_name": "Mock Father Name",
                 "dob": "01/01/1990"
@@ -283,9 +287,21 @@ def extract_document_info(image_bytes, filename=None):
             is_pan = True
             
     if is_aadhaar:
-        return parse_aadhaar(cleaned_lines)
+        result = parse_aadhaar(cleaned_lines)
+        num = result.get('aadhaar_number')
+        if not num or not re.match(r'^\d{12}$', num):
+            raise ValueError("Invalid Aadhaar Card. Please upload a clear and valid Aadhaar Card.")
+        if not result.get('name') or not result.get('dob') or not result.get('gender'):
+            raise ValueError("Invalid Aadhaar Card. Please upload a clear and valid Aadhaar Card.")
+        return result
     elif is_pan:
-        return parse_pan(cleaned_lines)
+        result = parse_pan(cleaned_lines)
+        num = result.get('pan_number')
+        if not num or not re.match(r'^[A-Z]{5}[0-9]{4}[A-Z]$', num, re.IGNORECASE):
+            raise ValueError("Invalid PAN Card. Please upload a clear and valid PAN Card.")
+        if not result.get('name') or not result.get('dob'):
+            raise ValueError("Invalid PAN Card. Please upload a clear and valid PAN Card.")
+        return result
     else:
         # Cannot classify document
         raise TypeError("Unsupported document.")

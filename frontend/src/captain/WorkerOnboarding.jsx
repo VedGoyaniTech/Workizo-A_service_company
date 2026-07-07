@@ -29,6 +29,9 @@ const WorkerOnboarding = () => {
 
   const { register, handleSubmit, reset, setValue, watch } = useForm();
 
+  const [aadhaarData, setAadhaarData] = useState(null);
+  const [panData, setPanData] = useState(null);
+
   const watchFullName = watch('fullName');
   const watchAadhaarNumber = watch('aadhaarNumber');
   const watchPanNumber = watch('panNumber');
@@ -70,11 +73,20 @@ const WorkerOnboarding = () => {
     }
   }, [user, reset]);
 
-  const handleDocumentOcr = async (file) => {
+  const handleDocumentOcr = async (file, expectedType) => {
     if (!file) return;
     
+    // Clear previous state for this document type
+    if (expectedType === 'AADHAAR') {
+      setAadhaarData(null);
+      setValue('aadhaarNumber', '');
+    } else if (expectedType === 'PAN') {
+      setPanData(null);
+      setValue('panNumber', '');
+    }
+    
     setOcrLoading(true);
-    const toastId = toast.loading("Processing document with OCR...");
+    const toastId = toast.loading(`Processing ${expectedType === 'AADHAAR' ? 'Aadhaar' : 'PAN'} with OCR...`);
     
     try {
       const formData = new FormData();
@@ -87,14 +99,25 @@ const WorkerOnboarding = () => {
       });
       
       const data = res.data;
+      
+      // Enforce classification match
+      if (data.document_type !== expectedType) {
+        const errorMsg = expectedType === 'AADHAAR' 
+          ? "Invalid Aadhaar Card. Please upload a clear and valid Aadhaar Card." 
+          : "Invalid PAN Card. Please upload a clear and valid PAN Card.";
+        throw new Error(errorMsg);
+      }
+      
       toast.success(`${data.document_type} processed successfully!`, { id: toastId });
       
-      if (data.document_type === 'AADHAAR') {
+      if (expectedType === 'AADHAAR') {
+        setAadhaarData(data);
         if (data.name) setValue('fullName', data.name);
         if (data.aadhaar_number) setValue('aadhaarNumber', data.aadhaar_number);
         if (data.dob) setValue('dob', data.dob);
         if (data.gender) setValue('gender', data.gender.toUpperCase());
-      } else if (data.document_type === 'PAN') {
+      } else if (expectedType === 'PAN') {
+        setPanData(data);
         if (data.name) setValue('fullName', data.name);
         if (data.pan_number) setValue('panNumber', data.pan_number);
         if (data.dob) setValue('dob', data.dob);
@@ -102,7 +125,7 @@ const WorkerOnboarding = () => {
       }
     } catch (err) {
       console.error(err);
-      const errMsg = err.response?.data?.detail || "Unable to read the document. Please upload a clear Aadhaar or PAN card.";
+      const errMsg = err.response?.data?.detail || err.message || `Unable to read the document. Please upload a clear ${expectedType === 'AADHAAR' ? 'Aadhaar' : 'PAN'} card.`;
       toast.error(errMsg, { id: toastId });
     } finally {
       setOcrLoading(false);
@@ -113,7 +136,7 @@ const WorkerOnboarding = () => {
     const file = e.target.files[0];
     if (file) {
       setAadhaarPhotoFile(file);
-      handleDocumentOcr(file);
+      handleDocumentOcr(file, 'AADHAAR');
     }
   };
 
@@ -121,7 +144,7 @@ const WorkerOnboarding = () => {
     const file = e.target.files[0];
     if (file) {
       setPanPhotoFile(file);
-      handleDocumentOcr(file);
+      handleDocumentOcr(file, 'PAN');
     }
   };
 
@@ -143,6 +166,38 @@ const WorkerOnboarding = () => {
     if (!panPhotoFile && !user?.profile?.pan_photo) {
       toast.error('Please upload your PAN card copy.');
       return;
+    }
+
+    // Strict document verification validation checks
+    if (aadhaarPhotoFile && !aadhaarData) {
+      toast.error("Invalid Aadhaar Card. Please upload a clear and valid Aadhaar Card.");
+      return;
+    }
+    if (panPhotoFile && !panData) {
+      toast.error("Invalid PAN Card. Please upload a clear and valid PAN Card.");
+      return;
+    }
+
+    // Cross-document validation: matching Full Name and Date of Birth
+    if (aadhaarData && panData) {
+      const normalizeName = (name) => {
+        if (!name) return "";
+        return name.toLowerCase().replace(/[^a-z0-9]/g, "").trim();
+      };
+      
+      const normalizeDob = (dob) => {
+        if (!dob) return "";
+        const match = dob.match(/\b\d{4}\b/);
+        return match ? match[0] : "";
+      };
+      
+      const nameMatch = normalizeName(aadhaarData.name) === normalizeName(panData.name);
+      const dobMatch = normalizeDob(aadhaarData.dob) === normalizeDob(panData.dob);
+      
+      if (!nameMatch || !dobMatch) {
+        toast.error("The details on your Aadhaar Card and PAN Card do not match. Please upload valid documents with matching information.");
+        return;
+      }
     }
 
     setLoading(true);
