@@ -83,31 +83,60 @@ function BookingTimeline({ bookingId, open, onClose, onRefresh }) {
     if (!id) return;
     fetchDetails();
 
-    // Establish WebSocket Connection
-    const wsScheme = window.location.protocol === "https:" ? "wss" : "ws";
-    const token = localStorage.getItem('access_token');
-    ws.current = new WebSocket(`${wsScheme}://127.0.0.1:8001/ws/bookings/${id}/?token=${token}`);
+    // StrictMode-safe WebSocket with auto-reconnect.
+    let isActive = true;
+    let socket = null;
+    let reconnectTimer = null;
 
-    ws.current.onmessage = (event) => {
-      const payload = JSON.parse(event.data);
-      if (payload.type === 'booking_status') {
-        setBooking(payload.booking);
-        if (onRefresh) onRefresh();
-        // Refresh invoice/bill if updated
-        if (payload.booking.status === 'completed' || payload.booking.status === 'in_progress') {
-          api.get(`/api/billing/${id}/get-bill/`)
-            .then(res => setBill(res.data))
-            .catch(() => setBill(null));
+    const connect = () => {
+      if (!isActive) return;
+
+      const wsScheme = window.location.protocol === 'https:' ? 'wss' : 'ws';
+      const token = localStorage.getItem('access_token');
+      socket = new WebSocket(`${wsScheme}://127.0.0.1:8001/ws/bookings/${id}/?token=${token}`);
+      ws.current = socket;
+
+      socket.onopen = () => {
+        console.log('[WS] Booking tracker connected');
+      };
+
+      socket.onmessage = (event) => {
+        if (!isActive) return;
+        try {
+          const payload = JSON.parse(event.data);
+          if (payload.type === 'booking_status') {
+            setBooking(payload.booking);
+            if (onRefresh) onRefresh();
+            if (payload.booking.status === 'completed' || payload.booking.status === 'in_progress') {
+              api.get(`/api/billing/${id}/get-bill/`)
+                .then(res => setBill(res.data))
+                .catch(() => setBill(null));
+            }
+          }
+        } catch (err) {
+          console.error('[WS] Message parse error:', err);
         }
-      }
+      };
+
+      socket.onerror = () => {
+        socket.close();
+      };
+
+      socket.onclose = () => {
+        ws.current = null;
+        if (isActive) {
+          console.log('[WS] Disconnected. Reconnecting in 3s…');
+          reconnectTimer = setTimeout(connect, 3000);
+        }
+      };
     };
 
-    ws.current.onclose = () => {
-      console.log('WS Connection closed');
-    };
+    connect();
 
     return () => {
-      if (ws.current) ws.current.close();
+      isActive = false;
+      clearTimeout(reconnectTimer);
+      if (socket) socket.close();
       if (searchTimer.current) clearTimeout(searchTimer.current);
     };
   }, [id]);
