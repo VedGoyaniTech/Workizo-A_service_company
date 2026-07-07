@@ -58,3 +58,49 @@ class WorkerProfileRegistrationTest(TestCase):
         self.worker_user.refresh_from_db()
         self.assertEqual(self.worker_user.full_name, 'Worker Dave Updated')
         self.assertEqual(self.worker_user.phone, '9000000003')
+
+    def test_ocr_extract_aadhaar_mock(self):
+        small_gif = (
+            b'\x47\x49\x46\x38\x39\x61\x01\x00\x01\x00\x00\x00\x00\x21\xf9\x04'
+            b'\x01\x0a\x00\x01\x00\x2c\x00\x00\x00\x00\x01\x00\x01\x00\x00\x02'
+            b'\x02\x4c\x01\x00\x3b'
+        )
+        mock_aadhaar_file = SimpleUploadedFile('mock_aadhaar.gif', small_gif, content_type='image/gif')
+        data = {
+            'document': mock_aadhaar_file
+        }
+        response = self.client.post('/api/ocr/extract-document/', data, format='multipart')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data['document_type'], 'AADHAAR')
+        self.assertEqual(response.data['aadhaar_number'], '123456789012')
+        self.assertEqual(response.data['name'], 'Mock Aadhaar User')
+        
+    def test_ocr_extract_pan_mock(self):
+        small_gif = (
+            b'\x47\x49\x46\x38\x39\x61\x01\x00\x01\x00\x00\x00\x00\x21\xf9\x04'
+            b'\x01\x0a\x00\x01\x00\x2c\x00\x00\x00\x00\x01\x00\x01\x00\x00\x02'
+            b'\x02\x4c\x01\x00\x3b'
+        )
+        mock_pan_file = SimpleUploadedFile('mock_pan.gif', small_gif, content_type='image/gif')
+        data = {
+            'document': mock_pan_file
+        }
+        response = self.client.post('/api/ocr/extract-document/', data, format='multipart')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data['document_type'], 'PAN')
+        self.assertEqual(response.data['pan_number'], 'ABCDE1234F')
+        self.assertEqual(response.data['name'], 'Mock PAN User')
+        self.assertEqual(response.data['father_name'], 'Mock Father Name')
+        
+    def test_ocr_unsupported_document(self):
+        small_gif = (
+            b'\x47\x49\x46\x38\x39\x61\x01\x00\x01\x00\x00\x00\x00\x21\xf9\x04'
+            b'\x01\x0a\x00\x01\x00\x2c\x00\x00\x00\x00\x01\x00\x01\x00\x00\x02'
+            b'\x02\x4c\x01\x00\x3b'
+        )
+        invalid_file = SimpleUploadedFile('invalid_file.gif', small_gif, content_type='image/gif')
+        data = {
+            'document': invalid_file
+        }
+        response = self.client.post('/api/ocr/extract-document/', data, format='multipart')
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)

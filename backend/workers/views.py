@@ -5,6 +5,10 @@ from rest_framework.parsers import MultiPartParser, FormParser
 from workers.models import WorkerProfile
 from workers.serializers import WorkerProfileSerializer
 from accounts.permissions import IsWorker
+from workers.ocr_service import extract_document_info
+import logging
+
+logger = logging.getLogger(__name__)
 
 class WorkerRegisterProfileView(APIView):
     permission_classes = (IsWorker,)
@@ -223,4 +227,26 @@ class WorkerDashboardStatsView(APIView):
             "recent_activity": recent_activities,
             "performance_graph": graph_data
         })
+
+class OCRExtractView(APIView):
+    permission_classes = (IsWorker,)
+    parser_classes = (MultiPartParser, FormParser)
+
+    def post(self, request):
+        file_obj = request.FILES.get('document')
+        if not file_obj:
+            return Response({"detail": "No document file was provided."}, status=status.HTTP_400_BAD_REQUEST)
+            
+        try:
+            image_bytes = file_obj.read()
+            extracted_data = extract_document_info(image_bytes, filename=file_obj.name)
+            return Response(extracted_data, status=status.HTTP_200_OK)
+        except TypeError as te:
+            # Unsupported document type (e.g. classification failed)
+            return Response({"detail": "Unsupported document."}, status=status.HTTP_400_BAD_REQUEST)
+        except Exception as e:
+            logger.error(f"OCR document extraction failed: {e}")
+            return Response({
+                "detail": "Unable to read the document. Please upload a clear Aadhaar or PAN card."
+            }, status=status.HTTP_400_BAD_REQUEST)
 

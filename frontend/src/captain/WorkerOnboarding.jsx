@@ -20,12 +20,20 @@ const WorkerOnboarding = () => {
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(false);
 
+  const [ocrLoading, setOcrLoading] = useState(false);
+
   // File Upload State
   const [profilePhotoFile, setProfilePhotoFile] = useState(null);
   const [aadhaarPhotoFile, setAadhaarPhotoFile] = useState(null);
   const [panPhotoFile, setPanPhotoFile] = useState(null);
 
-  const { register, handleSubmit, reset } = useForm();
+  const { register, handleSubmit, reset, setValue, watch } = useForm();
+
+  const watchFullName = watch('fullName');
+  const watchAadhaarNumber = watch('aadhaarNumber');
+  const watchPanNumber = watch('panNumber');
+  const watchDob = watch('dob');
+  const watchFatherName = watch('fatherName');
 
   useEffect(() => {
     const fetchCategories = async () => {
@@ -55,9 +63,67 @@ const WorkerOnboarding = () => {
         bankAccount: user.profile?.bank_account || '',
         ifscCode: user.profile?.ifsc_code || '',
         accountHolderName: user.full_name || '',
+        dob: user.profile?.dob || '',
+        gender: user.profile?.gender || '',
+        fatherName: user.profile?.father_name || '',
       });
     }
   }, [user, reset]);
+
+  const handleDocumentOcr = async (file) => {
+    if (!file) return;
+    
+    setOcrLoading(true);
+    const toastId = toast.loading("Processing document with OCR...");
+    
+    try {
+      const formData = new FormData();
+      formData.append('document', file);
+      
+      const res = await api.post('ocr/extract-document/', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+      
+      const data = res.data;
+      toast.success(`${data.document_type} processed successfully!`, { id: toastId });
+      
+      if (data.document_type === 'AADHAAR') {
+        if (data.name) setValue('fullName', data.name);
+        if (data.aadhaar_number) setValue('aadhaarNumber', data.aadhaar_number);
+        if (data.dob) setValue('dob', data.dob);
+        if (data.gender) setValue('gender', data.gender.toUpperCase());
+      } else if (data.document_type === 'PAN') {
+        if (data.name) setValue('fullName', data.name);
+        if (data.pan_number) setValue('panNumber', data.pan_number);
+        if (data.dob) setValue('dob', data.dob);
+        if (data.father_name) setValue('fatherName', data.father_name);
+      }
+    } catch (err) {
+      console.error(err);
+      const errMsg = err.response?.data?.detail || "Unable to read the document. Please upload a clear Aadhaar or PAN card.";
+      toast.error(errMsg, { id: toastId });
+    } finally {
+      setOcrLoading(false);
+    }
+  };
+
+  const handleAadhaarChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setAadhaarPhotoFile(file);
+      handleDocumentOcr(file);
+    }
+  };
+
+  const handlePanChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setPanPhotoFile(file);
+      handleDocumentOcr(file);
+    }
+  };
 
   const handleLogout = async () => {
     await logout();
@@ -91,6 +157,9 @@ const WorkerOnboarding = () => {
       formData.append('pincode', data.pincode);
       formData.append('aadhaar_number', data.aadhaarNumber);
       formData.append('pan_number', data.panNumber);
+      formData.append('dob', data.dob);
+      formData.append('gender', data.gender);
+      formData.append('father_name', data.fatherName);
       formData.append('bank_account', data.bankAccount);
       formData.append('ifsc_code', data.ifscCode);
       formData.append('account_holder_name', data.accountHolderName);
@@ -200,6 +269,7 @@ const WorkerOnboarding = () => {
                   required
                   fullWidth
                   label="Full Name"
+                  InputLabelProps={{ shrink: !!watchFullName || undefined }}
                   {...register('fullName', { required: true })}
                 />
               </Box>
@@ -297,6 +367,7 @@ const WorkerOnboarding = () => {
                   fullWidth
                   label="Aadhaar Card Number (12 digit)"
                   inputProps={{ maxLength: 12 }}
+                  InputLabelProps={{ shrink: !!watchAadhaarNumber || undefined }}
                   {...register('aadhaarNumber', { required: true })}
                 />
               </Box>
@@ -306,7 +377,40 @@ const WorkerOnboarding = () => {
                   fullWidth
                   label="PAN Card Number (10 digit)"
                   inputProps={{ maxLength: 10 }}
+                  InputLabelProps={{ shrink: !!watchPanNumber || undefined }}
                   {...register('panNumber', { required: true })}
+                />
+              </Box>
+
+              <Box sx={span.third}>
+                <TextField
+                  fullWidth
+                  label="Date of Birth"
+                  placeholder="DD/MM/YYYY"
+                  InputLabelProps={{ shrink: !!watchDob || undefined }}
+                  {...register('dob')}
+                />
+              </Box>
+              <Box sx={span.third}>
+                <TextField
+                  fullWidth
+                  select
+                  label="Gender"
+                  defaultValue=""
+                  {...register('gender')}
+                >
+                  <MenuItem value="">Select Gender</MenuItem>
+                  <MenuItem value="MALE">MALE</MenuItem>
+                  <MenuItem value="FEMALE">FEMALE</MenuItem>
+                  <MenuItem value="OTHER">OTHER</MenuItem>
+                </TextField>
+              </Box>
+              <Box sx={span.third}>
+                <TextField
+                  fullWidth
+                  label="Father's Name"
+                  InputLabelProps={{ shrink: !!watchFatherName || undefined }}
+                  {...register('fatherName')}
                 />
               </Box>
 
@@ -374,9 +478,9 @@ const WorkerOnboarding = () => {
                 <Typography variant="caption" color="text.secondary" display="block" sx={{ mb: 1, fontWeight: 600 }}>
                   Aadhaar Card Copy *
                 </Typography>
-                <Button variant="outlined" component="label" fullWidth sx={{ textTransform: 'none', py: 1.25 }}>
-                  Upload Aadhaar
-                  <input type="file" hidden accept="image/*" onChange={(e) => setAadhaarPhotoFile(e.target.files[0])} />
+                <Button variant="outlined" component="label" fullWidth disabled={ocrLoading} sx={{ textTransform: 'none', py: 1.25 }}>
+                  {ocrLoading ? 'Processing...' : 'Upload Aadhaar'}
+                  <input type="file" hidden accept="image/*" onChange={handleAadhaarChange} />
                 </Button>
                 {aadhaarPhotoFile ? (
                   <Typography variant="caption" color="success.main" display="block" sx={{ mt: 1 }}>
@@ -393,9 +497,9 @@ const WorkerOnboarding = () => {
                 <Typography variant="caption" color="text.secondary" display="block" sx={{ mb: 1, fontWeight: 600 }}>
                   PAN Card Copy *
                 </Typography>
-                <Button variant="outlined" component="label" fullWidth sx={{ textTransform: 'none', py: 1.25 }}>
-                  Upload PAN
-                  <input type="file" hidden accept="image/*" onChange={(e) => setPanPhotoFile(e.target.files[0])} />
+                <Button variant="outlined" component="label" fullWidth disabled={ocrLoading} sx={{ textTransform: 'none', py: 1.25 }}>
+                  {ocrLoading ? 'Processing...' : 'Upload PAN'}
+                  <input type="file" hidden accept="image/*" onChange={handlePanChange} />
                 </Button>
                 {panPhotoFile ? (
                   <Typography variant="caption" color="success.main" display="block" sx={{ mt: 1 }}>

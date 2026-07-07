@@ -6,9 +6,11 @@ from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
 from accounts.views import GoogleLoginView
+from workers.views import OCRExtractView
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('api/ocr/extract-document/', OCRExtractView.as_view(), name='ocr_extract'),
     path('api/auth/google-login/', GoogleLoginView.as_view(), name='google_login'),
     path('api/accounts/', include('accounts.urls')),
     path('api/services/', include('services.urls')),

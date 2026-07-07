@@ -21,6 +21,9 @@ class WorkerProfile(models.Model):
     
     aadhaar_number = models.CharField(max_length=12, blank=True, null=True)
     pan_number = models.CharField(max_length=10, blank=True, null=True)
+    dob = models.CharField(max_length=50, blank=True, null=True)
+    gender = models.CharField(max_length=20, blank=True, null=True)
+    father_name = models.CharField(max_length=255, blank=True, null=True)
     bank_account = models.CharField(max_length=20, blank=True, null=True)
     ifsc_code = models.CharField(max_length=11, blank=True, null=True)
     
