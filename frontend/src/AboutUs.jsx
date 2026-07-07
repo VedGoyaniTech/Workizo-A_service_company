@@ -285,30 +285,31 @@ const AboutUs = () => {
                     To become India's most trusted local service platform.
                   </Typography>
                 </CardContent>
-              </Grid>
-
-              {/* Values */}
-              <Grid item xs={12} md={4}>
-                <Card sx={{ height: '100%', p: 3, border: '1px solid #E5E7EB', boxShadow: 'none' }}>
-                  <CardContent sx={{ textAlign: 'center', p: 0 }}>
-                    <Box sx={{ color: '#0F0F14', mb: 2 }}>
-                      <StarIcon sx={{ fontSize: 36 }} />
-                    </Box>
-                    <Typography variant="h5" sx={{ fontFamily: 'Outfit', fontWeight: 800, mb: 1.5 }}>
-                      Values
-                    </Typography>
-                    <Box display="flex" flexDirection="column" gap={0.5} alignItems="center">
-                      {['Trust', 'Transparency', 'Reliability', 'Innovation'].map((val) => (
-                        <Typography key={val} variant="body2" sx={{ color: '#4B5563', fontWeight: 600 }}>
-                          ✓ {val}
-                        </Typography>
-                      ))}
-                    </Box>
-                  </CardContent>
-                </Card>
-              </Grid>
+              </Card>
             </Grid>
-          </Container>
+
+            {/* Values */}
+            <Grid item xs={12} md={4}>
+              <Card sx={{ height: '100%', p: 3, border: '1px solid #E5E7EB', boxShadow: 'none' }}>
+                <CardContent sx={{ textAlign: 'center', p: 0 }}>
+                  <Box sx={{ color: '#0F0F14', mb: 2 }}>
+                    <StarIcon sx={{ fontSize: 36 }} />
+                  </Box>
+                  <Typography variant="h5" sx={{ fontFamily: 'Outfit', fontWeight: 800, mb: 1.5 }}>
+                    Values
+                  </Typography>
+                  <Box display="flex" flexDirection="column" gap={0.5} alignItems="center">
+                    {['Trust', 'Transparency', 'Reliability', 'Innovation'].map((val) => (
+                      <Typography key={val} variant="body2" sx={{ color: '#4B5563', fontWeight: 600 }}>
+                        ✓ {val}
+                      </Typography>
+                    ))}
+                  </Box>
+                </CardContent>
+              </Card>
+            </Grid>
+          </Grid>
+        </Container>
       </Box>
 
       {/* 4. Our Team Section */}
