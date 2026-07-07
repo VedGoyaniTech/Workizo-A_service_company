@@ -165,3 +165,6 @@ MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# Google OAuth Client ID
+GOOGLE_CLIENT_ID = env('GOOGLE_CLIENT_ID', default=None)
