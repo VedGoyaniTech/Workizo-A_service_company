@@ -237,70 +237,6 @@ function BookingTimeline({ bookingId, open, onClose, onRefresh }) {
 
   if (!open) return null;
 
-  if (loading) {
-    return (
-      <Dialog
-        open={open}
-        onClose={onClose}
-        fullWidth
-        maxWidth="md"
-        PaperProps={{
-          sx: {
-            borderRadius: `${tokens.borderRadius}px`,
-            p: 4,
-            bgcolor: '#FAFAFB',
-            boxSizing: 'border-box'
-          }
-        }}
-      >
-        <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
-          <Typography variant="h6" fontWeight={700} sx={{ fontFamily: 'Outfit, sans-serif' }}>
-            Loading Details...
-          </Typography>
-          <IconButton onClick={onClose} edge="end">
-            <CloseIcon />
-          </IconButton>
-        </Box>
-        <Divider sx={{ mb: 4 }} />
-        <Box display="flex" justifyContent="center" alignItems="center" py={8} flex={1}>
-          <CircularProgress />
-        </Box>
-      </Dialog>
-    );
-  }
-
-  if (!booking) {
-    return (
-      <Dialog
-        open={open}
-        onClose={onClose}
-        fullWidth
-        maxWidth="md"
-        PaperProps={{
-          sx: {
-            borderRadius: `${tokens.borderRadius}px`,
-            p: 4,
-            bgcolor: '#FAFAFB',
-            boxSizing: 'border-box'
-          }
-        }}
-      >
-        <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
-          <Typography variant="h6" fontWeight={700} sx={{ fontFamily: 'Outfit, sans-serif' }}>
-            Booking Not Found
-          </Typography>
-          <IconButton onClick={onClose} edge="end">
-            <CloseIcon />
-          </IconButton>
-        </Box>
-        <Divider sx={{ mb: 4 }} />
-        <Box py={4}>
-          <Typography variant="body1">This service request does not exist or has been removed.</Typography>
-        </Box>
-      </Dialog>
-    );
-  }
-
   const getActiveStepIndex = (status) => {
     switch (status) {
       case 'searching':
@@ -325,7 +261,7 @@ function BookingTimeline({ bookingId, open, onClose, onRefresh }) {
     }
   };
 
-  const activeStepIndex = getActiveStepIndex(booking.status);
+  const activeStepIndex = booking ? getActiveStepIndex(booking.status) : -1;
 
   const HORIZONTAL_STEPS = [
     { key: 'searching', label: 'Searching', subtitle: 'Your booking request is currently this step.' },
@@ -336,7 +272,7 @@ function BookingTimeline({ bookingId, open, onClose, onRefresh }) {
     { key: 'completed', label: 'Completed', subtitle: 'Service has been completed.' }
   ];
 
-  const catStyle = CATEGORY_STYLES[booking.service_category_detail?.name];
+  const catStyle = booking ? CATEGORY_STYLES[booking.service_category_detail?.name] : null;
 
   return (
     <Dialog
@@ -353,20 +289,53 @@ function BookingTimeline({ bookingId, open, onClose, onRefresh }) {
         }
       }}
     >
-      {/* Dialog Header */}
-      <Box display="flex" justifyContent="space-between" alignItems="flex-start" mb={2}>
-        <Box>
-          <Typography variant="h5" fontWeight={800} sx={{ fontFamily: 'Outfit, sans-serif', color: '#0F0F14' }}>
-            Tracking ID: {booking.tracking_id || booking.id}
-          </Typography>
-          <Typography variant="body2" color="text.secondary" sx={{ fontWeight: 500, mt: 0.5 }}>
-            Category: {booking.service_category_detail?.name}
-          </Typography>
-        </Box>
-        <IconButton onClick={onClose} edge="end" sx={{ color: '#0F0F14' }}>
-          <CloseIcon />
-        </IconButton>
-      </Box>
+      {loading ? (
+        <>
+          <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
+            <Typography variant="h6" fontWeight={700} sx={{ fontFamily: 'Outfit, sans-serif' }}>
+              Loading Details...
+            </Typography>
+            <IconButton onClick={onClose} edge="end">
+              <CloseIcon />
+            </IconButton>
+          </Box>
+          <Divider sx={{ mb: 4 }} />
+          <Box display="flex" justifyContent="center" alignItems="center" py={8} flex={1}>
+            <CircularProgress />
+          </Box>
+        </>
+      ) : !booking ? (
+        <>
+          <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
+            <Typography variant="h6" fontWeight={700} sx={{ fontFamily: 'Outfit, sans-serif' }}>
+              Booking Not Found
+            </Typography>
+            <IconButton onClick={onClose} edge="end">
+              <CloseIcon />
+            </IconButton>
+          </Box>
+          <Divider sx={{ mb: 4 }} />
+          <Box py={4}>
+            <Typography variant="body1">This service request does not exist or has been removed.</Typography>
+          </Box>
+        </>
+      ) : (
+        <>
+          {/* Dialog Header */}
+          <Box display="flex" justifyContent="space-between" alignItems="flex-start" mb={2}>
+            <Box>
+              <Typography variant="h5" fontWeight={800} sx={{ fontFamily: 'Outfit, sans-serif', color: '#0F0F14' }}>
+                Tracking ID: {booking.tracking_id || booking.id}
+              </Typography>
+              <Typography variant="body2" color="text.secondary" sx={{ fontWeight: 500, mt: 0.5 }}>
+                Category: {booking.service_category_detail?.name}
+              </Typography>
+            </Box>
+            <IconButton onClick={onClose} edge="end" sx={{ color: '#0F0F14' }}>
+              <CloseIcon />
+            </IconButton>
+          </Box>
+
 
       <Divider sx={{ mb: 3 }} />
 
@@ -1145,6 +1114,9 @@ function BookingTimeline({ bookingId, open, onClose, onRefresh }) {
           Close
         </Button>
       </Box>
+
+    </>
+  )}
 
       {/* Payment Selection Modal */}
       <Dialog 
