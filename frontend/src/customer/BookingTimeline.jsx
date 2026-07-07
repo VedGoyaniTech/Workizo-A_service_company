@@ -4,7 +4,7 @@ import {
   Box, Button, Typography, Divider, List, ListItem, ListItemText, 
   Dialog, DialogTitle, DialogContent, DialogActions, Rating, TextField, 
   LinearProgress, CircularProgress, Badge, Grid, ListItemIcon,
-  Drawer, IconButton, Avatar
+  IconButton, Avatar
 } from '@mui/material';
 import { motion, AnimatePresence } from 'framer-motion';
 import api from '../services/api';
@@ -205,13 +205,14 @@ function BookingTimeline({ bookingId, open, onClose, onRefresh }) {
 
   if (loading) {
     return (
-      <Drawer
-        anchor="right"
+      <Dialog
         open={open}
         onClose={onClose}
+        fullWidth
+        maxWidth="md"
         PaperProps={{
           sx: {
-            width: { xs: '100%', sm: 600, md: 750 },
+            borderRadius: `${tokens.borderRadius}px`,
             p: 4,
             bgcolor: '#FAFAFB',
             boxSizing: 'border-box'
@@ -230,19 +231,20 @@ function BookingTimeline({ bookingId, open, onClose, onRefresh }) {
         <Box display="flex" justifyContent="center" alignItems="center" py={8} flex={1}>
           <CircularProgress />
         </Box>
-      </Drawer>
+      </Dialog>
     );
   }
 
   if (!booking) {
     return (
-      <Drawer
-        anchor="right"
+      <Dialog
         open={open}
         onClose={onClose}
+        fullWidth
+        maxWidth="md"
         PaperProps={{
           sx: {
-            width: { xs: '100%', sm: 600, md: 750 },
+            borderRadius: `${tokens.borderRadius}px`,
             p: 4,
             bgcolor: '#FAFAFB',
             boxSizing: 'border-box'
@@ -261,20 +263,21 @@ function BookingTimeline({ bookingId, open, onClose, onRefresh }) {
         <Box py={4}>
           <Typography variant="body1">This service request does not exist or has been removed.</Typography>
         </Box>
-      </Drawer>
+      </Dialog>
     );
   }
 
   const activeStepIndex = STATUS_STEPS.findIndex(step => step.key === booking.status);
 
   return (
-    <Drawer
-      anchor="right"
+    <Dialog
       open={open}
       onClose={onClose}
+      fullWidth
+      maxWidth="md"
       PaperProps={{
         sx: {
-          width: { xs: '100%', sm: 600, md: 750 },
+          borderRadius: `${tokens.borderRadius}px`,
           p: { xs: 2.5, sm: 4 },
           bgcolor: '#FAFAFB',
           boxSizing: 'border-box'
@@ -872,7 +875,7 @@ function BookingTimeline({ bookingId, open, onClose, onRefresh }) {
           </DialogActions>
         )}
       </Dialog>
-    </Drawer>
+    </Dialog>
   );
 }
 
