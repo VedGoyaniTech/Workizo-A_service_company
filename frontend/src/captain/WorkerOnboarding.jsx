@@ -127,18 +127,34 @@ const WorkerOnboarding = () => {
   return (
     <Box sx={{ minHeight: '100vh', bgcolor: tokens.colors.bg, pb: 6 }}>
       {/* Mini Topbar */}
-      <AppBar position="static" elevation={0} sx={{ background: '#0F0F14', borderBottom: '1px solid #1E1E24', height: '64px' }}>
-        <Toolbar sx={{ justifyContent: 'space-between' }}>
-          <Box display="flex" alignItems="center" gap={1.5}>
-            <Box component="img" src="/logo.png" sx={{ width: 32, height: 32, objectFit: 'contain' }} />
-            <Box sx={{ textAlign: 'left' }}>
-              <Typography variant="h6" sx={{ fontFamily: 'Outfit', fontWeight: 900, color: '#ffffff', lineHeight: 1.2 }}>
-                WORKIZO
-              </Typography>
-              <Typography variant="caption" sx={{ color: '#888888', fontWeight: 600 }}>
-                CAPTAIN PORTAL
-              </Typography>
-            </Box>
+      <AppBar position="static" elevation={0} sx={{ background: '#0F0F14', borderBottom: '1px solid #1E1E24', height: 'auto' }}>
+        <Toolbar 
+          disableGutters
+          sx={{ 
+            display: 'flex',
+            justifyContent: 'space-between', 
+            alignItems: 'center',
+            py: { xs: 1.5, sm: 2 },
+            px: { xs: 3, sm: 4 }
+          }}
+        >
+          <Box display="flex" flexDirection="column" alignItems="flex-start" gap={0.5}>
+            <Box 
+              component="img" 
+              src="/logo.png" 
+              sx={{ 
+                width: 36, 
+                height: 36, 
+                objectFit: 'contain',
+                flexShrink: 0 
+              }} 
+            />
+            <Typography variant="h6" sx={{ fontFamily: 'Outfit', fontWeight: 900, color: '#ffffff', lineHeight: 1.2 }}>
+              WORKIZO
+            </Typography>
+            <Typography variant="caption" sx={{ color: '#888888', fontWeight: 600 }}>
+              Captain Portal
+            </Typography>
           </Box>
           <Button
             startIcon={<LogoutIcon />}
