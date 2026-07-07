@@ -269,7 +269,7 @@ const WorkerOnboarding = () => {
                   required
                   fullWidth
                   label="Full Name"
-                  InputLabelProps={{ shrink: !!watchFullName || undefined }}
+                  InputLabelProps={{ shrink: true }}
                   {...register('fullName', { required: true })}
                 />
               </Box>
@@ -367,7 +367,7 @@ const WorkerOnboarding = () => {
                   fullWidth
                   label="Aadhaar Card Number (12 digit)"
                   inputProps={{ maxLength: 12 }}
-                  InputLabelProps={{ shrink: !!watchAadhaarNumber || undefined }}
+                  InputLabelProps={{ shrink: true }}
                   {...register('aadhaarNumber', { required: true })}
                 />
               </Box>
@@ -377,7 +377,7 @@ const WorkerOnboarding = () => {
                   fullWidth
                   label="PAN Card Number (10 digit)"
                   inputProps={{ maxLength: 10 }}
-                  InputLabelProps={{ shrink: !!watchPanNumber || undefined }}
+                  InputLabelProps={{ shrink: true }}
                   {...register('panNumber', { required: true })}
                 />
               </Box>
@@ -387,7 +387,7 @@ const WorkerOnboarding = () => {
                   fullWidth
                   label="Date of Birth"
                   placeholder="DD/MM/YYYY"
-                  InputLabelProps={{ shrink: !!watchDob || undefined }}
+                  InputLabelProps={{ shrink: true }}
                   {...register('dob')}
                 />
               </Box>
@@ -409,7 +409,7 @@ const WorkerOnboarding = () => {
                 <TextField
                   fullWidth
                   label="Father's Name"
-                  InputLabelProps={{ shrink: !!watchFatherName || undefined }}
+                  InputLabelProps={{ shrink: true }}
                   {...register('fatherName')}
                 />
               </Box>
