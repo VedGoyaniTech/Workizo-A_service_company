@@ -19,6 +19,7 @@ from workers.models import WorkerProfile, Wallet, WalletTransaction
 from workers.serializers import WorkerProfileSerializer, WalletSerializer
 from bookings.models import Booking, RepairToken, MajorRepairApproval
 from bookings.serializers import BookingSerializer, RepairTokenSerializer, MajorRepairApprovalSerializer
+from bookings.views import send_booking_update
 from billing.models import Bill, Payment
 from billing.serializers import BillSerializer, PaymentSerializer
 from services.models import ServiceCategory, Rating, SystemSetting
