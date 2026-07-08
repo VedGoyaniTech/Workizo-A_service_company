@@ -413,60 +413,74 @@ function BookingTracker() {
       </Box>
 
       {/* SECTION 2: Large Header */}
-      <Paper elevation={0} sx={{ p: 3, mb: 3, border: `1px solid ${tokens.borderColor}`, borderRadius: '16px', bgcolor: tokens.colors.paper }}>
-        <Grid container spacing={2} alignItems="center" justifyContent="space-between">
-          <Grid item xs={12} md={7}>
-            <Typography variant="caption" color="text.secondary" fontWeight={600} display="block" sx={{ textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-              Tracking ID
-            </Typography>
-            <Typography variant="h4" fontWeight={800} sx={{ fontFamily: 'Outfit, sans-serif', color: tokens.colors.primary, mb: 1 }}>
-              {booking.tracking_id || `WRK-${booking.id + 10000}`}
-            </Typography>
-            <Box display="flex" alignItems="center" gap={1.5} flexWrap="wrap">
+      <Paper elevation={0} sx={{ p: 3, mb: 4, border: `1px solid ${tokens.borderColor}`, borderRadius: '18px', bgcolor: tokens.colors.paper, boxShadow: '0 4px 20px rgba(0,0,0,0.03)' }}>
+        <Grid container spacing={3} alignItems="center">
+          <Grid item xs={12} md={7} sx={{ display: 'flex', flexDirection: 'column', gap: 1.5 }}>
+            <Box>
+              <Typography variant="caption" color="text.secondary" fontWeight={700} display="block" sx={{ textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                Tracking ID
+              </Typography>
+              <Typography variant="h3" fontWeight={900} sx={{ fontFamily: 'Outfit, sans-serif', color: tokens.colors.primary, fontSize: { xs: '1.75rem', md: '2.25rem' }, lineHeight: 1.2 }}>
+                {booking.tracking_id || `WRK-${booking.id + 10000}`}
+              </Typography>
+            </Box>
+            <Box display="flex" flexDirection="column" gap={0.5}>
+              <Typography variant="caption" color="text.secondary" fontWeight={700} sx={{ textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                Service Category
+              </Typography>
               <Typography variant="h6" fontWeight={700} sx={{ color: tokens.colors.textSecondary }}>
                 {categoryName}
               </Typography>
-              <Box sx={{ px: 1.5, py: 0.5, borderRadius: '20px', bgcolor: statusBadge.bg }}>
-                <Typography variant="caption" fontWeight={800} sx={{ color: statusBadge.color, textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+            </Box>
+            <Box sx={{ alignSelf: 'flex-start', mt: 0.5 }}>
+              <Box sx={{ px: 2, py: 0.75, borderRadius: '20px', bgcolor: statusBadge.bg, display: 'inline-flex', alignItems: 'center' }}>
+                <Typography variant="caption" fontWeight={800} sx={{ color: statusBadge.color, textTransform: 'uppercase', letterSpacing: '0.06em', fontSize: '0.75rem' }}>
                   {booking.status.replace('_', ' ')}
                 </Typography>
               </Box>
             </Box>
           </Grid>
-          <Grid item xs={12} md={5} sx={{ textAlign: { md: 'right' } }}>
-            <Typography variant="body2" color="text.secondary" sx={{ mb: 0.5 }}>
-              Booking Date: <b>{new Date(booking.created_at).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' })}</b>
-            </Typography>
-            <Typography variant="body2" color="text.secondary" sx={{ mb: 0.5 }}>
-              Booking ID: <b>#{booking.id}</b>
-            </Typography>
-            <Typography variant="body2" color="text.secondary">
-              Payment Status: <b style={{ color: booking.status === 'completed' ? '#10b981' : '#e11d48' }}>
-                {booking.status === 'completed' ? 'Paid' : 'Pending'}
-              </b>
-            </Typography>
+          <Grid item xs={12} md={5} sx={{ display: 'flex', justifyContent: { xs: 'flex-start', md: 'flex-end' }, alignItems: 'center' }}>
+            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1.5, width: '100%', maxWidth: '340px', ml: { md: 'auto' } }}>
+              {[
+                { label: 'Booking Date', value: new Date(booking.created_at).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' }) },
+                { label: 'Booking ID', value: `#${booking.id}` },
+                { label: 'Payment Status', value: booking.status === 'completed' ? 'Paid' : 'Pending', color: booking.status === 'completed' ? '#10b981' : '#e11d48' },
+                { label: 'Payment Method', value: bill?.payment?.method ? bill.payment.method.toUpperCase() : 'N/A' },
+                { label: 'Requested Time', value: new Date(booking.created_at).toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' }) }
+              ].map((item, idx) => (
+                <Box key={idx} display="flex" justifyContent="space-between" alignItems="center">
+                  <Typography variant="body2" color="text.secondary" fontWeight={600}>
+                    {item.label}
+                  </Typography>
+                  <Typography variant="body2" fontWeight={800} sx={{ color: item.color || tokens.colors.primary }}>
+                    {item.value}
+                  </Typography>
+                </Box>
+              ))}
+            </Box>
           </Grid>
         </Grid>
       </Paper>
 
       {/* SECTION 3: Top Info Cards */}
-      <Grid container spacing={2} sx={{ mb: 4 }}>
+      <Grid container spacing={3} sx={{ mb: 4 }}>
         {[
-          { label: 'Category', value: categoryName, icon: catStyle.icon, color: '#8F00FF' },
-          { label: 'Service Status', value: booking.status.replace('_', ' ').toUpperCase(), icon: <TimelineIcon sx={{ fontSize: 32, color: statusBadge.color }} />, color: statusBadge.color },
-          { label: 'Mode', value: 'Instant', icon: <FlashOnIcon sx={{ fontSize: 32, color: '#f59e0b' }} />, color: '#f59e0b' },
-          { label: 'Captain Assigned', value: booking.worker?.full_name || 'Searching...', icon: <PersonIcon sx={{ fontSize: 32, color: '#1A73E8' }} />, color: '#1A73E8' }
+          { label: 'Category', value: categoryName, icon: React.cloneElement(catStyle.icon, { sx: { fontSize: 36, color: '#8F00FF' } }) },
+          { label: 'Service Status', value: booking.status.replace('_', ' ').toUpperCase(), icon: <TimelineIcon sx={{ fontSize: 36, color: statusBadge.color }} /> },
+          { label: 'Mode', value: 'Instant', icon: <FlashOnIcon sx={{ fontSize: 36, color: '#f59e0b' }} /> },
+          { label: 'Captain Assigned', value: booking.worker?.full_name || 'Searching...', icon: <PersonIcon sx={{ fontSize: 36, color: '#1A73E8' }} /> }
         ].map((card, idx) => (
           <Grid item xs={12} sm={6} md={3} key={idx}>
-            <Paper elevation={0} sx={{ p: 2.5, border: `1px solid ${tokens.borderColor}`, borderRadius: '16px', display: 'flex', alignItems: 'center', gap: 2, height: '100%', bgcolor: tokens.colors.paper }}>
-              <Box sx={{ p: 1.5, borderRadius: '12px', bgcolor: 'rgba(0,0,0,0.02)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <Paper elevation={0} sx={{ p: 2, border: `1px solid ${tokens.borderColor}`, borderRadius: '18px', display: 'flex', alignItems: 'center', gap: 2, height: '100%', bgcolor: tokens.colors.paper, boxShadow: '0 4px 20px rgba(0,0,0,0.03)' }}>
+              <Box sx={{ p: 1.25, borderRadius: '12px', bgcolor: 'rgba(0,0,0,0.02)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                 {card.icon}
               </Box>
               <Box>
-                <Typography variant="caption" color="text.secondary" fontWeight={600} display="block" sx={{ textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+                <Typography variant="caption" color="text.secondary" fontWeight={700} display="block" sx={{ textTransform: 'uppercase', letterSpacing: '0.04em' }}>
                   {card.label}
                 </Typography>
-                <Typography variant="subtitle1" fontWeight={700} sx={{ color: tokens.colors.primary, fontFamily: 'Outfit' }}>
+                <Typography variant="subtitle2" fontWeight={800} sx={{ color: tokens.colors.primary, fontFamily: 'Outfit', mt: 0.25 }}>
                   {card.value}
                 </Typography>
               </Box>
@@ -476,51 +490,81 @@ function BookingTracker() {
       </Grid>
 
       {/* SECTION 5: FULL WIDTH TIMELINE STEPPER */}
-      <Paper elevation={0} sx={{ p: 3, mb: 4, border: `1px solid ${tokens.borderColor}`, borderRadius: '16px', bgcolor: tokens.colors.paper }}>
-        <Typography variant="subtitle1" fontWeight={700} sx={{ mb: 3, color: tokens.colors.primary, textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+      <Paper elevation={0} sx={{ p: 4, mb: 4, border: `1px solid ${tokens.borderColor}`, borderRadius: '18px', bgcolor: tokens.colors.paper, minHeight: '240px', display: 'flex', flexDirection: 'column', justifyContent: 'center', boxShadow: '0 4px 20px rgba(0,0,0,0.03)' }}>
+        <Typography variant="subtitle1" fontWeight={800} sx={{ mb: 4, color: tokens.colors.primary, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
           Service Tracking
         </Typography>
-        <Box sx={{ width: '100%', position: 'relative', px: 2 }}>
+        <Box sx={{ width: '100%', position: 'relative', px: { xs: 1, md: 3 } }}>
           {/* Progress Connector Line */}
           <Box sx={{ 
-            position: 'absolute', top: '18px', left: '4%', right: '4%', height: '4px', 
+            position: 'absolute', top: '22px', left: '6%', right: '6%', height: '4px', 
             bgcolor: '#E5E7EB', zIndex: 1 
           }}>
             <Box sx={{ 
               width: `${currentStepIdx >= 0 ? (currentStepIdx / 5) * 100 : 0}%`, 
-              height: '100%', bgcolor: '#1A73E8', transition: 'width 0.4s ease' 
+              height: '100%', bgcolor: '#1E3A8A', transition: 'width 0.4s ease' 
             }} />
           </Box>
 
           <Grid container justifyContent="space-between">
-            {STEPPER_STEPS.map((step, idx) => {
+            {[
+              { key: 'searching', label: 'Searching', desc: 'Finding nearby captain' },
+              { key: 'accepted', label: 'Accepted', desc: 'Captain assigned' },
+              { key: 'on_the_way', label: 'On The Way', desc: 'Traveling to location' },
+              { key: 'arrived', label: 'Arrived', desc: 'Captain at site' },
+              { key: 'repair_started', label: 'Work Started', desc: 'Repairs in progress' },
+              { key: 'completed', label: 'Completed', desc: 'Service finished' }
+            ].map((step, idx) => {
               const isActive = currentStepIdx === idx;
               const isCompleted = currentStepIdx > idx;
 
+              let circleBg = '#ffffff';
+              let circleBorder = '#D1D5DB';
+              let circleColor = '#9CA3AF';
+              let labelColor = tokens.colors.textSecondary;
+
+              if (isActive) {
+                circleBg = '#1A73E8';
+                circleBorder = '#1A73E8';
+                circleColor = '#ffffff';
+                labelColor = '#1A73E8';
+              } else if (isCompleted) {
+                circleBg = '#1E3A8A';
+                circleBorder = '#1E3A8A';
+                circleColor = '#ffffff';
+                labelColor = '#1E3A8A';
+              }
+
               return (
-                <Grid item key={idx} sx={{ zIndex: 2, textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                <Grid item key={idx} sx={{ zIndex: 2, textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center', width: '15%' }}>
                   <motion.div
-                    animate={isActive ? { scale: [1, 1.15, 1] } : {}}
+                    animate={isActive ? { scale: [1, 1.12, 1] } : {}}
                     transition={{ repeat: Infinity, duration: 2 }}
                   >
                     <Box sx={{
-                      width: '36px', height: '36px', borderRadius: '50%',
-                      bgcolor: isActive ? '#1A73E8' : isCompleted ? '#1A73E8' : '#ffffff',
-                      border: `2px solid ${isActive || isCompleted ? '#1A73E8' : '#D1D5DB'}`,
-                      color: isActive || isCompleted ? '#ffffff' : tokens.colors.textMuted,
+                      width: '44px', height: '44px', borderRadius: '50%',
+                      bgcolor: circleBg,
+                      border: `2px solid ${circleBorder}`,
+                      color: circleColor,
                       display: 'flex', alignItems: 'center', justifyContent: 'center',
-                      fontWeight: 700, fontSize: '0.9rem', mb: 1,
+                      fontWeight: 800, fontSize: '1rem', mb: 1.5,
                       boxShadow: isActive ? '0 0 12px rgba(26, 115, 232, 0.4)' : 'none'
                     }}>
                       {isCompleted ? '✓' : idx + 1}
                     </Box>
                   </motion.div>
                   <Typography 
-                    variant="caption" 
-                    fontWeight={isActive || isCompleted ? 700 : 500} 
-                    sx={{ color: isActive || isCompleted ? tokens.colors.primary : tokens.colors.textSecondary, display: 'block', maxWidth: '100px', lineHeight: 1.2 }}
+                    variant="body2" 
+                    fontWeight={800} 
+                    sx={{ color: labelColor, display: 'block', mb: 0.5, fontSize: '0.85rem', whiteSpace: 'nowrap' }}
                   >
                     {step.label}
+                  </Typography>
+                  <Typography 
+                    variant="caption" 
+                    sx={{ color: '#9CA3AF', display: 'block', fontSize: '0.72rem', maxWidth: '100px', lineHeight: 1.3, mx: 'auto' }}
+                  >
+                    {step.desc}
                   </Typography>
                 </Grid>
               );
@@ -530,13 +574,13 @@ function BookingTracker() {
       </Paper>
 
       {/* SECTION 4: Two Column Layout */}
-      <Grid container spacing={3}>
+      <Grid container spacing={4}>
         {/* LEFT COLUMN 65% */}
         <Grid item xs={12} lg={8}>
           <Box display="flex" flexDirection="column" gap={3}>
             
             {/* Service Progress Card */}
-            <Paper elevation={0} sx={{ p: 3, border: `1px solid ${tokens.borderColor}`, borderRadius: '16px', bgcolor: tokens.colors.paper }}>
+            <Paper elevation={0} sx={{ p: 3, border: `1px solid ${tokens.borderColor}`, borderRadius: '18px', bgcolor: tokens.colors.paper, boxShadow: '0 4px 20px rgba(0,0,0,0.03)' }}>
               <Box display="flex" gap={2.5} alignItems="flex-start">
                 <Box sx={{ p: 2, borderRadius: '16px', bgcolor: catStyle.bgColor, border: `1px solid ${catStyle.borderColor}` }}>
                   {catStyle.icon}
@@ -592,7 +636,7 @@ function BookingTracker() {
 
             {/* SECTION 6: OTP VERIFICATION CARD */}
             {booking.status === 'arrived' && (
-              <Paper elevation={0} sx={{ p: 3, border: `1px solid ${tokens.borderColor}`, borderRadius: '16px', bgcolor: tokens.colors.paper, textAlign: 'center' }}>
+              <Paper elevation={0} sx={{ p: 3, border: `1px solid ${tokens.borderColor}`, borderRadius: '18px', bgcolor: tokens.colors.paper, textAlign: 'center', boxShadow: '0 4px 20px rgba(0,0,0,0.03)' }}>
                 <Box display="flex" flexDirection="column" alignItems="center">
                   <QrCode2Icon sx={{ fontSize: 56, color: tokens.colors.primary, mb: 1.5 }} />
                   <Typography variant="h6" fontWeight={700} sx={{ mb: 1 }}>
@@ -617,7 +661,7 @@ function BookingTracker() {
             {booking.major_repairs && booking.major_repairs.length > 0 && (
               <Box>
                 {booking.major_repairs.map((rep) => (
-                  <Paper key={rep.id} elevation={0} sx={{ p: 3, mb: 2, border: `1px solid ${rep.status === 'pending' ? tokens.colors.primary : tokens.borderColor}`, borderRadius: '16px', bgcolor: tokens.colors.paper }}>
+                  <Paper key={rep.id} elevation={0} sx={{ p: 3, mb: 2, border: `1px solid ${rep.status === 'pending' ? tokens.colors.primary : tokens.borderColor}`, borderRadius: '18px', bgcolor: tokens.colors.paper, boxShadow: '0 4px 20px rgba(0,0,0,0.03)' }}>
                     <Typography variant="subtitle1" fontWeight={700}>
                       Major Repair Approval Estimate
                     </Typography>
@@ -655,7 +699,7 @@ function BookingTracker() {
 
             {/* SECTION 8: PAYMENT CARD */}
             {bill && (
-              <Paper elevation={0} sx={{ p: 3, border: `1px solid ${tokens.borderColor}`, borderRadius: '16px', bgcolor: tokens.colors.paper }}>
+              <Paper elevation={0} sx={{ p: 3, border: `1px solid ${tokens.borderColor}`, borderRadius: '18px', bgcolor: tokens.colors.paper, boxShadow: '0 4px 20px rgba(0,0,0,0.03)' }}>
                 <Typography variant="subtitle1" fontWeight={700} sx={{ mb: 2 }}>
                   Bill Invoice Summary
                 </Typography>
@@ -721,7 +765,7 @@ function BookingTracker() {
             )}
 
             {/* SECTION 7: LIVE STATUS EVENTS FEED */}
-            <Paper elevation={0} sx={{ p: 3, border: `1px solid ${tokens.borderColor}`, borderRadius: '16px', bgcolor: tokens.colors.paper }}>
+            <Paper elevation={0} sx={{ p: 3, border: `1px solid ${tokens.borderColor}`, borderRadius: '18px', bgcolor: tokens.colors.paper, boxShadow: '0 4px 20px rgba(0,0,0,0.03)' }}>
               <Typography variant="subtitle1" fontWeight={700} sx={{ mb: 2 }}>
                 Live Service Status Feed
               </Typography>
@@ -741,7 +785,7 @@ function BookingTracker() {
             </Paper>
 
             {/* SECTION 9: SERVICE HISTORY EVENT TRACKER */}
-            <Paper elevation={0} sx={{ p: 3, border: `1px solid ${tokens.borderColor}`, borderRadius: '16px', bgcolor: tokens.colors.paper }}>
+            <Paper elevation={0} sx={{ p: 3, border: `1px solid ${tokens.borderColor}`, borderRadius: '18px', bgcolor: tokens.colors.paper, boxShadow: '0 4px 20px rgba(0,0,0,0.03)' }}>
               <Typography variant="subtitle1" fontWeight={700} sx={{ mb: 2.5 }}>
                 Activity Time Log
               </Typography>
@@ -770,7 +814,7 @@ function BookingTracker() {
 
             {/* Rating/Feedback card */}
             {booking.status === 'completed' && !booking.rating && (
-              <Paper elevation={0} sx={{ p: 3, border: `1px solid ${tokens.borderColor}`, borderRadius: '16px', bgcolor: tokens.colors.paper }}>
+              <Paper elevation={0} sx={{ p: 3, border: `1px solid ${tokens.borderColor}`, borderRadius: '18px', bgcolor: tokens.colors.paper, boxShadow: '0 4px 20px rgba(0,0,0,0.03)' }}>
                 <Typography variant="subtitle1" fontWeight={700} sx={{ mb: 1 }}>
                   Submit Service Feedback
                 </Typography>
@@ -810,7 +854,7 @@ function BookingTracker() {
 
             {/* Display submitted rating card */}
             {booking.status === 'completed' && booking.rating && (
-              <Paper elevation={0} sx={{ p: 3, border: `1px solid ${tokens.borderColor}`, borderRadius: '16px', bgcolor: tokens.colors.paper }}>
+              <Paper elevation={0} sx={{ p: 3, border: `1px solid ${tokens.borderColor}`, borderRadius: '18px', bgcolor: tokens.colors.paper, boxShadow: '0 4px 20px rgba(0,0,0,0.03)' }}>
                 <Typography variant="subtitle1" fontWeight={700} sx={{ mb: 1.5 }}>
                   Your Submitted Review
                 </Typography>
@@ -841,7 +885,7 @@ function BookingTracker() {
           <Box display="flex" flexDirection="column" gap={3}>
             
             {/* Captain Information */}
-            <Paper elevation={0} sx={{ p: 3, border: `1px solid ${tokens.borderColor}`, borderRadius: '16px', bgcolor: tokens.colors.paper }}>
+            <Paper elevation={0} sx={{ p: 3, border: `1px solid ${tokens.borderColor}`, borderRadius: '18px', bgcolor: tokens.colors.paper, boxShadow: '0 4px 20px rgba(0,0,0,0.03)' }}>
               <Typography variant="subtitle1" fontWeight={700} sx={{ mb: 2 }}>
                 Service Partner
               </Typography>
@@ -911,7 +955,7 @@ function BookingTracker() {
             </Paper>
 
             {/* Service Location */}
-            <Paper elevation={0} sx={{ p: 3, border: `1px solid ${tokens.borderColor}`, borderRadius: '16px', bgcolor: tokens.colors.paper }}>
+            <Paper elevation={0} sx={{ p: 3, border: `1px solid ${tokens.borderColor}`, borderRadius: '18px', bgcolor: tokens.colors.paper, boxShadow: '0 4px 20px rgba(0,0,0,0.03)' }}>
               <Typography variant="subtitle1" fontWeight={700} sx={{ mb: 2 }}>
                 Service Location
               </Typography>
@@ -929,7 +973,7 @@ function BookingTracker() {
             </Paper>
 
             {/* Booking Information */}
-            <Paper elevation={0} sx={{ p: 3, border: `1px solid ${tokens.borderColor}`, borderRadius: '16px', bgcolor: tokens.colors.paper }}>
+            <Paper elevation={0} sx={{ p: 3, border: `1px solid ${tokens.borderColor}`, borderRadius: '18px', bgcolor: tokens.colors.paper, boxShadow: '0 4px 20px rgba(0,0,0,0.03)' }}>
               <Typography variant="subtitle1" fontWeight={700} sx={{ mb: 2 }}>
                 Booking Details
               </Typography>
