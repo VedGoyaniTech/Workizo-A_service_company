@@ -433,7 +433,7 @@ function WorkerJobDetails() {
                     disabled={submitting}
                     sx={{ bgcolor: tokens.colors.accent, color: '#ffffff', py: 1.5, borderRadius: `${tokens.borderRadiusSm}px`, fontWeight: 700 }}
                   >
-                    Start Journey (Travelling)
+                    Start Navigation
                   </Button>
                 )}
 
@@ -445,7 +445,7 @@ function WorkerJobDetails() {
                     disabled={submitting}
                     sx={{ bgcolor: tokens.colors.accent, color: '#ffffff', py: 1.5, borderRadius: `${tokens.borderRadiusSm}px`, fontWeight: 700 }}
                   >
-                    Arrived at Customer Location
+                    Arrived
                   </Button>
                 )}
 
@@ -483,11 +483,11 @@ function WorkerJobDetails() {
                   <Button
                     fullWidth
                     variant="contained"
-                    onClick={() => updateJobStatus('inspection')}
+                    onClick={() => updateJobStatus('repair_started')}
                     disabled={submitting}
                     sx={{ bgcolor: tokens.colors.accent, color: '#ffffff', py: 1.5, borderRadius: `${tokens.borderRadiusSm}px`, fontWeight: 700 }}
                   >
-                    Initiate Inspection
+                    Start Work
                   </Button>
                 )}
 
@@ -499,7 +499,7 @@ function WorkerJobDetails() {
                     disabled={submitting}
                     sx={{ bgcolor: tokens.colors.accent, color: '#ffffff', py: 1.5, borderRadius: `${tokens.borderRadiusSm}px`, fontWeight: 700 }}
                   >
-                    Start Repair Work
+                    Start Work
                   </Button>
                 )}
 
@@ -511,7 +511,7 @@ function WorkerJobDetails() {
                     disabled={submitting}
                     sx={{ bgcolor: tokens.colors.accent, color: '#ffffff', py: 1.5, borderRadius: `${tokens.borderRadiusSm}px`, fontWeight: 700 }}
                   >
-                    Mark Repair Completed
+                    Complete Work
                   </Button>
                 )}
 

@@ -339,7 +339,7 @@ function WorkerDashboard() {
             {/* Active Job Callout */}
             {activeJob && (
               <DashboardCard 
-                title="Active Service Job" 
+                title="Active Jobs" 
                 subtitle={`Job ID: #${activeJob.id} | Status: ${activeJob.status.replace('_', ' ').toUpperCase()}`}
                 highlight
               >
@@ -368,7 +368,7 @@ function WorkerDashboard() {
 
             {/* Available Bookings Board Feed */}
             <DashboardCard 
-              title="Available Bookings Board" 
+              title="Incoming Requests" 
               subtitle="Live job requests matching your skills nearby Ahmedabad"
             >
               {!online ? (
@@ -404,30 +404,38 @@ function WorkerDashboard() {
                           borderColor: tokens.colors.accent,
                         }
                       }}>
-                        <Box display="flex" justifyContent="space-between" alignItems="center" sx={{ mb: 2 }}>
-                          <Typography variant="caption" color="textSecondary" fontWeight={600}>
-                            ID: #{b.id}
+                        <Box display="flex" justifyContent="space-between" alignItems="center" sx={{ mb: 1.5 }}>
+                          <Typography variant="caption" color="textSecondary" fontWeight={700}>
+                            Booking ID: #{b.id}
                           </Typography>
                         </Box>
 
-                        <Typography variant="subtitle1" fontWeight={700}>
+                        <Typography variant="subtitle1" fontWeight={800} color="primary" sx={{ mb: 1 }}>
                           {b.customer?.full_name}
                         </Typography>
-                        <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>
-                          Category: <b>{b.service_category_detail?.name}</b>
-                        </Typography>
-                        <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>
-                          Area: <b>{b.city} ({b.pincode})</b>
-                        </Typography>
+
+                        <Box display="flex" flexDirection="column" gap={0.75} sx={{ mb: 2 }}>
+                          <Typography variant="body2" color="text.secondary">
+                            Service Category: <span style={{ fontWeight: 700, color: tokens.colors.primary }}>{b.service_category_detail?.name}</span>
+                          </Typography>
+                          <Typography variant="body2" color="text.secondary">
+                            Address: <span style={{ fontWeight: 600 }}>{b.address}, {b.city}, {b.state} - {b.pincode}</span>
+                          </Typography>
+                          <Typography variant="body2" color="text.secondary">
+                            Distance: <span style={{ fontWeight: 700, color: '#34A853' }}>{b.distance ? `${b.distance} km` : '1.2 km'}</span>
+                          </Typography>
+                          <Typography variant="body2" color="text.secondary">
+                            Requested Time: <span style={{ fontWeight: 600 }}>{new Date(b.created_at).toLocaleString('en-IN', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' })}</span>
+                          </Typography>
+                          <Typography variant="body2" color="text.secondary">
+                            Payment Mode: <span style={{ fontWeight: 700, color: '#1A73E8' }}>{b.payment_mode || 'Online / Cash'}</span>
+                          </Typography>
+                        </Box>
                         
-                        <Box sx={{ mt: 2, p: 1.5, bgcolor: tokens.colors.bg, borderRadius: `${tokens.borderRadiusSm}px` }}>
-                          <Typography variant="caption" color="text.secondary">Problem Summary:</Typography>
+                        <Box sx={{ p: 1.5, mb: 2, bgcolor: tokens.colors.bg, borderRadius: `${tokens.borderRadiusSm}px` }}>
+                          <Typography variant="caption" color="text.secondary" display="block">Problem Summary:</Typography>
                           <Typography variant="body2" fontWeight="700">{b.problem_type}</Typography>
                         </Box>
-
-                        <Typography variant="caption" color="text.secondary" sx={{ mt: 2, display: 'block' }}>
-                          Requested: <b>{new Date(b.created_at).toLocaleString('en-IN', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' })}</b>
-                        </Typography>
 
                         <Divider sx={{ my: 2 }} />
 

@@ -182,8 +182,21 @@ function BookingTracker() {
         if (!isActive) return;
         try {
           const payload = JSON.parse(event.data);
-          if (payload.type === 'booking_status') {
+          const acceptedTypes = [
+            'booking_created',
+            'booking_accepted',
+            'captain_arriving',
+            'work_started',
+            'work_completed',
+            'payment_pending',
+            'payment_completed',
+            'booking_status'
+          ];
+          if (acceptedTypes.includes(payload.type)) {
             setBooking(payload.booking);
+            if (payload.type === 'booking_accepted') {
+              toast.success(`${payload.booking.worker?.full_name || 'Captain'} accepted your booking!`);
+            }
             if (['repair_completed', 'waiting_approval', 'completed'].includes(payload.booking.status)) {
               api.get(`/api/billing/${id}/get-bill/`)
                 .then(res => setBill(res.data))
@@ -586,9 +599,9 @@ function BookingTracker() {
                   {catStyle.icon}
                 </Box>
                 <Box flex={1}>
-                  <Typography variant="h6" fontWeight={700} sx={{ fontFamily: 'Outfit' }}>
+                  <Typography variant="h6" fontWeight={800} color={tokens.colors.primary}>
                     {booking.status === 'searching' && "Broadcasting request to nearby Captains..."}
-                    {booking.status === 'accepted' && "Captain accepted your service booking!"}
+                    {booking.status === 'accepted' && `${booking.worker?.full_name || 'Captain'} accepted your booking.`}
                     {booking.status === 'on_the_way' && "Captain is en route to your place"}
                     {booking.status === 'arrived' && "Captain reached your location"}
                     {booking.status === 'verified' && "Check-in successful, diagnosing repair..."}
@@ -611,25 +624,7 @@ function BookingTracker() {
                     {booking.status === 'cancelled' && "This booking request was cancelled and terminated."}
                   </Typography>
 
-                  {booking.status === 'searching' && (
-                    <Box sx={{ mt: 3 }}>
-                      <Button
-                        variant="contained"
-                        onClick={async () => {
-                          try {
-                            await api.post(`/api/bookings/bookings/${booking.id}/simulate-assignment/`);
-                            toast.success('Captain assigned via simulation!');
-                            fetchDetails();
-                          } catch (err) {
-                            toast.error(err.response?.data?.detail || 'No available workers for simulation.');
-                          }
-                        }}
-                        sx={{ bgcolor: tokens.colors.primary, color: '#ffffff', fontWeight: '700', borderRadius: `${tokens.borderRadiusSm}px`, textTransform: 'none', '&:hover': { bgcolor: '#23232F' } }}
-                      >
-                        Simulate Captain Acceptance
-                      </Button>
-                    </Box>
-                  )}
+
                 </Box>
               </Box>
             </Paper>
@@ -773,7 +768,7 @@ function BookingTracker() {
                 <CircularProgress size={16} sx={{ color: '#1A73E8' }} />
                 <Typography variant="body2" fontWeight={600} color="primary">
                   {booking.status === 'searching' && "Listening for service captain coordinates..."}
-                  {booking.status === 'accepted' && "Captain assigned. Preparing toolbox."}
+                  {booking.status === 'accepted' && `${booking.worker?.full_name || 'Captain'} accepted your booking.`}
                   {booking.status === 'on_the_way' && "Captain en route to destination address."}
                   {booking.status === 'arrived' && "Captain at client site. Awaiting QR code authentication."}
                   {booking.status === 'verified' && "Diagnosis and repair operations initiated."}

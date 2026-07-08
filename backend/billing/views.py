@@ -180,11 +180,12 @@ class GenerateBillView(views.APIView):
         compile_bill_pdf(bill)
 
         # Update booking status & broadcast
-        booking.status = 'completed' if bill.grand_total == 0 else booking.status # if free, complete it immediately, else wait for payment
+        booking.status = 'completed' if bill.grand_total == 0 else 'waiting_approval'
         booking.save()
 
         booking_data = BookingSerializer(booking).data
-        send_booking_update(booking.id, booking_data)
+        event_type = 'payment_completed' if bill.grand_total == 0 else 'payment_pending'
+        send_booking_update(booking.id, booking_data, event_type)
 
         # Alert customer
         create_and_send_notification(
@@ -277,7 +278,7 @@ class ProcessPaymentView(views.APIView):
 
         # Broadcast update
         booking_data = BookingSerializer(booking).data
-        send_booking_update(booking.id, booking_data)
+        send_booking_update(booking.id, booking_data, 'payment_completed')
 
         # Dispatch alerts
         create_and_send_notification(

@@ -14,7 +14,7 @@ from notifications.serializers import NotificationSerializer
 
 User = get_user_model()
 
-def send_booking_update(booking_id, booking_data):
+def send_booking_update(booking_id, booking_data, event_type='booking_status'):
     channel_layer = get_channel_layer()
     if channel_layer:
         async_to_sync(channel_layer.group_send)(
@@ -22,7 +22,7 @@ def send_booking_update(booking_id, booking_data):
             {
                 "type": "booking_update",
                 "data": {
-                    "type": "booking_status",
+                    "type": event_type,
                     "booking": booking_data
                 }
             }
@@ -127,6 +127,10 @@ class BookingViewSet(viewsets.ModelViewSet):
             notification_type="booking_update"
         )
 
+        # Broadcast booking_created to the booking group
+        booking_data = BookingSerializer(booking).data
+        send_booking_update(booking.id, booking_data, 'booking_created')
+
     @action(detail=False, methods=['get'], permission_classes=[permissions.AllowAny], url_path='track')
     def track(self, request):
         tracking_id = request.query_params.get('tracking_id')
@@ -204,7 +208,7 @@ class BookingViewSet(viewsets.ModelViewSet):
 
         # Serialized data
         booking_data = self.get_serializer(booking).data
-        send_booking_update(booking.id, booking_data)
+        send_booking_update(booking.id, booking_data, 'booking_accepted')
 
         # Broadcast to all workers in this category that booking is taken (remove from their dashboard)
         channel_layer = get_channel_layer()
@@ -337,7 +341,17 @@ class BookingViewSet(viewsets.ModelViewSet):
                 create_and_send_notification(booking.worker, "Job Status Update", f"Job status updated to {new_status.replace('_', ' ').title()}.", "booking_update")
 
         booking_data = self.get_serializer(booking).data
-        send_booking_update(booking.id, booking_data)
+        
+        # Determine the event type for status updates
+        event_type = 'booking_status'
+        if new_status == 'on_the_way':
+            event_type = 'captain_arriving'
+        elif new_status == 'repair_started':
+            event_type = 'work_started'
+        elif new_status == 'repair_completed':
+            event_type = 'work_completed'
+            
+        send_booking_update(booking.id, booking_data, event_type)
 
 
         return Response(booking_data)
@@ -479,95 +493,4 @@ class BookingViewSet(viewsets.ModelViewSet):
 
         return Response(RepairTokenSerializer(token).data)
 
-    @action(detail=True, methods=['post'], url_path='simulate-assignment')
-    def simulate_assignment(self, request, pk=None):
-        booking = self.get_object()
-        if booking.status != 'searching':
-            return Response({"detail": "Already assigned or completed."}, status=status.HTTP_400_BAD_REQUEST)
-        
-        from workers.models import WorkerProfile
-        # Find any approved worker for this category
-        wp = WorkerProfile.objects.filter(approval_status='approved', service_category=booking.service_category).first()
-        if not wp:
-            # Fallback to any approved worker
-            wp = WorkerProfile.objects.filter(approval_status='approved').first()
-        if not wp:
-            # Fallback to any worker
-            wp = WorkerProfile.objects.first()
 
-        if not wp:
-            return Response({"detail": "No workers registered. Please register a worker user first."}, status=status.HTTP_400_BAD_REQUEST)
-
-        worker = wp.user
-        booking.worker = worker
-        booking.status = 'accepted'
-        booking.save()
-
-        booking_data = self.get_serializer(booking).data
-        send_booking_update(booking.id, booking_data)
-
-        create_and_send_notification(
-            user=booking.customer,
-            title="Captain Assigned",
-            message=f"Captain {worker.full_name} has accepted your request. Expected arrival in 15 mins.",
-            notification_type="booking_update"
-        )
-
-        return Response(booking_data)
-
-    @action(detail=False, methods=['post'], url_path='generate-simulation')
-    def generate_simulation(self, request):
-        customer = User.objects.filter(role='customer').first()
-        if not customer:
-            customer, _ = User.objects.get_or_create(
-                email='dummy_customer@workizo.com',
-                defaults={
-                    'full_name': 'Amit Patel',
-                    'phone': '9876543210',
-                    'role': 'customer',
-                    'is_active': True
-                }
-            )
-
-        import random
-        from services.models import ServiceCategory
-        
-        wp = getattr(request.user, 'worker_profile', None)
-        category = wp.service_category if wp else None
-        if not category:
-            category = ServiceCategory.objects.first()
-
-        problems = {
-            "Electrician": ["Short circuit in living room", "Ceiling fan installation", "Socket spark repair"],
-            "Plumber": ["Kitchen washbasin leak", "Water tank blockage", "Bathroom tap replacement"],
-            "Carpenter": ["Main door latch issue", "Wooden chair joint repair", "Kitchen cabinet fixing"],
-            "AC Technician": ["AC not cooling", "Gas leakage check", "Routine filter service"],
-            "Mechanic": ["Car starting trouble", "Brake pad replacement", "Engine noise diagnostics"],
-            "Home Cleaning": ["Deep kitchen cleaning", "Sofa vacuuming", "Full apartment sanitize"]
-        }
-
-        prob_type = category.name if category else "General Fix"
-        prob_list = problems.get(category.name, ["General repair service needed"]) if category else ["General repair service needed"]
-        prob_desc = random.choice(prob_list)
-
-        booking = Booking.objects.create(
-            customer=customer,
-            worker=request.user,
-            service_category=category,
-            problem_type=prob_type,
-            problem_description=prob_desc,
-            address="A-404, Vastrapur Lake Apartments",
-            city="Ahmedabad",
-            state="Gujarat",
-            pincode="380015",
-            status='accepted'
-        )
-
-        create_and_send_notification(
-            user=customer,
-            title="Booking Placed & Accepted",
-            message=f"Captain {request.user.full_name} accepted your request.",
-            notification_type="booking_update"
-        )
-
-        return Response(self.get_serializer(booking).data, status=status.HTTP_201_CREATED)
