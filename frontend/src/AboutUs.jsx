@@ -99,7 +99,7 @@ const AboutUs = () => {
           overflow: 'hidden',
           pt: '80px', 
           pb: '80px',
-          background: 'linear-gradient(180deg, #F5FAFF 0%, #FFFFFF 100%)',
+          bgcolor: '#FFFFFF', // Solid clean white background to prevent any blue gradient overlap
           borderBottom: '1px solid #F3F4F6'
         }}
       >
@@ -113,14 +113,14 @@ const AboutUs = () => {
               top: `${node.y}%`,
               width: `${node.size}px`,
               height: `${node.size}px`,
-              color: '#DBEAFE',
-              opacity: 0.06,
+              color: '#3B82F6', // Clear but extremely subtle blue outline
+              opacity: 0.09,    // Set opacity to 9% so it's perfectly visible on clean white background
               transform: `rotate(${node.rotate}deg)`,
               animation: `${node.anim} 14s ease-in-out infinite`,
               zIndex: 0,
               pointerEvents: 'none',
               display: { 
-                xs: index < 7 ? 'block' : 'none', // Slice down number of elements on mobile
+                xs: index < 7 ? 'block' : 'none', // Less icons on mobile
                 sm: 'block' 
               }
             }}
@@ -187,7 +187,7 @@ const AboutUs = () => {
                   WORKIZO is a technology-driven local service platform developed to simplify the way customers book trusted home service professionals.
                 </Typography>
                 <Typography variant="body1" sx={{ color: '#4B5563', lineHeight: 1.8, fontSize: '1.05rem' }}>
-                  Our platform connects customers with verified electricians, plumbers, carpenters, AC technicians, mechanics, and home cleaning experts in real time through a transparent, reliable, and user-friendly booking experience.
+                  Our platform connects customers with verified electricians, plumbers, carpenters, AC technicians, experts, and home cleaning experts in real time through a transparent, reliable, and user-friendly booking experience.
                 </Typography>
                 <Typography variant="body1" sx={{ color: '#4B5563', lineHeight: 1.8, fontSize: '1.05rem' }}>
                   By combining modern web technologies with real-time communication, WORKIZO aims to create better opportunities for local professionals while delivering fast and dependable services to customers.
@@ -267,7 +267,7 @@ const AboutUs = () => {
                   width: '120%',
                   height: '120%',
                   borderRadius: '50%',
-                  background: 'radial-gradient(circle, rgba(59,130,246,0.06) 0%, rgba(255,255,255,0) 70%)',
+                  background: 'radial-gradient(circle, rgba(59,130,246,0.04) 0%, rgba(255,255,255,0) 70%)',
                   filter: 'blur(30px)',
                   zIndex: 1,
                   pointerEvents: 'none'
