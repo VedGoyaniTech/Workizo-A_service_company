@@ -29,6 +29,7 @@ import CustomerDashboard from './customer/CustomerDashboard';
 import WorkerDashboard from './captain/WorkerDashboard';
 import AdminDashboard from './admin/AdminDashboard';
 import BookingFlow from './customer/BookingFlow';
+import BookingTracker from './customer/BookingTracker';
 import WorkerJobDetails from './captain/WorkerJobDetails';
 import WorkerJobHistory from './captain/WorkerJobHistory';
 import WorkerWallet from './captain/WorkerWallet';
@@ -81,6 +82,14 @@ function App() {
                 element={
                   <ProtectedRoute allowedRoles={['customer']}>
                     <CustomerProfile />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/customer/booking/:bookingId"
+                element={
+                  <ProtectedRoute allowedRoles={['customer']}>
+                    <BookingTracker />
                   </ProtectedRoute>
                 }
               />

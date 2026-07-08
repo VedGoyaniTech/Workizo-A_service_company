@@ -9,7 +9,7 @@ import {
 } from '@mui/material';
 import api from '../services/api';
 import toast from 'react-hot-toast';
-import BookingTimeline from './BookingTimeline';
+
 
 import HandymanIcon from '@mui/icons-material/Handyman';
 import RoomIcon from '@mui/icons-material/Room';
@@ -158,23 +158,17 @@ function CustomerDashboard() {
   const [loading,     setLoading]     = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
 
-  // Tracking details drawer state
-  const [selectedBookingId, setSelectedBookingId] = useState(null);
-  const [detailsOpen, setDetailsOpen] = useState(false);
-
   const handleViewDetails = (bookingId) => {
-    setSelectedBookingId(bookingId);
-    setDetailsOpen(true);
+    navigate(`/customer/booking/${bookingId}`);
   };
 
   useEffect(() => {
     if (location.state?.openBookingId) {
-      setSelectedBookingId(location.state.openBookingId);
-      setDetailsOpen(true);
+      navigate(`/customer/booking/${location.state.openBookingId}`);
       // Clear navigation state to prevent re-opening on back navigate/refresh
       window.history.replaceState({}, document.title);
     }
-  }, [location]);
+  }, [location, navigate]);
 
   // Location state
   const [locationLabel,   setLocationLabel]   = useState('');
@@ -873,18 +867,7 @@ function CustomerDashboard() {
         </DialogActions>
       </Dialog>
 
-      {selectedBookingId && (
-        <BookingTimeline
-          bookingId={selectedBookingId}
-          open={detailsOpen}
-          onClose={() => {
-            setDetailsOpen(false);
-            setSelectedBookingId(null);
-            fetchDashboardData();
-          }}
-          onRefresh={fetchDashboardData}
-        />
-      )}
+
 
     </DashboardPage>
   );
