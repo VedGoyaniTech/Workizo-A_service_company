@@ -342,18 +342,48 @@ const AboutUs = () => {
         </Container>
       </Box>
 
-      {/* 2. Existing "Champions of our startup project" Section */}
+      {/* 2. Existing "Champions of our startup project" Section with Pattern & Blue Shading */}
       <Box 
         sx={{ 
+          position: 'relative',
+          overflow: 'hidden',
           pt: '64px',
           pb: '80px',
           bgcolor: '#FFFFFF',
           borderTop: '1px solid #F3F4F6'
         }}
       >
+        {/* Render Branded Repeating Service Pattern in Champions Section too */}
+        {patternIcons.map((node, index) => (
+          <Box 
+            key={index}
+            sx={{ 
+              position: 'absolute',
+              left: `${node.x}%`,
+              top: `${node.y}%`,
+              width: `${node.size}px`,
+              height: `${node.size}px`,
+              color: '#3B82F6', // Clear blue outline
+              opacity: 0.15,    // 15% opacity to match Hero
+              transform: `rotate(${node.rotate}deg)`,
+              animation: `${node.anim} 14s ease-in-out infinite`,
+              zIndex: 0,
+              pointerEvents: 'none',
+              display: { 
+                xs: index < 7 ? 'block' : 'none', // Less icons on mobile
+                sm: 'block' 
+              }
+            }}
+          >
+            {serviceIcons[node.iconIdx]}
+          </Box>
+        ))}
+
         <Container 
           maxWidth={false} 
           sx={{ 
+            position: 'relative',
+            zIndex: 1,
             maxWidth: '1280px', 
             mx: 'auto',
             px: { xs: 3, md: 4 }
@@ -444,6 +474,7 @@ const AboutUs = () => {
             {/* Right Column (40% Desktop / 45% Tablet) */}
             <Box 
               sx={{ 
+                position: 'relative',
                 display: 'flex', 
                 flexDirection: { xs: 'column', sm: 'row' }, 
                 justifyContent: 'center',
@@ -453,8 +484,24 @@ const AboutUs = () => {
                 mx: 'auto'
               }}
             >
+              {/* Single soft light-blue circular glow behind the profiles to create depth and shading */}
+              <Box 
+                sx={{ 
+                  position: 'absolute',
+                  top: '-10%',
+                  left: '-10%',
+                  width: '120%',
+                  height: '120%',
+                  borderRadius: '50%',
+                  background: 'radial-gradient(circle, rgba(59,130,246,0.04) 0%, rgba(255,255,255,0) 70%)',
+                  filter: 'blur(30px)',
+                  zIndex: 1,
+                  pointerEvents: 'none'
+                }}
+              />
+
               {/* Profile 1: Ambariya Vivek */}
-              <Box sx={{ textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+              <Box sx={{ textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center', position: 'relative', zIndex: 2 }}>
                 <Box 
                   sx={{
                     display: 'inline-block',
@@ -508,7 +555,7 @@ const AboutUs = () => {
               </Box>
 
               {/* Profile 2: Ved Goyani */}
-              <Box sx={{ textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+              <Box sx={{ textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center', position: 'relative', zIndex: 2 }}>
                 <Box 
                   sx={{
                     display: 'inline-block',
