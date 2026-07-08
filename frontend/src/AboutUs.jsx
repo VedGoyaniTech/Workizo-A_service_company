@@ -6,8 +6,6 @@ import {
   Container, Typography, Button, Box, Grid, Avatar
 } from '@mui/material';
 import { tokens } from './design/tokens';
-import SchoolIcon from '@mui/icons-material/School';
-import HandymanIcon from '@mui/icons-material/Handyman';
 
 const AboutUs = () => {
   const { isAuthenticated } = useAuth();
@@ -24,353 +22,198 @@ const AboutUs = () => {
   };
 
   return (
-    <Box sx={{ bgcolor: '#FFFFFF', minHeight: '100vh', color: '#0F0F14', fontFamily: 'Outfit' }}>
-      
-      {/* 1. Rapido-style Hero Section */}
-      <Box sx={{ py: { xs: 8, md: 14 } }}>
-        <Container maxWidth="lg">
-          <Grid container spacing={{ xs: 6, md: 8 }} alignItems="center">
-            {/* Left side text column */}
-            <Grid item xs={12} md={6}>
-              <Box sx={{ pr: { md: 4 } }}>
-                <Typography 
-                  variant="h3" 
-                  component="h3" 
-                  sx={{ 
-                    fontFamily: 'Outfit', 
-                    fontWeight: 900, 
-                    color: '#0F0F14',
-                    mb: 1.5,
-                    fontSize: { xs: '2.25rem', md: '3rem' }
-                  }}
-                >
-                  India’s Beloved
-                </Typography>
-                <Typography 
-                  variant="h4" 
-                  component="h4" 
-                  sx={{ 
-                    fontFamily: 'Outfit', 
-                    fontWeight: 900, 
-                    color: '#0F0F14',
-                    mb: 3,
-                    fontSize: { xs: '1.75rem', md: '2.25rem' }
-                  }}
-                >
-                  Local Service Platform
-                </Typography>
-                
-                <Typography 
-                  variant="subtitle1" 
-                  component="label"
-                  sx={{ 
-                    display: 'block',
-                    fontWeight: 800, 
-                    color: '#0F0F14', 
-                    textTransform: 'uppercase', 
-                    letterSpacing: '0.1em',
-                    fontSize: '0.85rem',
-                    mb: 1.5
-                  }}
-                >
-                  We are not an option, we are a choice
-                </Typography>
-                <Typography 
-                  variant="body1" 
-                  sx={{ 
-                    color: '#4B5563', 
-                    lineHeight: 1.75, 
-                    mb: 4,
-                    fontSize: '1.05rem'
-                  }}
-                >
-                  We're #1 choice of 10 Million people because we're the solution of India's intra-city household and professional service booking problems. With assured safety, we also provide economically priced bookings.
-                </Typography>
-
-                <Typography 
-                  variant="subtitle1" 
-                  component="label"
-                  sx={{ 
-                    display: 'block',
-                    fontWeight: 800, 
-                    color: '#0F0F14', 
-                    textTransform: 'uppercase', 
-                    letterSpacing: '0.15em',
-                    fontSize: '0.85rem',
-                    mb: 1.5
-                  }}
-                >
-                  What makes us different?
-                </Typography>
-                <Typography 
-                  variant="body1" 
-                  sx={{ 
-                    color: '#4B5563', 
-                    lineHeight: 1.75,
-                    fontSize: '1.05rem'
-                  }}
-                >
-                  Our certified professionals can dodge the booking delays during peak hours and get to your location to solve your problem in a jiffy! So when you think travel, think Rapido; when you think home service, think WORKIZO.
-                </Typography>
-              </Box>
-            </Grid>
-
-            {/* Right side double overlapping image representation */}
-            <Grid item xs={12} md={6}>
-              <Box 
+    <Box sx={{ bgcolor: '#FFFFFF', minHeight: '80vh', color: '#0F0F14', fontFamily: 'Outfit', py: { xs: 10, md: 16 } }}>
+      <Container maxWidth="xl">
+        <Grid container spacing={{ xs: 6, lg: 10 }} alignItems="center">
+          
+          {/* Left Column: Academic Project Description */}
+          <Grid item xs={12} md={6.5}>
+            <Box sx={{ pr: { md: 4 } }}>
+              <Typography 
+                variant="h2" 
+                component="h1" 
                 sx={{ 
-                  position: 'relative', 
-                  width: '100%', 
-                  height: { xs: '320px', sm: '420px' },
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center'
+                  fontFamily: 'Outfit', 
+                  fontWeight: 900, 
+                  color: '#0F0F14',
+                  lineHeight: 1.15,
+                  mb: 4,
+                  fontSize: { xs: '2.5rem', md: '3.75rem' }
                 }}
               >
-                {/* Image Box 1: Bottom Left */}
                 <Box 
+                  component="span" 
                   sx={{ 
-                    position: 'absolute',
-                    bottom: '5%',
-                    left: '5%',
-                    width: '65%',
-                    height: '70%',
-                    bgcolor: '#F4F6F9',
-                    borderRadius: `${tokens.borderRadius}px`,
-                    border: '1px solid #E5E7EB',
-                    boxShadow: '0 10px 25px rgba(0,0,0,0.05)',
-                    display: 'flex',
-                    flexDirection: 'column',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    p: 3,
-                    zIndex: 1,
-                    transition: tokens.transition,
-                    '&:hover': {
-                      transform: 'translateY(-4px)',
-                      zIndex: 3
+                    position: 'relative', 
+                    display: 'inline-block',
+                    pb: 0.5,
+                    '&::after': {
+                      content: '""',
+                      position: 'absolute',
+                      bottom: 0,
+                      left: 0,
+                      width: '100%',
+                      height: '4px',
+                      bgcolor: '#0F0F14'
                     }
                   }}
                 >
-                  <HandymanIcon sx={{ fontSize: 48, color: '#0F0F14', mb: 1.5 }} />
-                  <Typography variant="h6" sx={{ fontWeight: 800, color: '#0F0F14', fontSize: '1.1rem' }}>
-                    WORKIZO Customer
-                  </Typography>
-                  <Typography variant="caption" sx={{ color: '#6B7280', textAlign: 'center', mt: 0.5 }}>
-                    Book trusted professionals in one click.
-                  </Typography>
-                </Box>
+                  Champions
+                </Box>{' '}
+                of our academic project
+              </Typography>
+              
+              <Typography 
+                variant="body1" 
+                sx={{ 
+                  color: '#4B5563', 
+                  lineHeight: 1.8, 
+                  mb: 3,
+                  fontSize: '1.05rem',
+                  maxWidth: '640px'
+                }}
+              >
+                WORKIZO is our academic project developed as part of our coursework at LJ University. With dedication and hardwork, we have created a comprehensive local service platform that demonstrates real-world application of technology in solving booking and service delivery challenges.
+              </Typography>
 
-                {/* Image Box 2: Top Right Overlapping */}
+              <Typography 
+                variant="body1" 
+                sx={{ 
+                  color: '#4B5563', 
+                  lineHeight: 1.8,
+                  fontSize: '1.05rem',
+                  maxWidth: '640px'
+                }}
+              >
+                This project showcases our skills in web development, database management, and user experience design, combining cutting-edge technology with practical solutions to revolutionize household services.
+              </Typography>
+            </Box>
+          </Grid>
+
+          {/* Right Column: Two Profile Circles */}
+          <Grid item xs={12} md={5.5}>
+            <Box 
+              sx={{ 
+                display: 'flex', 
+                gap: { xs: 4, sm: 8 }, 
+                justifyContent: 'center',
+                alignItems: 'center',
+                flexWrap: 'wrap'
+              }}
+            >
+              {/* Profile 1: Ambariya Vivek */}
+              <Box sx={{ textAlign: 'center', minWidth: '180px' }}>
                 <Box 
-                  sx={{ 
-                    position: 'absolute',
-                    top: '5%',
-                    right: '5%',
-                    width: '65%',
-                    height: '70%',
-                    bgcolor: '#0F0F14',
-                    color: '#ffffff',
-                    borderRadius: `${tokens.borderRadius}px`,
-                    border: '1px solid #0F0F14',
-                    boxShadow: '0 20px 45px rgba(0,0,0,0.15)',
-                    display: 'flex',
-                    flexDirection: 'column',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    p: 3,
-                    zIndex: 2,
+                  sx={{
+                    display: 'inline-block',
+                    p: '6px',
+                    border: '3px solid #0F0F14',
+                    borderRadius: '50%',
+                    mb: 2.5,
                     transition: tokens.transition,
                     '&:hover': {
-                      transform: 'translateY(-4px)',
-                      zIndex: 3
+                      transform: 'scale(1.05)',
                     }
                   }}
                 >
-                  <SchoolIcon sx={{ fontSize: 48, color: '#ffffff', mb: 1.5 }} />
-                  <Typography variant="h6" sx={{ fontWeight: 800, color: '#ffffff', fontSize: '1.1rem' }}>
-                    LJ University Incubated
-                  </Typography>
-                  <Typography variant="caption" sx={{ color: '#9CA3AF', textAlign: 'center', mt: 0.5 }}>
-                    Proudly built as a tech startup.
-                  </Typography>
-                </Box>
-              </Box>
-            </Grid>
-          </Grid>
-        </Container>
-      </Box>
-
-      {/* 2. Champions of our success story */}
-      <Box sx={{ bgcolor: '#F9FAFB', borderTop: '1px solid #E5E7EB', borderBottom: '1px solid #E5E7EB', py: { xs: 10, md: 14 } }}>
-        <Container maxWidth="lg">
-          <Grid container spacing={{ xs: 6, md: 8 }} alignItems="center">
-            {/* Left Column header */}
-            <Grid item xs={12} md={5}>
-              <Box>
-                <Typography 
-                  variant="h3" 
-                  component="label"
-                  sx={{ 
-                    fontFamily: 'Outfit',
-                    fontWeight: 900, 
-                    color: '#0F0F14', 
-                    display: 'block',
-                    lineHeight: 1.2,
-                    mb: 3,
-                    fontSize: { xs: '2rem', md: '2.5rem' }
-                  }}
-                >
-                  Champions of our success story
-                </Typography>
-                <Typography 
-                  variant="body1" 
-                  sx={{ 
-                    color: '#4B5563', 
-                    lineHeight: 1.8,
-                    fontSize: '1.05rem'
-                  }}
-                >
-                  WORKIZO has come a long way ever since its conceptualization at LJ University in 2026. With a lot of hardwork and perseverance, we have built a trusted marketplace. As a brand and as a service, it is our constant endeavour to redefine ourselves.
-                </Typography>
-              </Box>
-            </Grid>
-
-            {/* Right Column Team members circles */}
-            <Grid item xs={12} md={7}>
-              <Box 
-                sx={{ 
-                  display: 'flex', 
-                  gap: { xs: 4, sm: 6 }, 
-                  justifyContent: 'center', 
-                  flexWrap: 'wrap'
-                }}
-              >
-                {/* Rishi -> Vivek */}
-                <Box sx={{ textAlign: 'center', minWidth: '140px' }}>
-                  <Box 
+                  <Avatar 
                     sx={{ 
-                      width: 120, 
-                      height: 120, 
-                      borderRadius: '50%', 
-                      overflow: 'hidden', 
-                      mx: 'auto',
-                      mb: 2,
-                      border: '4px solid #FFFFFF',
-                      boxShadow: '0 4px 15px rgba(0,0,0,0.06)',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      bgcolor: '#0F0F14'
+                      width: 150, 
+                      height: 150, 
+                      bgcolor: '#0F0F14', 
+                      color: '#ffffff',
+                      fontFamily: 'Outfit',
+                      fontSize: '2.5rem',
+                      fontWeight: 900
                     }}
                   >
-                    <Typography variant="h4" sx={{ color: '#ffffff', fontWeight: 900 }}>
-                      AV
-                    </Typography>
-                  </Box>
-                  <Typography variant="subtitle1" sx={{ fontWeight: 800, color: '#0F0F14', mb: 0.5 }}>
-                    Ambariya Vivek
-                  </Typography>
-                  <Typography variant="caption" sx={{ color: '#6B7280', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-                    Founder
-                  </Typography>
+                    AV
+                  </Avatar>
                 </Box>
+                <Typography 
+                  variant="h6" 
+                  sx={{ 
+                    fontFamily: 'Outfit', 
+                    fontWeight: 800, 
+                    color: '#0F0F14',
+                    mb: 0.5,
+                    fontSize: '1.15rem'
+                  }}
+                >
+                  Ambariya Vivek
+                </Typography>
+                <Typography 
+                  variant="body2" 
+                  sx={{ 
+                    color: '#6B7280', 
+                    fontWeight: 700,
+                    textTransform: 'none',
+                    fontSize: '0.875rem'
+                  }}
+                >
+                  Project Leader
+                </Typography>
+              </Box>
 
-                {/* Pavan -> Ved */}
-                <Box sx={{ textAlign: 'center', minWidth: '140px' }}>
-                  <Box 
+              {/* Profile 2: Ved Goyani */}
+              <Box sx={{ textAlign: 'center', minWidth: '180px' }}>
+                <Box 
+                  sx={{
+                    display: 'inline-block',
+                    p: '6px',
+                    border: '3px solid #0F0F14',
+                    borderRadius: '50%',
+                    mb: 2.5,
+                    transition: tokens.transition,
+                    '&:hover': {
+                      transform: 'scale(1.05)',
+                    }
+                  }}
+                >
+                  <Avatar 
                     sx={{ 
-                      width: 120, 
-                      height: 120, 
-                      borderRadius: '50%', 
-                      overflow: 'hidden', 
-                      mx: 'auto',
-                      mb: 2,
-                      border: '4px solid #FFFFFF',
-                      boxShadow: '0 4px 15px rgba(0,0,0,0.06)',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      bgcolor: '#0F0F14'
+                      width: 150, 
+                      height: 150, 
+                      bgcolor: '#0F0F14', 
+                      color: '#ffffff',
+                      fontFamily: 'Outfit',
+                      fontSize: '2.5rem',
+                      fontWeight: 900
                     }}
                   >
-                    <Typography variant="h4" sx={{ color: '#ffffff', fontWeight: 900 }}>
-                      VG
-                    </Typography>
-                  </Box>
-                  <Typography variant="subtitle1" sx={{ fontWeight: 800, color: '#0F0F14', mb: 0.5 }}>
-                    Ved Goyani
-                  </Typography>
-                  <Typography variant="caption" sx={{ color: '#6B7280', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-                    Founder
-                  </Typography>
+                    VG
+                  </Avatar>
                 </Box>
+                <Typography 
+                  variant="h6" 
+                  sx={{ 
+                    fontFamily: 'Outfit', 
+                    fontWeight: 800, 
+                    color: '#0F0F14',
+                    mb: 0.5,
+                    fontSize: '1.15rem'
+                  }}
+                >
+                  Ved Goyani
+                </Typography>
+                <Typography 
+                  variant="body2" 
+                  sx={{ 
+                    color: '#6B7280', 
+                    fontWeight: 700,
+                    textTransform: 'none',
+                    fontSize: '0.875rem'
+                  }}
+                >
+                  Team Member
+                </Typography>
               </Box>
-            </Grid>
+
+            </Box>
           </Grid>
-        </Container>
-      </Box>
 
-      {/* 3. Jobs @ WORKIZO / Work with us */}
-      <Box sx={{ py: { xs: 10, md: 14 } }}>
-        <Container maxWidth="md">
-          <Box 
-            sx={{ 
-              textAlign: 'center', 
-              bgcolor: '#0F0F14', 
-              color: '#ffffff',
-              borderRadius: `${tokens.borderRadius}px`,
-              p: { xs: 6, md: 8 },
-              boxShadow: '0 20px 40px rgba(0,0,0,0.1)'
-            }}
-          >
-            <Typography 
-              variant="h3" 
-              component="h3" 
-              sx={{ 
-                fontFamily: 'Outfit', 
-                fontWeight: 900, 
-                mb: 2.5,
-                fontSize: { xs: '2rem', md: '2.5rem' }
-              }}
-            >
-              Jobs @ WORKIZO
-            </Typography>
-            <Typography 
-              variant="body1" 
-              sx={{ 
-                color: '#9CA3AF', 
-                lineHeight: 1.7, 
-                mb: 4.5,
-                maxWidth: '500px',
-                mx: 'auto'
-              }}
-            >
-              Join us in exploring a world of endless opportunities. Let’s find a spot for you.
-            </Typography>
-            <Button 
-              variant="contained" 
-              onClick={() => navigate('/captain/login')}
-              sx={{ 
-                bgcolor: '#ffffff', 
-                color: '#000000', 
-                borderRadius: '24px', 
-                fontWeight: 'bold',
-                px: 5,
-                py: 1.5,
-                textTransform: 'none',
-                fontSize: '1rem',
-                '&:hover': {
-                  bgcolor: '#F3F4F6'
-                }
-              }}
-            >
-              Work with us
-            </Button>
-          </Box>
-        </Container>
-      </Box>
-
+        </Grid>
+      </Container>
     </Box>
   );
 };
