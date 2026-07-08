@@ -378,19 +378,39 @@ function BookingTracker() {
 
   return (
     <Box sx={{ maxWidth: '1300px', margin: '0 auto', px: { xs: 2, md: 4 }, py: 3 }}>
-      
-      {/* SECTION 1: Breadcrumb */}
-      <Breadcrumbs separator="›" aria-label="breadcrumb" sx={{ mb: 3, fontSize: '0.875rem' }}>
-        <Link to="/customer/dashboard" style={{ textDecoration: 'none', color: tokens.colors.textSecondary, fontWeight: 500 }}>
-          Home
-        </Link>
-        <Link to="/customer/dashboard" style={{ textDecoration: 'none', color: tokens.colors.textSecondary, fontWeight: 500 }}>
-          My Bookings
-        </Link>
-        <Typography color="text.primary" fontWeight={600} sx={{ fontSize: '0.875rem' }}>
-          Booking Details
-        </Typography>
-      </Breadcrumbs>
+      {/* Top Header with Breadcrumbs & Action Buttons */}
+      <Box display="flex" justifyContent="space-between" alignItems="center" sx={{ mb: 4, flexWrap: 'wrap', gap: 2 }}>
+        <Breadcrumbs separator="›" aria-label="breadcrumb" sx={{ fontSize: '0.875rem' }}>
+          <Link to="/customer/dashboard" style={{ textDecoration: 'none', color: tokens.colors.textSecondary, fontWeight: 500 }}>
+            Home
+          </Link>
+          <Link to="/customer/dashboard" style={{ textDecoration: 'none', color: tokens.colors.textSecondary, fontWeight: 500 }}>
+            My Bookings
+          </Link>
+          <Typography color="text.primary" fontWeight={600} sx={{ fontSize: '0.875rem' }}>
+            Booking Details
+          </Typography>
+        </Breadcrumbs>
+
+        <Box display="flex" gap={2}>
+          <Button
+            variant="contained"
+            startIcon={<ArrowBackIcon />}
+            onClick={() => navigate('/customer/dashboard')}
+            sx={{ bgcolor: tokens.colors.primary, color: '#ffffff', px: 3, py: 1.25, borderRadius: '8px', textTransform: 'none', fontWeight: 700, fontSize: '0.875rem', '&:hover': { bgcolor: '#23232F' } }}
+          >
+            Back to Dashboard
+          </Button>
+          <Button
+            variant="outlined"
+            startIcon={<HeadsetMicIcon />}
+            onClick={() => toast.success('Connecting with Workizo Support...')}
+            sx={{ borderColor: tokens.colors.primary, color: tokens.colors.primary, px: 3, py: 1.25, borderRadius: '8px', textTransform: 'none', fontWeight: 700, fontSize: '0.875rem' }}
+          >
+            Contact Support
+          </Button>
+        </Box>
+      </Box>
 
       {/* SECTION 2: Large Header */}
       <Paper elevation={0} sx={{ p: 3, mb: 3, border: `1px solid ${tokens.borderColor}`, borderRadius: '16px', bgcolor: tokens.colors.paper }}>
@@ -937,25 +957,6 @@ function BookingTracker() {
         </Grid>
       </Grid>
 
-      {/* BOTTOM BUTTONS */}
-      <Box sx={{ mt: 5, display: 'flex', justifyContent: 'center', gap: 3, flexWrap: 'wrap' }}>
-        <Button
-          variant="contained"
-          startIcon={<ArrowBackIcon />}
-          onClick={() => navigate('/customer/dashboard')}
-          sx={{ bgcolor: tokens.colors.primary, color: '#ffffff', px: 4, py: 1.5, borderRadius: '8px', textTransform: 'none', fontWeight: 700, '&:hover': { bgcolor: '#23232F' } }}
-        >
-          Back to Dashboard
-        </Button>
-        <Button
-          variant="outlined"
-          startIcon={<HeadsetMicIcon />}
-          onClick={() => toast.success('Connecting with Workizo Support...')}
-          sx={{ borderColor: tokens.colors.primary, color: tokens.colors.primary, px: 4, py: 1.5, borderRadius: '8px', textTransform: 'none', fontWeight: 700 }}
-        >
-          Contact Support
-        </Button>
-      </Box>
 
       {/* Payment Selection Modal */}
       <Dialog 
