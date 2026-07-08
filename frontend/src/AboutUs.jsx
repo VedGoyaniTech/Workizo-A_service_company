@@ -158,7 +158,7 @@ const AboutUs = () => {
               <Typography 
                 variant="overline" 
                 sx={{ 
-                  color: '#6B7280', 
+                  color: '#3B82F6', 
                   fontWeight: 800, 
                   letterSpacing: '0.2em',
                   display: 'block',
@@ -428,6 +428,7 @@ const AboutUs = () => {
                   sx={{ 
                     position: 'relative', 
                     display: 'inline-block',
+                    color: '#3B82F6',
                     pb: 0.5,
                     '&::after': {
                       content: '""',
@@ -436,7 +437,7 @@ const AboutUs = () => {
                       left: 0,
                       width: '100%',
                       height: '4px',
-                      bgcolor: '#0F0F14'
+                      bgcolor: '#3B82F6'
                     }
                   }}
                 >
@@ -506,7 +507,7 @@ const AboutUs = () => {
                   sx={{
                     display: 'inline-block',
                     p: '6px',
-                    border: '3px solid #0F0F14',
+                    border: '3px solid #3B82F6',
                     borderRadius: '50%',
                     mb: 2.5,
                     transition: tokens.transition,
@@ -519,7 +520,7 @@ const AboutUs = () => {
                     sx={{ 
                       width: 176, 
                       height: 176, 
-                      bgcolor: '#0F0F14', 
+                      bgcolor: '#3B82F6', 
                       color: '#ffffff',
                       fontFamily: 'Outfit',
                       fontSize: '2.75rem',
@@ -560,7 +561,7 @@ const AboutUs = () => {
                   sx={{
                     display: 'inline-block',
                     p: '6px',
-                    border: '3px solid #0F0F14',
+                    border: '3px solid #3B82F6',
                     borderRadius: '50%',
                     mb: 2.5,
                     transition: tokens.transition,
@@ -573,7 +574,7 @@ const AboutUs = () => {
                     sx={{ 
                       width: 176, 
                       height: 176, 
-                      bgcolor: '#0F0F14', 
+                      bgcolor: '#3B82F6', 
                       color: '#ffffff',
                       fontFamily: 'Outfit',
                       fontSize: '2.75rem',
