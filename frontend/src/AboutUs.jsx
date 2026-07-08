@@ -99,7 +99,7 @@ const AboutUs = () => {
           overflow: 'hidden',
           pt: '80px', 
           pb: '80px',
-          bgcolor: '#FFFFFF', // Solid clean white background to prevent any blue gradient overlap
+          bgcolor: '#FFFFFF', // Solid clean white background
           borderBottom: '1px solid #F3F4F6'
         }}
       >
@@ -113,8 +113,8 @@ const AboutUs = () => {
               top: `${node.y}%`,
               width: `${node.size}px`,
               height: `${node.size}px`,
-              color: '#3B82F6', // Clear blue outline
-              opacity: 0.15,    // Set opacity to 15% to ensure it is visible on white background
+              color: '#4f46e5', // Branded purple matching "One Skilled Solution"
+              opacity: 0.1,    // Subtle opacity on white background
               transform: `rotate(${node.rotate}deg)`,
               animation: `${node.anim} 14s ease-in-out infinite`,
               zIndex: 0,
@@ -158,7 +158,7 @@ const AboutUs = () => {
               <Typography 
                 variant="overline" 
                 sx={{ 
-                  color: '#3B82F6', 
+                  color: '#4f46e5', // Branded purple
                   fontWeight: 800, 
                   letterSpacing: '0.2em',
                   display: 'block',
@@ -258,7 +258,7 @@ const AboutUs = () => {
                 mx: 'auto'
               }}
             >
-              {/* Single soft light-blue circular glow behind the image card to create depth */}
+              {/* Single soft purple circular glow behind the image card to create depth */}
               <Box 
                 sx={{ 
                   position: 'absolute',
@@ -267,7 +267,7 @@ const AboutUs = () => {
                   width: '120%',
                   height: '120%',
                   borderRadius: '50%',
-                  background: 'radial-gradient(circle, rgba(59,130,246,0.04) 0%, rgba(255,255,255,0) 70%)',
+                  background: 'radial-gradient(circle, rgba(79,70,229,0.04) 0%, rgba(255,255,255,0) 70%)',
                   filter: 'blur(30px)',
                   zIndex: 1,
                   pointerEvents: 'none'
@@ -281,8 +281,8 @@ const AboutUs = () => {
                   aspectRatio: '16/9', 
                   bgcolor: '#F4F6F9', 
                   borderRadius: '24px', 
-                  boxShadow: '0 20px 40px rgba(59, 130, 246, 0.08)',
-                  border: '1px solid rgba(59, 130, 246, 0.15)',
+                  boxShadow: '0 20px 40px rgba(79, 70, 229, 0.08)',
+                  border: '1px solid rgba(79, 70, 229, 0.15)',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
@@ -295,7 +295,7 @@ const AboutUs = () => {
                   transition: 'all 0.3s ease',
                   '&:hover': {
                     transform: 'translateY(-4px)',
-                    boxShadow: '0 25px 50px rgba(59, 130, 246, 0.15)'
+                    boxShadow: '0 25px 50px rgba(79, 70, 229, 0.15)'
                   }
                 }}
               >
@@ -342,7 +342,7 @@ const AboutUs = () => {
         </Container>
       </Box>
 
-      {/* 2. Existing "Champions of our startup project" Section with Pattern & Blue Shading */}
+      {/* 2. Existing "Champions of our startup project" Section with Pattern & Shading */}
       <Box 
         sx={{ 
           position: 'relative',
@@ -363,8 +363,8 @@ const AboutUs = () => {
               top: `${node.y}%`,
               width: `${node.size}px`,
               height: `${node.size}px`,
-              color: '#3B82F6', // Clear blue outline
-              opacity: 0.15,    // 15% opacity to match Hero
+              color: '#4f46e5', // Branded purple matching "One Skilled Solution"
+              opacity: 0.1,    // Subtle opacity
               transform: `rotate(${node.rotate}deg)`,
               animation: `${node.anim} 14s ease-in-out infinite`,
               zIndex: 0,
@@ -428,7 +428,7 @@ const AboutUs = () => {
                   sx={{ 
                     position: 'relative', 
                     display: 'inline-block',
-                    color: '#3B82F6',
+                    color: '#4f46e5', // Branded purple
                     pb: 0.5,
                     '&::after': {
                       content: '""',
@@ -437,7 +437,7 @@ const AboutUs = () => {
                       left: 0,
                       width: '100%',
                       height: '4px',
-                      bgcolor: '#3B82F6'
+                      bgcolor: '#4f46e5' // Branded purple underline
                     }
                   }}
                 >
@@ -485,7 +485,7 @@ const AboutUs = () => {
                 mx: 'auto'
               }}
             >
-              {/* Single soft light-blue circular glow behind the profiles to create depth and shading */}
+              {/* Single soft purple circular glow behind the profiles to create depth and shading */}
               <Box 
                 sx={{ 
                   position: 'absolute',
@@ -494,7 +494,7 @@ const AboutUs = () => {
                   width: '120%',
                   height: '120%',
                   borderRadius: '50%',
-                  background: 'radial-gradient(circle, rgba(59,130,246,0.04) 0%, rgba(255,255,255,0) 70%)',
+                  background: 'radial-gradient(circle, rgba(79,70,229,0.04) 0%, rgba(255,255,255,0) 70%)',
                   filter: 'blur(30px)',
                   zIndex: 1,
                   pointerEvents: 'none'
@@ -507,7 +507,7 @@ const AboutUs = () => {
                   sx={{
                     display: 'inline-block',
                     p: '6px',
-                    border: '3px solid #3B82F6',
+                    border: '3px solid #4f46e5', // Branded purple border
                     borderRadius: '50%',
                     mb: 2.5,
                     transition: tokens.transition,
@@ -520,7 +520,7 @@ const AboutUs = () => {
                     sx={{ 
                       width: 176, 
                       height: 176, 
-                      bgcolor: '#3B82F6', 
+                      bgcolor: '#4f46e5', // Branded purple background
                       color: '#ffffff',
                       fontFamily: 'Outfit',
                       fontSize: '2.75rem',
@@ -561,7 +561,7 @@ const AboutUs = () => {
                   sx={{
                     display: 'inline-block',
                     p: '6px',
-                    border: '3px solid #3B82F6',
+                    border: '3px solid #4f46e5', // Branded purple border
                     borderRadius: '50%',
                     mb: 2.5,
                     transition: tokens.transition,
@@ -574,7 +574,7 @@ const AboutUs = () => {
                     sx={{ 
                       width: 176, 
                       height: 176, 
-                      bgcolor: '#3B82F6', 
+                      bgcolor: '#4f46e5', // Branded purple background
                       color: '#ffffff',
                       fontFamily: 'Outfit',
                       fontSize: '2.75rem',
