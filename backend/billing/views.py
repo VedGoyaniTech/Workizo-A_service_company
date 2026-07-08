@@ -240,6 +240,9 @@ class ProcessPaymentView(views.APIView):
         if booking.customer != request.user:
             return Response({"detail": "Access denied."}, status=status.HTTP_403_FORBIDDEN)
 
+        if booking.status == 'completed':
+            return Response({"detail": "This booking is already completed and paid."}, status=status.HTTP_400_BAD_REQUEST)
+
         bill = get_object_or_404(Bill, booking=booking)
         method = request.data.get('method', 'cash')
         

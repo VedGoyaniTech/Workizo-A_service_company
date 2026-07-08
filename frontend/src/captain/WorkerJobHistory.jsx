@@ -225,7 +225,7 @@ function WorkerJobHistory() {
                               Problem: {job.problem_type} — {job.problem_description?.substring(0, 80)}...
                             </Typography>
                             <Typography variant="caption" color="text.secondary" sx={{ mt: 1, display: 'block' }}>
-                              Schedule: <b>{job.preferred_date} | {job.preferred_time}</b>
+                              Booked: <b>{new Date(job.created_at).toLocaleString('en-IN', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' })}</b>
                             </Typography>
                           </Grid>
 

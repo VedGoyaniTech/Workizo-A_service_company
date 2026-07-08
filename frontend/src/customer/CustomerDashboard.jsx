@@ -562,16 +562,12 @@ function CustomerDashboard() {
                 
                 // Calculate expected arrival text
                 let arrivalText = "";
-                if (bk.booking_type === 'instant') {
-                  if (bk.status === 'searching') {
-                    arrivalText = "Finding nearest Captain...";
-                  } else if (['accepted', 'on_the_way'].includes(bk.status)) {
-                    arrivalText = "Captain arriving in ~15 mins";
-                  } else {
-                    arrivalText = "Captain arrived at premises";
-                  }
+                if (bk.status === 'searching') {
+                  arrivalText = "Finding nearest Captain...";
+                } else if (['accepted', 'on_the_way'].includes(bk.status)) {
+                  arrivalText = "Captain arriving in ~15 mins";
                 } else {
-                  arrivalText = `Scheduled: ${bk.preferred_date || ''} (${bk.preferred_time || 'Instant'})`;
+                  arrivalText = "Captain arrived at premises";
                 }
 
                 return (
@@ -634,7 +630,7 @@ function CustomerDashboard() {
                         <Typography variant="caption" color="text.secondary" sx={{ fontWeight: 600, display: 'block', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
                           ETA / Schedule
                         </Typography>
-                        <Typography variant="body2" fontWeight={700} sx={{ mt: 0.5, color: bk.booking_type === 'instant' && bk.status !== 'searching' ? 'primary.main' : 'text.primary' }}>
+                        <Typography variant="body2" fontWeight={700} sx={{ mt: 0.5, color: bk.status !== 'searching' ? 'primary.main' : 'text.primary' }}>
                           {arrivalText}
                         </Typography>
                       </Box>

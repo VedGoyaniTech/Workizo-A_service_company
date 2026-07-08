@@ -408,15 +408,6 @@ function WorkerDashboard() {
                           <Typography variant="caption" color="textSecondary" fontWeight={600}>
                             ID: #{b.id}
                           </Typography>
-                          <Box sx={{ 
-                            px: 1.25, py: 0.25, borderRadius: '12px', 
-                            bgcolor: tokens.colors.accentLight, 
-                            border: '1px solid rgba(26, 115, 232, 0.15)'
-                          }}>
-                            <Typography variant="caption" fontWeight={700} color="primary">
-                              {b.booking_type === 'instant' ? 'INSTANT' : 'SLOT'}
-                            </Typography>
-                          </Box>
                         </Box>
 
                         <Typography variant="subtitle1" fontWeight={700}>
@@ -435,7 +426,7 @@ function WorkerDashboard() {
                         </Box>
 
                         <Typography variant="caption" color="text.secondary" sx={{ mt: 2, display: 'block' }}>
-                          Preferred Schedule: <b>{b.preferred_date} | {b.preferred_time}</b>
+                          Requested: <b>{new Date(b.created_at).toLocaleString('en-IN', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' })}</b>
                         </Typography>
 
                         <Divider sx={{ my: 2 }} />

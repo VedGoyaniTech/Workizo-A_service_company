@@ -50,51 +50,60 @@ def create_and_send_notification(user, title, message, notification_type='genera
     return noti
 
 class BookingViewSet(viewsets.ModelViewSet):
-    queryset = Booking.objects.all().order_by('-created_at')
     serializer_class = BookingSerializer
     permission_classes = [permissions.IsAuthenticated]
+
+    def get_queryset(self):
+        user = self.request.user
+        if not user.is_authenticated:
+            return Booking.objects.none()
+        if user.is_staff or user.role == 'admin':
+            return Booking.objects.all().order_by('-created_at')
+        elif user.role == 'worker':
+            profile = getattr(user, 'worker_profile', None)
+            category = profile.service_category if profile else None
+            from django.db.models import Q
+            if category:
+                return Booking.objects.filter(
+                    Q(worker=user) | Q(status='searching', service_category=category)
+                ).order_by('-created_at')
+            else:
+                return Booking.objects.filter(worker=user).order_by('-created_at')
+        else:
+            return Booking.objects.filter(customer=user).order_by('-created_at')
 
     def perform_create(self, serializer):
         booking = serializer.save(customer=self.request.user)
         
-        # Default date/time if instant booking
-        if booking.booking_type == 'instant':
-            from django.utils import timezone
-            if not booking.preferred_date:
-                booking.preferred_date = timezone.now().date()
-            if not booking.preferred_time:
-                booking.preferred_time = "Instant (10-40 mins)"
-            booking.save()
-            
-            # Find and notify online approved workers in the service category
-            from workers.models import WorkerProfile
-            workers = WorkerProfile.objects.filter(
-                online_status=True,
-                approval_status='approved',
-                service_category=booking.service_category
+        # Find and notify online approved workers in the service category
+        from workers.models import WorkerProfile
+        workers = WorkerProfile.objects.filter(
+            online_status=True,
+            approval_status='approved',
+            service_category=booking.service_category
+        )
+        
+        channel_layer = get_channel_layer()
+        for wp in workers:
+            # Create DB notification for the worker
+            noti = Notification.objects.create(
+                user=wp.user,
+                title="New Instant Booking Request",
+                message=f"New instant request for {booking.service_category.name}. Problem: {booking.problem_type}.",
+                notification_type="incoming_booking_request"
             )
-            
-            channel_layer = get_channel_layer()
-            for wp in workers:
-                # Create DB notification for the worker
-                noti = Notification.objects.create(
-                    user=wp.user,
-                    title="New Instant Booking Request",
-                    message=f"New instant request for {booking.service_category.name}. Problem: {booking.problem_type}.",
-                    notification_type="incoming_booking_request"
-                )
-                if channel_layer:
-                    async_to_sync(channel_layer.group_send)(
-                        f"user_{wp.user.id}",
-                        {
-                            "type": "send_notification",
-                            "data": {
-                                "type": "notification",
-                                "notification": NotificationSerializer(noti).data,
-                                "booking": BookingSerializer(booking).data
-                            }
+            if channel_layer:
+                async_to_sync(channel_layer.group_send)(
+                    f"user_{wp.user.id}",
+                    {
+                        "type": "send_notification",
+                        "data": {
+                            "type": "notification",
+                            "notification": NotificationSerializer(noti).data,
+                            "booking": BookingSerializer(booking).data
                         }
-                    )
+                    }
+                )
 
         # Broadcast the new available booking request to all workers in this category
         channel_layer = get_channel_layer()
@@ -171,17 +180,27 @@ class BookingViewSet(viewsets.ModelViewSet):
 
     @action(detail=True, methods=['post'])
     def accept(self, request, pk=None):
-        booking = self.get_object()
         user = request.user
         if user.role != 'worker':
             return Response({"detail": "Only workers can accept jobs."}, status=status.HTTP_403_FORBIDDEN)
         
-        if booking.status != 'searching':
-            return Response({"detail": "This booking has already been assigned or cancelled."}, status=status.HTTP_400_BAD_REQUEST)
+        profile = getattr(user, 'worker_profile', None)
+        if not profile or not profile.online_status or profile.approval_status != 'approved':
+            return Response({"detail": "You must be approved and online to accept jobs."}, status=status.HTTP_400_BAD_REQUEST)
         
-        booking.worker = user
-        booking.status = 'accepted'
-        booking.save()
+        from django.db import transaction
+        with transaction.atomic():
+            try:
+                booking = Booking.objects.select_for_update().get(pk=pk)
+            except Booking.DoesNotExist:
+                return Response({"detail": "Booking not found."}, status=status.HTTP_404_NOT_FOUND)
+
+            if booking.status != 'searching':
+                return Response({"detail": "This booking has already been assigned or cancelled."}, status=status.HTTP_400_BAD_REQUEST)
+            
+            booking.worker = user
+            booking.status = 'accepted'
+            booking.save()
 
         # Serialized data
         booking_data = self.get_serializer(booking).data
@@ -239,11 +258,49 @@ class BookingViewSet(viewsets.ModelViewSet):
         if new_status not in valid_statuses:
             return Response({"detail": "Invalid status value."}, status=status.HTTP_400_BAD_REQUEST)
 
-        # Basic role validations
-        if user.role == 'worker' and booking.worker != user:
-            return Response({"detail": "You are not assigned to this job."}, status=status.HTTP_403_FORBIDDEN)
-        if user.role == 'customer' and booking.customer != user and new_status == 'cancelled':
-            return Response({"detail": "You cannot modify this booking."}, status=status.HTTP_403_FORBIDDEN)
+        # Define allowed transitions for each status
+        allowed_transitions = {
+            'searching': ['accepted', 'cancelled'],
+            'accepted': ['on_the_way', 'cancelled'],
+            'on_the_way': ['arrived', 'cancelled'],
+            'arrived': ['verified', 'cancelled'],
+            'verified': ['inspection', 'repair_started'],
+            'inspection': ['repair_started'],
+            'repair_started': ['repair_completed'],
+            'repair_completed': ['waiting_approval', 'completed'],
+            'waiting_approval': ['completed'],
+            'completed': [],
+            'cancelled': []
+        }
+
+        current_status = booking.status
+
+        # Strict role-based & state machine validation
+        if user.role == 'customer':
+            if booking.customer != user:
+                return Response({"detail": "You do not own this booking."}, status=status.HTTP_403_FORBIDDEN)
+            if new_status == 'cancelled':
+                if current_status != 'searching':
+                    return Response({"detail": "You can only cancel a booking while it is searching for a captain."}, status=status.HTTP_400_BAD_REQUEST)
+            else:
+                return Response({"detail": "Customers can only cancel bookings."}, status=status.HTTP_400_BAD_REQUEST)
+                
+        elif user.role == 'worker':
+            if booking.worker != user:
+                return Response({"detail": "You are not assigned to this job."}, status=status.HTTP_403_FORBIDDEN)
+            
+            # Workers cannot manually force completed or verified status (must happen via verify-qr / payment process)
+            if new_status in ['verified', 'completed']:
+                return Response({"detail": f"Status '{new_status}' cannot be set manually."}, status=status.HTTP_400_BAD_REQUEST)
+                
+            allowed = allowed_transitions.get(current_status, [])
+            if new_status not in allowed:
+                return Response({"detail": f"Invalid status transition from {current_status} to {new_status}."}, status=status.HTTP_400_BAD_REQUEST)
+                
+        elif user.role == 'admin' or user.is_staff:
+            pass
+        else:
+            return Response({"detail": "Access denied."}, status=status.HTTP_403_FORBIDDEN)
 
         booking.status = new_status
         
@@ -293,8 +350,14 @@ class BookingViewSet(viewsets.ModelViewSet):
         if user.role != 'worker' or booking.worker != user:
             return Response({"detail": "Access denied."}, status=status.HTTP_403_FORBIDDEN)
         
-        qr_value = request.data.get('qr_code_value')
-        if str(booking.qr_code_value) == str(qr_value):
+        qr_value = request.data.get('qr_code_value') or request.data.get('qr_code')
+        if not qr_value:
+            return Response({"verified": False, "detail": "Missing QR code value."}, status=status.HTTP_400_BAD_REQUEST)
+            
+        expected_token = str(booking.qr_code_value)[:8].strip().upper()
+        provided_token = str(qr_value).strip().upper()
+        
+        if expected_token == provided_token:
             booking.status = 'verified'
             booking.save()
 
@@ -497,8 +560,6 @@ class BookingViewSet(viewsets.ModelViewSet):
             city="Ahmedabad",
             state="Gujarat",
             pincode="380015",
-            preferred_date="2026-07-04",
-            preferred_time="03:00 PM - 05:00 PM",
             status='accepted'
         )
 

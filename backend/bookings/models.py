@@ -28,14 +28,6 @@ class Booking(models.Model):
     city = models.CharField(max_length=100)
     state = models.CharField(max_length=100)
     pincode = models.CharField(max_length=10)
-    BOOKING_TYPE_CHOICES = (
-        ('slot', 'Slot-Based Service'),
-        ('instant', 'Instant Service (10-40 mins)'),
-    )
-
-    booking_type = models.CharField(max_length=20, choices=BOOKING_TYPE_CHOICES, default='slot')
-    preferred_date = models.DateField(null=True, blank=True)
-    preferred_time = models.CharField(max_length=50, null=True, blank=True)
     status = models.CharField(max_length=50, choices=STATUS_CHOICES, default='searching')
     qr_code_value = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
     tracking_id = models.CharField(max_length=50, unique=True, null=True, blank=True)

@@ -346,6 +346,7 @@ class AdminBookingDetailView(APIView):
         if action == 'cancel':
             booking.status = 'cancelled'
             booking.save()
+            send_booking_update(booking.id, BookingSerializer(booking).data)
             return Response({"message": "Booking cancelled successfully."}, status=status.HTTP_200_OK)
         
         elif action == 'assign':
@@ -358,6 +359,7 @@ class AdminBookingDetailView(APIView):
             booking.worker = worker
             booking.status = 'accepted'
             booking.save()
+            send_booking_update(booking.id, BookingSerializer(booking).data)
             return Response({"message": f"Assigned to {worker.full_name} successfully."}, status=status.HTTP_200_OK)
 
         return Response({"detail": "Invalid action"}, status=status.HTTP_400_BAD_REQUEST)

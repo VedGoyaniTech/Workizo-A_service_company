@@ -36,7 +36,7 @@ class BookingSerializer(serializers.ModelSerializer):
         fields = (
             'id', 'tracking_id', 'customer', 'worker', 'service_category', 'service_category_detail',
             'problem_type', 'problem_description', 'address', 'city', 'state', 'pincode',
-            'preferred_date', 'preferred_time', 'booking_type', 'status', 'qr_code_value',
+            'status', 'qr_code_value',
             'before_photo', 'after_photo', 'spare_part_photo', 'invoice_photo', 'optional_video',
             'repair_token', 'major_repairs', 'rating', 'created_at', 'updated_at'
         )
@@ -52,8 +52,8 @@ class PublicBookingSerializer(serializers.ModelSerializer):
     class Meta:
         model = Booking
         fields = (
-            'id', 'tracking_id', 'status', 'booking_type', 'problem_type',
-            'preferred_date', 'preferred_time', 'service_category_detail',
+            'id', 'tracking_id', 'status', 'problem_type',
+            'service_category_detail',
             'worker_name', 'repair_token', 'major_repairs', 'created_at', 'updated_at'
         )
         read_only_fields = ('id', 'tracking_id', 'status', 'created_at', 'updated_at')

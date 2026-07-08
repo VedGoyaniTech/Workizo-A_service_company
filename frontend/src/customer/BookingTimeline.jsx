@@ -7,7 +7,7 @@ import {
   IconButton, Avatar
 } from '@mui/material';
 import { motion, AnimatePresence } from 'framer-motion';
-import api, { buildWsUrl } from '../services/api';
+import api, { buildWsUrl, buildApiUrl } from '../services/api';
 import toast from 'react-hot-toast';
 import PhoneIcon from '@mui/icons-material/Phone';
 import ChatIcon from '@mui/icons-material/Chat';
@@ -61,8 +61,8 @@ function BookingTimeline({ bookingId, open, onClose, onRefresh }) {
       const res = await api.get(`/api/bookings/bookings/${id}/`);
       setBooking(res.data);
       
-      // Fetch bill if status is completed or bill exists
-      if (res.data.status === 'completed' || res.data.status === 'in_progress') {
+      // Fetch bill if status is completed, waiting approval, or repair completed
+      if (['repair_completed', 'waiting_approval', 'completed'].includes(res.data.status)) {
         try {
           const billRes = await api.get(`/api/billing/${id}/get-bill/`);
           setBill(billRes.data);
@@ -112,7 +112,7 @@ function BookingTimeline({ bookingId, open, onClose, onRefresh }) {
           if (payload.type === 'booking_status') {
             setBooking(payload.booking);
             if (onRefresh) onRefresh();
-            if (payload.booking.status === 'completed' || payload.booking.status === 'in_progress') {
+            if (['repair_completed', 'waiting_approval', 'completed'].includes(payload.booking.status)) {
               api.get(`/api/billing/${id}/get-bill/`)
                 .then(res => setBill(res.data))
                 .catch(() => setBill(null));
@@ -152,29 +152,7 @@ function BookingTimeline({ bookingId, open, onClose, onRefresh }) {
     };
   }, [id]);
 
-  // Simulate assignment logic
-  useEffect(() => {
-    if (booking && booking.status === 'searching' && booking.booking_type !== 'instant') {
-      if (!searchTimer.current) {
-        searchTimer.current = setTimeout(async () => {
-          try {
-            await api.post(`/api/bookings/bookings/${id}/simulate-assignment/`);
-            toast.success('Worker assigned! Simulation update.');
-            fetchDetails();
-            if (onRefresh) onRefresh();
-          } catch (err) {
-            console.error(err);
-            toast.error(err.response?.data?.detail || 'No available worker registered for this category.');
-          }
-        }, 8000);
-      }
-    } else {
-      if (searchTimer.current) {
-        clearTimeout(searchTimer.current);
-        searchTimer.current = null;
-      }
-    }
-  }, [booking, id]);
+
 
   const handleApproveRepair = async (approvalId, statusVal) => {
     try {
@@ -225,7 +203,7 @@ function BookingTimeline({ bookingId, open, onClose, onRefresh }) {
   };
 
   const handleDownloadInvoice = () => {
-    window.open(`http://127.0.0.1:8001/api/billing/${id}/download-invoice/`, '_blank');
+    window.open(buildApiUrl(`/api/billing/${id}/download-invoice/`), '_blank');
   };
 
   const handleSubmitRating = async () => {
@@ -430,7 +408,7 @@ function BookingTimeline({ bookingId, open, onClose, onRefresh }) {
               <Box minWidth={0}>
                 <Typography variant="caption" color="text.secondary" display="block" sx={{ fontWeight: 600 }}>Mode</Typography>
                 <Typography variant="body2" fontWeight={700} noWrap sx={{ fontFamily: 'Outfit', color: tokens.colors.primary }}>
-                  {booking.booking_type === 'instant' ? 'Instant' : 'Scheduled'}
+                  Instant
                 </Typography>
               </Box>
             </Box>
@@ -528,34 +506,35 @@ function BookingTimeline({ bookingId, open, onClose, onRefresh }) {
                       Broadcast is live. A nearby worker will pick up your request shortly.
                     </Typography>
 
-                    {booking.booking_type === 'instant' && (
-                      <Button
-                        variant="contained"
-                        onClick={async () => {
-                          try {
-                            await api.post(`/api/bookings/bookings/${booking.id}/simulate-assignment/`);
-                            toast.success('Captain assigned via simulation!');
-                            fetchDetails();
-                            if (onRefresh) onRefresh();
-                          } catch (err) {
-                            console.error(err);
-                            toast.error(err.response?.data?.detail || 'No available workers for simulation.');
-                          }
-                        }}
-                        sx={{
-                          bgcolor: tokens.colors.primary,
-                          color: '#ffffff',
-                          fontWeight: '700',
-                          px: 3,
-                          py: 1,
-                          borderRadius: `${tokens.borderRadiusSm}px`,
-                          textTransform: 'none',
-                          '&:hover': { bgcolor: '#23232F' }
-                        }}
-                      >
-                        Simulate Captain Acceptance
-                      </Button>
-                    )}
+                    <Button
+                      variant="contained"
+                      onClick={async () => {
+                        try {
+                          await api.post(`/api/bookings/bookings/${booking.id}/simulate-assignment/`);
+                          toast.success('Captain assigned via simulation!');
+                          fetchDetails();
+                          if (onRefresh) onRefresh();
+                        } catch (err) {
+                          console.error(err);
+                          toast.error(err.response?.data?.detail || 'No available workers for simulation.');
+                        }
+                      }}
+                      sx={{
+                        bgcolor: tokens.colors.primary,
+                        color: '#ffffff',
+                        fontWeight: '700',
+                        px: 3,
+                        py: 1,
+                        borderRadius: `${tokens.borderRadiusSm}px`,
+                        textTransform: 'none',
+                        fontSize: '0.9rem',
+                        '&:hover': {
+                          bgcolor: '#23232F'
+                        }
+                      }}
+                    >
+                      Assign Simulator Captain
+                    </Button>
                   </Box>
                 </Paper>
               ) : (
@@ -861,15 +840,7 @@ function BookingTimeline({ bookingId, open, onClose, onRefresh }) {
                     </Typography>
                   </ListItem>
 
-                  <ListItem sx={{ py: 1.25, px: 0, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <Box display="flex" alignItems="center" gap={1.5}>
-                      <AccessTimeIcon sx={{ color: tokens.colors.textSecondary, fontSize: 18 }} />
-                      <Typography variant="body2" color="text.secondary" fontWeight={500}>Requested Time</Typography>
-                    </Box>
-                    <Typography variant="body2" fontWeight={700} sx={{ color: tokens.colors.primary }}>
-                      {booking.preferred_time || '10:30 AM'}
-                    </Typography>
-                  </ListItem>
+
 
                   <ListItem sx={{ py: 1.25, px: 0, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                     <Box display="flex" alignItems="center" gap={1.5}>

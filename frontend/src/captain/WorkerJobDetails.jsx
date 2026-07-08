@@ -334,8 +334,8 @@ function WorkerJobDetails() {
         loading={loading}
       />
       <SummaryCard
-        label="Preferred Schedule"
-        value={`${booking.preferred_date} (${booking.preferred_time})`}
+        label="Booked Time"
+        value={booking.created_at ? new Date(booking.created_at).toLocaleString('en-IN', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' }) : 'N/A'}
         icon={<HourglassEmptyIcon />}
         accentColor="#FBBC05"
         loading={loading}
