@@ -225,3 +225,155 @@ class EmailNotificationService:
             context=context,
             recipient_list=[booking.customer.email]
         )
+
+    @staticmethod
+    def send_captain_welcome_verification_email(user, request=None):
+        """
+        Sends a welcome email containing a secure verification link that expires in 24 hours to a captain.
+        """
+        signer = TimestampSigner()
+        token = signer.sign(str(user.id))
+        
+        base_url = EmailNotificationService._get_base_url(request)
+        verification_url = f"{base_url}/api/accounts/verify-email/?token={token}"
+        
+        context = {
+            'subject': 'Welcome to WORKIZO! Verify your Captain account',
+            'user_name': user.full_name,
+            'verification_url': verification_url,
+            'expire_hours': 24
+        }
+        
+        return send_html_email(
+            subject=context['subject'],
+            template_name='emails/captain_welcome_verification.html',
+            context=context,
+            recipient_list=[user.email]
+        )
+
+    @staticmethod
+    def send_captain_kyc_submitted_email(user):
+        """
+        Sends an email confirming KYC document receipt.
+        """
+        context = {
+            'subject': 'KYC Verification Documents Received',
+            'user_name': user.full_name
+        }
+        
+        return send_html_email(
+            subject=context['subject'],
+            template_name='emails/captain_kyc_submitted.html',
+            context=context,
+            recipient_list=[user.email]
+        )
+
+    @staticmethod
+    def send_captain_kyc_approved_email(user):
+        """
+        Sends an email notifying the captain that they have been approved.
+        """
+        context = {
+            'subject': 'Congratulations! Your Captain account is verified',
+            'user_name': user.full_name
+        }
+        
+        return send_html_email(
+            subject=context['subject'],
+            template_name='emails/captain_kyc_approved.html',
+            context=context,
+            recipient_list=[user.email]
+        )
+
+    @staticmethod
+    def send_captain_kyc_rejected_email(user, reason=None):
+        """
+        Sends an email notifying the captain that their KYC has been rejected.
+        """
+        context = {
+            'subject': 'Action Required: Captain Verification Update',
+            'user_name': user.full_name,
+            'rejection_reason': reason
+        }
+        
+        return send_html_email(
+            subject=context['subject'],
+            template_name='emails/captain_kyc_rejected.html',
+            context=context,
+            recipient_list=[user.email]
+        )
+
+    @staticmethod
+    def send_captain_booking_assigned_email(booking):
+        """
+        Sends an email containing details of the booking accepted by the captain.
+        """
+        if not booking.worker:
+            return False
+
+        context = {
+            'subject': f"New Job Accepted - Booking #{booking.id}",
+            'user_name': booking.worker.full_name,
+            'booking_id': booking.id,
+            'customer_name': booking.customer.full_name,
+            'customer_phone': booking.customer.phone or "N/A",
+            'service_category': booking.service_category.name,
+            'service_address': f"{booking.address}, {booking.city}, {booking.state} - {booking.pincode}",
+            'current_status': booking.get_status_display()
+        }
+        
+        return send_html_email(
+            subject=context['subject'],
+            template_name='emails/captain_booking_assigned.html',
+            context=context,
+            recipient_list=[booking.worker.email]
+        )
+
+    @staticmethod
+    def send_captain_booking_cancelled_email(booking, reason=None):
+        """
+        Sends a cancellation notification to the captain.
+        """
+        if not booking.worker:
+            return False
+
+        context = {
+            'subject': f"Job Cancelled - Booking #{booking.id}",
+            'user_name': booking.worker.full_name,
+            'booking_id': booking.id,
+            'cancellation_reason': reason
+        }
+        
+        return send_html_email(
+            subject=context['subject'],
+            template_name='emails/captain_booking_cancelled.html',
+            context=context,
+            recipient_list=[booking.worker.email]
+        )
+
+    @staticmethod
+    def send_captain_service_completed_email(booking):
+        """
+        Sends a service completion summary to the captain.
+        """
+        if not booking.worker:
+            return False
+
+        from django.utils.timezone import now
+        formatted_time = now().strftime("%B %d, %Y at %I:%M %p")
+
+        context = {
+            'subject': f"Job Completed Summary - Booking #{booking.id}",
+            'user_name': booking.worker.full_name,
+            'booking_id': booking.id,
+            'customer_name': booking.customer.full_name,
+            'completion_time': formatted_time
+        }
+        
+        return send_html_email(
+            subject=context['subject'],
+            template_name='emails/captain_service_completed.html',
+            context=context,
+            recipient_list=[booking.worker.email]
+        )
+

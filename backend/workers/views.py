@@ -48,6 +48,10 @@ class WorkerRegisterProfileView(APIView):
             profile_obj.approval_status = 'pending'
             profile_obj.is_verified = False
             profile_obj.save()
+            
+            # Send KYC submitted email to captain
+            from notifications.email_service import EmailNotificationService
+            EmailNotificationService.send_captain_kyc_submitted_email(user)
             return Response({
                 'profile': WorkerProfileSerializer(profile_obj).data,
                 'message': 'Worker profile details and documents uploaded successfully.'

@@ -44,6 +44,8 @@ class RegisterView(APIView):
                 EmailNotificationService.send_welcome_verification_email(user, request)
             elif user.role == 'worker':
                 WorkerProfile.objects.create(user=user)
+                # Send welcome and email verification to captain
+                EmailNotificationService.send_captain_welcome_verification_email(user, request)
                 
             refresh = RefreshToken.for_user(user)
             

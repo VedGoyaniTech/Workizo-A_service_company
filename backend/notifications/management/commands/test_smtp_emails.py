@@ -147,6 +147,50 @@ class Command(BaseCommand):
         ok = EmailNotificationService.send_booking_cancelled_email(booking, reason="Captain request timed out")
         results.append(("Booking Cancelled", ok))
 
+        # --- CAPTAIN EMAILS ---
+        # Temporarily route worker emails to target inbox for testing
+        worker.email = target_email
+
+        self.stdout.write("\nSending Captain test emails...")
+
+        # 10. Captain Welcome & Verification
+        self.stdout.write("Sending [10/16] Captain Welcome & Verification...")
+        ok = EmailNotificationService.send_captain_welcome_verification_email(worker)
+        results.append(("Captain Welcome & Verify", ok))
+
+        # 11. Captain KYC Submitted
+        self.stdout.write("Sending [11/16] Captain KYC Submitted...")
+        ok = EmailNotificationService.send_captain_kyc_submitted_email(worker)
+        results.append(("Captain KYC Submitted", ok))
+
+        # 12. Captain KYC Approved
+        self.stdout.write("Sending [12/16] Captain KYC Approved...")
+        ok = EmailNotificationService.send_captain_kyc_approved_email(worker)
+        results.append(("Captain KYC Approved", ok))
+
+        # 13. Captain KYC Rejected
+        self.stdout.write("Sending [13/16] Captain KYC Rejected...")
+        ok = EmailNotificationService.send_captain_kyc_rejected_email(worker, reason="Pan card photo is blurry")
+        results.append(("Captain KYC Rejected", ok))
+
+        # 14. Captain Booking Assigned
+        self.stdout.write("Sending [14/16] Captain Booking Assigned...")
+        booking.status = "accepted"
+        ok = EmailNotificationService.send_captain_booking_assigned_email(booking)
+        results.append(("Captain Booking Assigned", ok))
+
+        # 15. Captain Booking Cancelled
+        self.stdout.write("Sending [15/16] Captain Booking Cancelled...")
+        booking.status = "cancelled"
+        ok = EmailNotificationService.send_captain_booking_cancelled_email(booking, reason="Customer cancelled")
+        results.append(("Captain Booking Cancelled", ok))
+
+        # 16. Captain Service Completed
+        self.stdout.write("Sending [16/16] Captain Service Completed...")
+        booking.status = "completed"
+        ok = EmailNotificationService.send_captain_service_completed_email(booking)
+        results.append(("Captain Service Completed", ok))
+
         # Output Results Summary
         self.stdout.write("\n" + "=" * 50)
         self.stdout.write(self.style.SUCCESS("EMAIL DELIVERY RESULTS SUMMARY"))
@@ -163,3 +207,4 @@ class Command(BaseCommand):
             self.stdout.write(self.style.SUCCESS("All test email renderings succeeded!"))
         else:
             self.stdout.write(self.style.ERROR(f"{failures} email renderings failed. Please check configured SMTP variables and logs."))
+

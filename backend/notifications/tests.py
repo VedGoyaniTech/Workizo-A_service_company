@@ -234,3 +234,75 @@ class EmailSystemTests(TestCase):
         with patch('django.core.mail.EmailMultiAlternatives.send', side_effect=Exception("SMTP Connection Error")):
             result = EmailNotificationService.send_welcome_verification_email(self.customer)
             self.assertFalse(result) # Should return False on failure, but NOT raise an exception
+
+    def test_captain_registration_and_verification_emails(self):
+        mail.outbox.clear()
+        # Create a new captain via Register API
+        url = reverse('register')
+        data = {
+            "email": "newcaptain@example.com",
+            "full_name": "New Captain",
+            "phone": "+916666666666",
+            "password": "captainpassword",
+            "role": "worker"
+        }
+        response = self.client.post(url, data)
+        self.assertEqual(response.status_code, 201)
+        
+        # Assert welcome verification email is sent to captain
+        self.assertEqual(len(mail.outbox), 1)
+        self.assertIn("Verify your Captain account", mail.outbox[0].subject)
+        self.assertIn("newcaptain@example.com", mail.outbox[0].to)
+
+    def test_captain_kyc_notifications(self):
+        # 1. KYC Submitted
+        mail.outbox.clear()
+        EmailNotificationService.send_captain_kyc_submitted_email(self.worker)
+        self.assertEqual(len(mail.outbox), 1)
+        self.assertIn("KYC Verification Documents Received", mail.outbox[0].subject)
+
+        # 2. KYC Approved
+        mail.outbox.clear()
+        EmailNotificationService.send_captain_kyc_approved_email(self.worker)
+        self.assertEqual(len(mail.outbox), 1)
+        self.assertIn("Congratulations! Your Captain account is verified", mail.outbox[0].subject)
+
+        # 3. KYC Rejected
+        mail.outbox.clear()
+        EmailNotificationService.send_captain_kyc_rejected_email(self.worker, reason="Aadhaar card blur")
+        self.assertEqual(len(mail.outbox), 1)
+        self.assertIn("Captain Verification Update", mail.outbox[0].subject)
+        self.assertIn("Aadhaar card blur", mail.outbox[0].body)
+
+    def test_captain_booking_notifications(self):
+        booking = Booking.objects.create(
+            customer=self.customer,
+            worker=self.worker,
+            service_category=self.category,
+            problem_type="Leakage",
+            problem_description="Kitchen pipe leaking",
+            address="123 Street",
+            city="Mumbai",
+            state="Maharashtra",
+            pincode="400001",
+            status="accepted"
+        )
+        
+        # 1. Booking Assigned
+        mail.outbox.clear()
+        EmailNotificationService.send_captain_booking_assigned_email(booking)
+        self.assertEqual(len(mail.outbox), 1)
+        self.assertIn("New Job Accepted", mail.outbox[0].subject)
+
+        # 2. Booking Cancelled
+        mail.outbox.clear()
+        EmailNotificationService.send_captain_booking_cancelled_email(booking, reason="Customer cancelled")
+        self.assertEqual(len(mail.outbox), 1)
+        self.assertIn("Job Cancelled", mail.outbox[0].subject)
+        self.assertIn("Customer cancelled", mail.outbox[0].body)
+
+        # 3. Service Completed
+        mail.outbox.clear()
+        EmailNotificationService.send_captain_service_completed_email(booking)
+        self.assertEqual(len(mail.outbox), 1)
+        self.assertIn("Job Completed Summary", mail.outbox[0].subject)

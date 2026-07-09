@@ -101,6 +101,15 @@ class AdminVerifyWorkerView(APIView):
             profile.is_verified = False
             
         profile.save()
+        
+        # Send KYC status email to captain
+        from notifications.email_service import EmailNotificationService
+        if approval_status == 'approved':
+            EmailNotificationService.send_captain_kyc_approved_email(profile.user)
+        elif approval_status == 'rejected':
+            rejection_reason = request.data.get('rejection_reason') or request.data.get('reason')
+            EmailNotificationService.send_captain_kyc_rejected_email(profile.user, rejection_reason)
+            
         return Response({
             'profile': WorkerProfileSerializer(profile).data,
             'message': f"Worker status updated to {approval_status} successfully."

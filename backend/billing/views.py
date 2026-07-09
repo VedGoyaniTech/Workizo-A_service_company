@@ -199,6 +199,10 @@ class GenerateBillView(views.APIView):
         from notifications.email_service import EmailNotificationService
         EmailNotificationService.send_work_completed_email(booking, bill)
 
+        # Send Service Completed Email to Captain if free job (grand total 0 completes instantly)
+        if bill.grand_total == 0:
+            EmailNotificationService.send_captain_service_completed_email(booking)
+
         return Response(BillSerializer(bill).data, status=status.HTTP_201_CREATED)
 
 class GetBillView(views.APIView):
@@ -301,6 +305,9 @@ class ProcessPaymentView(views.APIView):
         # Send Payment Successful Email Receipt to Customer
         from notifications.email_service import EmailNotificationService
         EmailNotificationService.send_payment_receipt_email(booking, payment)
+
+        # Send Service Completed Email to Captain
+        EmailNotificationService.send_captain_service_completed_email(booking)
 
         return Response(PaymentSerializer(payment).data)
 

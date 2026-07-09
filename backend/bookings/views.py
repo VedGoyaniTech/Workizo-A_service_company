@@ -213,6 +213,8 @@ class BookingViewSet(viewsets.ModelViewSet):
         # Send captain assigned email to customer
         from notifications.email_service import EmailNotificationService
         EmailNotificationService.send_captain_assigned_email(booking)
+        # Send new booking assigned email to captain
+        EmailNotificationService.send_captain_booking_assigned_email(booking)
 
         # Serialized data
         booking_data = self.get_serializer(booking).data
@@ -339,6 +341,8 @@ class BookingViewSet(viewsets.ModelViewSet):
         elif new_status == 'cancelled':
             reason = request.data.get('cancellation_reason') or request.data.get('reason')
             EmailNotificationService.send_booking_cancelled_email(booking, reason)
+            if booking.worker:
+                EmailNotificationService.send_captain_booking_cancelled_email(booking, reason)
 
         # Notify both parties
         status_messages = {
