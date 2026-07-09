@@ -127,6 +127,10 @@ class BookingViewSet(viewsets.ModelViewSet):
             notification_type="booking_update"
         )
 
+        # Send booking confirmation email to customer
+        from notifications.email_service import EmailNotificationService
+        EmailNotificationService.send_booking_confirmation_email(booking)
+
         # Broadcast booking_created to the booking group
         booking_data = BookingSerializer(booking).data
         send_booking_update(booking.id, booking_data, 'booking_created')
@@ -205,6 +209,10 @@ class BookingViewSet(viewsets.ModelViewSet):
             booking.worker = user
             booking.status = 'accepted'
             booking.save()
+
+        # Send captain assigned email to customer
+        from notifications.email_service import EmailNotificationService
+        EmailNotificationService.send_captain_assigned_email(booking)
 
         # Serialized data
         booking_data = self.get_serializer(booking).data
@@ -321,6 +329,16 @@ class BookingViewSet(viewsets.ModelViewSet):
             booking.optional_video = request.FILES['optional_video']
 
         booking.save()
+
+        # Send status-specific emails
+        from notifications.email_service import EmailNotificationService
+        if new_status == 'arrived':
+            EmailNotificationService.send_captain_arrived_email(booking)
+        elif new_status == 'repair_started':
+            EmailNotificationService.send_work_started_email(booking)
+        elif new_status == 'cancelled':
+            reason = request.data.get('cancellation_reason') or request.data.get('reason')
+            EmailNotificationService.send_booking_cancelled_email(booking, reason)
 
         # Notify both parties
         status_messages = {

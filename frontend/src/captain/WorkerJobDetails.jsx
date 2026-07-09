@@ -16,6 +16,7 @@ import HandymanIcon from '@mui/icons-material/Handyman';
 import QrCodeScannerIcon from '@mui/icons-material/QrCodeScanner';
 import CancelIcon from '@mui/icons-material/Cancel';
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
+import HourglassEmptyIcon from '@mui/icons-material/HourglassEmpty';
 
 import { tokens, span } from '../design/tokens';
 import { 
@@ -306,8 +307,17 @@ function WorkerJobDetails() {
     }
   };
 
-  const handleDownloadInvoice = () => {
-    window.open(`http://127.0.0.1:8001/api/billing/${id}/download-invoice/`, '_blank');
+  const handleDownloadInvoice = async () => {
+    try {
+      const response = await api.get(`/api/billing/${id}/download-invoice/`, {
+        responseType: 'blob'
+      });
+      const blob = new Blob([response.data], { type: 'application/pdf' });
+      const url = window.URL.createObjectURL(blob);
+      window.open(url, '_blank');
+    } catch (err) {
+      toast.error('Failed to download invoice');
+    }
   };
 
   if (loading) {

@@ -195,6 +195,10 @@ class GenerateBillView(views.APIView):
             notification_type="bill"
         )
 
+        # Send Work Completed Email to Customer
+        from notifications.email_service import EmailNotificationService
+        EmailNotificationService.send_work_completed_email(booking, bill)
+
         return Response(BillSerializer(bill).data, status=status.HTTP_201_CREATED)
 
 class GetBillView(views.APIView):
@@ -293,6 +297,10 @@ class ProcessPaymentView(views.APIView):
             message=f"₹{worker_payout} deposited to wallet for booking #{booking.id}.",
             notification_type="payment"
         )
+
+        # Send Payment Successful Email Receipt to Customer
+        from notifications.email_service import EmailNotificationService
+        EmailNotificationService.send_payment_receipt_email(booking, payment)
 
         return Response(PaymentSerializer(payment).data)
 

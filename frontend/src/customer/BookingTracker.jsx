@@ -274,8 +274,17 @@ function BookingTracker() {
     }, 1500);
   };
 
-  const handleDownloadInvoice = () => {
-    window.open(buildApiUrl(`/api/billing/${id}/download-invoice/`), '_blank');
+  const handleDownloadInvoice = async () => {
+    try {
+      const response = await api.get(`/api/billing/${id}/download-invoice/`, {
+        responseType: 'blob'
+      });
+      const blob = new Blob([response.data], { type: 'application/pdf' });
+      const url = window.URL.createObjectURL(blob);
+      window.open(url, '_blank');
+    } catch (err) {
+      toast.error('Failed to download invoice');
+    }
   };
 
   const handleSubmitRating = async () => {
